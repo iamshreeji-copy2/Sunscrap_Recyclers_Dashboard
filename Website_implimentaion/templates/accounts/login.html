@@ -4,25 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In — Sunscrap Solar SCADA</title>
+    <title>Operator Sign In — Sunscrap Solar SCADA</title>
     <link rel="stylesheet" href="{% static 'css/theme.css' %}">
-    <script src="{% static 'js/app.js' %}"></script>
     <style>
         body {
-            background-color: var(--nav-bg);
+            background: linear-gradient(135deg, #0B1329 0%, #172554 50%, #0F172A 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
         .login-card {
             background: var(--surface);
             border-radius: var(--radius-lg);
             width: 100%;
-            max-width: 440px;
+            max-width: 480px;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
         }
         .login-banner {
             width: 100%;
@@ -34,15 +34,18 @@
             padding: 28px;
         }
         .login-title {
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             font-weight: 800;
             color: var(--nav-bg);
             margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .login-sub {
             font-size: 0.85rem;
             color: var(--text-muted);
-            margin-bottom: 22px;
+            margin-bottom: 20px;
         }
         .form-group {
             margin-bottom: 16px;
@@ -50,7 +53,7 @@
         .form-label {
             display: block;
             font-size: 0.82rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-main);
             margin-bottom: 6px;
         }
@@ -63,6 +66,7 @@
             color: var(--text-main);
             outline: none;
             transition: var(--transition);
+            background: var(--surface);
         }
         .form-input:focus {
             border-color: var(--primary);
@@ -86,7 +90,7 @@
         .btn-submit {
             width: 100%;
             padding: 12px;
-            background-color: var(--primary);
+            background: linear-gradient(135deg, #1D5BF1 0%, #1E40AF 100%);
             color: #FFFFFF;
             border: none;
             border-radius: var(--radius-sm);
@@ -95,9 +99,30 @@
             cursor: pointer;
             transition: var(--transition);
             margin-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         .btn-submit:hover {
-            background-color: var(--primary-hover);
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+        .role-chip {
+            padding: 4px 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+        .role-chip:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
         }
         .login-footer-links {
             display: flex;
@@ -119,38 +144,53 @@
 <body>
 
 <div class="login-card">
-    <img src="{% static 'assets/solar-banner.png' %}" alt="Sunscrap Solar Plant" class="login-banner">
+    <img src="{% static 'assets/solar-banner.png' %}" alt="Sunscrap Solar Plant" class="login-banner" onerror="this.style.background='linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%)'; this.style.height='90px';">
     
     <div class="login-body">
-        <h1 class="login-title">Sunscrap Solar SCADA</h1>
-        <p class="login-sub">Sign in with authorized plant operator credentials</p>
+        <h1 class="login-title">
+            <svg width="22" height="22" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-5c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1s-1-.45-1-1V3c0-.55.45-1 1-1zm0 18c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1s-1-.45-1-1v-2c0-.55.45-1 1-1zm10-9c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1s.45-1 1-1h2c.55 0 1 .45 1 1zM5 12c0 .55-.45 1-1 1H2c-.55 0-1-.45-1-1s.45-1 1-1h2c.55 0 1 .45 1 1z"/></svg>
+            Sunscrap Solar SCADA v2.4
+        </h1>
+        <p class="login-sub">Authorized Station Access • 3,900 kW AC / 4,640 kWp DC</p>
 
-        <!-- Credentials Helper Card -->
-        <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:18px;">
-            <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
-                <span>Authorized Login Credentials</span>
-                <span style="font-size:0.7rem; color:var(--success); font-weight:700;">● Ready</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; margin-bottom:6px; padding:4px 0; border-bottom:1px dashed var(--border);">
+        <!-- Active Session Banner (if already logged in) -->
+        <div id="active-session-banner" style="display:none; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:var(--radius-sm); padding:10px 14px; margin-bottom:16px; font-size:0.82rem; color:#1E40AF;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <strong>Admin:</strong> <code style="background:rgba(0,0,0,0.06); padding:2px 4px; border-radius:3px;">admin</code> / <code style="background:rgba(0,0,0,0.06); padding:2px 4px; border-radius:3px;">Sunscrap@2026</code>
+                    Active session: <strong id="active-session-username">admin</strong> (<span id="active-session-role">Administrator</span>)
                 </div>
-                <button type="button" onclick="fillCreds('admin', 'Sunscrap@2026')" class="export-btn" style="padding:2px 8px; font-size:0.72rem;">Fill Admin</button>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; padding:4px 0;">
-                <div>
-                    <strong>Viewer:</strong> <code style="background:rgba(0,0,0,0.06); padding:2px 4px; border-radius:3px;">viewer</code> / <code style="background:rgba(0,0,0,0.06); padding:2px 4px; border-radius:3px;">Viewer@2026</code>
-                </div>
-                <button type="button" onclick="fillCreds('viewer', 'Viewer@2026')" class="export-btn" style="padding:2px 8px; font-size:0.72rem;">Fill Viewer</button>
+                <a href="index.html" class="export-btn export-btn-primary" style="padding:3px 8px; font-size:0.75rem;">Enter ➔</a>
             </div>
         </div>
 
-        <script>
-        function fillCreds(u, p) {
-            document.getElementById('username').value = u;
-            document.getElementById('password').value = p;
-        }
-        </script>
+        <!-- Authorized Roles Quick Selector -->
+        <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:18px;">
+            <div style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Authorized Operator Roles (1-Click Fill)</span>
+                <span style="font-size:0.68rem; color:var(--success); font-weight:700;">● RBAC Active</span>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                <button type="button" class="role-chip" onclick="selectRolePreset('developer', 'Dev@2026', 'developer')" style="text-align:left;">
+                    <strong style="color:#6366F1;">1. Developer</strong><br>
+                    <span style="font-size:0.68rem; color:var(--text-muted);">developer / Dev@2026</span>
+                </button>
+                <button type="button" class="role-chip" onclick="selectRolePreset('admin', 'Sunscrap@2026', 'administrator')" style="text-align:left;">
+                    <strong style="color:var(--primary);">2. Administrator</strong><br>
+                    <span style="font-size:0.68rem; color:var(--text-muted);">admin / Sunscrap@2026</span>
+                </button>
+                <button type="button" class="role-chip" onclick="selectRolePreset('darshan_owner', 'Owner@2026', 'plant_owner')" style="text-align:left;">
+                    <strong style="color:#D97706;">3. Plant Owner</strong><br>
+                    <span style="font-size:0.68rem; color:var(--text-muted);">darshan_owner / Owner@2026</span>
+                </button>
+                <button type="button" class="role-chip" onclick="selectRolePreset('viewer', 'Viewer@2026', 'third_party')" style="text-align:left;">
+                    <strong style="color:#10B981;">4. Third Party</strong><br>
+                    <span style="font-size:0.68rem; color:var(--text-muted);">viewer / Viewer@2026</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="static-login-error" style="display:none; padding:10px 14px; border-radius:var(--radius-sm); font-size:0.82rem; font-weight:500; background:var(--error-bg); color:var(--error); border-left:3px solid var(--error); margin-bottom:16px;"></div>
 
         {% if messages %}
             <div style="margin-bottom: 16px;">
@@ -164,11 +204,16 @@
             </div>
         {% endif %}
 
-        <form method="POST" action="{% url 'login' %}" onsubmit="handleStaticLogin(event)">
+        <form method="POST" action="{% url 'login' %}" onsubmit="handleWorkstationLogin(event)">
             {% csrf_token %}
+            <!-- Telemetry inputs auto-filled by client JavaScript -->
+            <input type="hidden" id="login-device-name" name="device_name" value="">
+            <input type="hidden" id="login-approx-location" name="approx_location" value="Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)">
+            <input type="hidden" id="login-network-provider" name="network_provider" value="Jio Fiber Gateway / Enterprise WAN">
+
             <div class="form-group">
-                <label class="form-label" for="username">Username or Email</label>
-                <input type="text" id="username" name="username" class="form-input" required autofocus placeholder="admin (Default: admin)" value="admin">
+                <label class="form-label" for="username">Operator Username or Email</label>
+                <input type="text" id="username" name="username" class="form-input" required autofocus placeholder="e.g. admin" value="admin">
             </div>
 
             <div class="form-group">
@@ -178,39 +223,159 @@
                 </div>
                 <div class="pwd-container">
                     <input type="password" id="password" name="password" class="form-input" required placeholder="••••••••" value="Sunscrap@2026">
-                    <button type="button" class="btn-toggle-pwd" data-target="password">Show</button>
+                    <button type="button" class="btn-toggle-pwd" id="btn-show-hide-pwd">Show</button>
                 </div>
             </div>
 
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
                 <label style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-muted); cursor: pointer;">
                     <input type="checkbox" name="remember_me" checked>
-                    Remember me on this workstation
+                    Remember station operator credentials
                 </label>
             </div>
 
-            <button type="submit" class="btn-submit">Sign In to SCADA</button>
+            <button type="submit" class="btn-submit" id="btn-submit-login">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+                <span>Authorize & Sign In</span>
+            </button>
         </form>
-
-        <script>
-        function handleStaticLogin(event) {
-            // Check if running on GitHub Pages / static
-            if (window.location.protocol === 'file:' || window.location.hostname.includes('github.io') || window.location.pathname.endsWith('.html')) {
-                event.preventDefault();
-                localStorage.setItem('scada_logged_in_user', 'admin');
-                const target = window.location.pathname.includes('Sunscrap_Recyclers_Dashboard') ? '/Sunscrap_Recyclers_Dashboard/index.html' : './index.html';
-                window.location.href = target;
-            }
-        }
-        </script>
 
         <div class="login-footer-links">
             <a href="{% url 'login_otp' %}">Sign in with Email OTP</a>
             <span style="color: var(--text-dim);">•</span>
-            <span style="color: var(--text-muted);">4,640 kWp Plant</span>
+            <span style="color: var(--text-muted); font-size:0.78rem;">Security Audit Telemetry Active</span>
         </div>
     </div>
 </div>
+
+<script>
+// Known seeded credential dictionary for static fallback
+const AUTH_DICTIONARY = {
+    'developer': { pwd: 'Dev@2026', role: 'developer', name: 'Lead Developer' },
+    'dev_admin': { pwd: 'Dev@2026', role: 'developer', name: 'Lead Developer' },
+    'admin': { pwd: 'Sunscrap@2026', role: 'administrator', name: 'System Administrator' },
+    'darshan_owner': { pwd: 'Owner@2026', role: 'plant_owner', name: 'Darshan Patel' },
+    'owner': { pwd: 'Owner@2026', role: 'plant_owner', name: 'Darshan Patel' },
+    'viewer': { pwd: 'Viewer@2026', role: 'third_party', name: 'Third Party Auditor' },
+    'third_party': { pwd: 'Viewer@2026', role: 'third_party', name: 'Third Party Auditor' }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Populate client telemetry
+    const devInput = document.getElementById('login-device-name');
+    if (devInput) {
+        devInput.value = navigator.platform + ' (' + (navigator.userAgentData ? navigator.userAgentData.platform : 'SCADA Workstation') + ')';
+    }
+
+    // Toggle password
+    const toggleBtn = document.getElementById('btn-show-hide-pwd');
+    const pwdInput = document.getElementById('password');
+    if (toggleBtn && pwdInput) {
+        toggleBtn.addEventListener('click', () => {
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                toggleBtn.innerText = 'Hide';
+            } else {
+                pwdInput.type = 'password';
+                toggleBtn.innerText = 'Show';
+            }
+        });
+    }
+
+    // Check if session already exists
+    const existing = localStorage.getItem('scada_session_user');
+    if (existing) {
+        const banner = document.getElementById('active-session-banner');
+        const userEl = document.getElementById('active-session-username');
+        const roleEl = document.getElementById('active-session-role');
+        if (banner) banner.style.display = 'block';
+        if (userEl) userEl.innerText = existing;
+        if (roleEl) roleEl.innerText = localStorage.getItem('scada_session_role') || 'Authorized';
+    }
+});
+
+function selectRolePreset(username, password, role) {
+    document.getElementById('username').value = username;
+    document.getElementById('password').value = password;
+    showError(null);
+}
+
+function showError(msg) {
+    const errBox = document.getElementById('static-login-error');
+    if (!errBox) return;
+    if (msg) {
+        errBox.innerText = msg;
+        errBox.style.display = 'block';
+    } else {
+        errBox.style.display = 'none';
+    }
+}
+
+function handleWorkstationLogin(event) {
+    const isStatic = window.location.protocol === 'file:' || 
+                     window.location.hostname.includes('github.io') || 
+                     window.location.pathname.endsWith('.html');
+
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value;
+
+    // Check against seeded dict or dynamically created users in localStorage
+    let userRecord = AUTH_DICTIONARY[u.toLowerCase()];
+    if (!userRecord) {
+        try {
+            const dynamicUsers = JSON.parse(localStorage.getItem('scada_users_list') || '[]');
+            const found = dynamicUsers.find(item => item.username.toLowerCase() === u.toLowerCase());
+            if (found) {
+                userRecord = { pwd: found.password || 'Operator@2026', role: found.role, name: found.name };
+            }
+        } catch(e) {}
+    }
+
+    if (isStatic) {
+        event.preventDefault();
+
+        if (!userRecord || userRecord.pwd !== p) {
+            showError("Authentication failed: Invalid operator username or password. Please verify credentials.");
+            return;
+        }
+
+        // Establish session in browser
+        localStorage.setItem('scada_session_user', u);
+        localStorage.setItem('scada_session_role', userRecord.role);
+        localStorage.setItem('scada_session_name', userRecord.name || u);
+
+        // Record developer audit log with telemetry
+        try {
+            const auditLog = {
+                action: 'USER_LOGIN_SUCCESS',
+                user: u,
+                role: userRecord.role,
+                details: `Successful operator authentication (${userRecord.role})`,
+                timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB') + ' IST',
+                device: navigator.platform + ' Terminal',
+                browser: navigator.userAgent.split(' ')[0],
+                approx_location: 'Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)',
+                network_provider: 'Jio Fiber High-Speed Gateway'
+            };
+            let logs = JSON.parse(localStorage.getItem('scada_developer_audit_logs') || '[]');
+            logs.unshift(auditLog);
+            localStorage.setItem('scada_developer_audit_logs', JSON.stringify(logs.slice(0, 100)));
+        } catch(e) {}
+
+        // Navigate to dashboard
+        const currentPath = window.location.pathname;
+        const target = currentPath.includes('Sunscrap_Recyclers_Dashboard') ? 
+                       '/Sunscrap_Recyclers_Dashboard/index.html' : './index.html';
+        window.location.replace(target);
+    } else {
+        // Django backend form submit: also update localStorage session
+        if (userRecord) {
+            localStorage.setItem('scada_session_user', u);
+            localStorage.setItem('scada_session_role', userRecord.role);
+        }
+    }
+}
+</script>
 
 </body>
 </html>

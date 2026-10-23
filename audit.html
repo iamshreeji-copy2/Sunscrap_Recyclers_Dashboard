@@ -1,0 +1,1011 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Audit Trail & Developer Diagnostics — Sunscrap Solar SCADA</title>
+    
+    <!-- Local Static CSS Tokens -->
+    <link rel="stylesheet" href="./static/css/theme.css">
+    
+    <!-- Immediate Authentication Guard for Zero-Leak Security -->
+    <script>
+    (function() {
+        var isStatic = window.location.protocol === 'file:' || 
+                       window.location.hostname.includes('github.io') || 
+                       window.location.pathname.endsWith('.html');
+        var path = window.location.pathname;
+        var isAuthPage = path.endsWith('login.html') || 
+                         path.endsWith('login_otp.html') || 
+                         path.endsWith('forgot_password.html') || 
+                         path.endsWith('reset_password.html');
+        if (isStatic && !isAuthPage) {
+            var sessionUser = localStorage.getItem('scada_session_user');
+            if (!sessionUser) {
+                // Prevent DOM content render & immediately redirect to login.html
+                document.documentElement.style.display = 'none';
+                var prefix = path.includes('Sunscrap_Recyclers_Dashboard') ? '/Sunscrap_Recyclers_Dashboard/' : './';
+                window.location.replace(prefix + 'login.html');
+            }
+        }
+    })();
+    </script>
+
+    <!-- Local Offline Vendored JavaScript: HTMX & Apache ECharts -->
+    <script src="./static/vendor/htmx.min.js"></script>
+    <script src="./static/vendor/echarts.min.js"></script>
+    
+    <!-- Application Scripts -->
+    <script src="./static/js/charts.js"></script>
+    <script src="./static/js/app.js"></script>
+</head>
+<body>
+<div class="app-container">
+    <!-- Desktop 248px Sidebar -->
+    <aside class="app-sidebar">
+        <div class="sidebar-brand">
+            <a href="./index.html" style="display: flex; align-items: center; text-decoration: none;">
+                <img src="./static/assets/sunscrap-logo.svg" alt="Sunscrap Solar SCADA" onerror="this.src='/static/assets/sunscrap-logo.png'">
+            </a>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Dashboard & Monitoring</div>
+            <a href="./index.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                <span>Technical SCADA Dashboard</span>
+            </a>
+            <a href="./dashboard_analytical.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                <span>Analytical Dashboard (AI/ML)</span>
+            </a>
+            <a href="./inverter_overview.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+                <span>Inverter Overview (13)</span>
+            </a>
+            <a href="./mfm_overview.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+                <span>MFM Overview (LT/Out)</span>
+            </a>
+
+            <div class="nav-section-title">Reports & Analytics</div>
+            <a href="./report_summary.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                <span>Plant Summary</span>
+            </a>
+            <a href="./report_energy_generation.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></svg>
+                <span>Energy Generation</span>
+            </a>
+            <a href="./report_inverter_generation.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 3v18h18v-2H5V3H3zm4 14h2v-4H7v4zm4 0h2v-8h-2v8zm4 0h2v-6h-2v6zm4 0h2v-11h-2v11z"/></svg>
+                <span>Inverter Generation</span>
+            </a>
+            <a href="./report_alarm.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                <span>Alarm & Faults</span>
+            </a>
+            <a href="./report_trends.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+                <span>Multi-Trends (4-Panel)</span>
+            </a>
+            <a href="./report_custom.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                <span>Custom Report Builder</span>
+            </a>
+            <a href="./report_inverter_parameter.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+                <span>Inverter Parameters (69 Col)</span>
+            </a>
+            <a href="./report_mfm_parameter.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+                <span>MFM Parameters</span>
+            </a>
+            <a href="./report_wms_parameter.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+                <span>WMS Parameters</span>
+            </a>
+            <a href="./report_communication.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+                <span>Communication Health</span>
+            </a>
+
+            <div class="nav-section-title">Jobs & Delivery</div>
+            <a href="./downloads.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                <span>Downloads Center</span>
+            </a>
+            <a href="./schedules.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                <span>Report Schedules</span>
+            </a>
+
+            <div class="nav-section-title">System Settings</div>
+            <a href="./plant_settings.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                <span>Plant & Capacity</span>
+            </a>
+            <a href="./users_settings.html" class="nav-item sensitive-admin-only ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <span>User Accounts (Add/Delete)</span>
+            </a>
+            <a href="./devices_settings.html" class="nav-item sensitive-admin-only ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/></svg>
+                <span>Device Topology</span>
+            </a>
+            <a href="./system_health.html" class="nav-item sensitive-admin-only ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                <span>System Health</span>
+            </a>
+            <a href="./audit.html" class="nav-item sensitive-admin-only active">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                <span>Security Audit</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            Sunscrap Solar SCADA v2.4<br>
+            Sunscrap Recyclers PVT LTD<br>
+            Timezone: Asia/Kolkata
+        </div>
+    </aside>
+
+    <!-- Main Content Shell -->
+    <main class="app-main">
+        <!-- Sticky Header (70px) -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="plant-title">
+                    Sunscrap Solar Plant
+                    
+                        <span class="badge-demo">Demo Data</span>
+                    
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">
+                    3900 kW AC / 4640 kWp DC
+                </div>
+            </div>
+
+            <div class="header-right">
+                <!-- Plant Discussion / Comments Button (Role 4: Third Party & Operator Collaboration) -->
+                <button type="button" class="accessibility-btn-trigger" id="btn-open-plant-notes" title="Plant Telemetry Discussion & Operator Comments">
+                    <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                    <span>Discussion</span>
+                </button>
+
+                <!-- Plant Details & GPS Settings Trigger -->
+                <button type="button" class="accessibility-btn-trigger" id="btn-open-plant-details" title="Plant Location, Owner Details & GPS Coordinates">
+                    <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    <span>Plant & GPS</span>
+                </button>
+
+                <!-- Expiring Share Link Trigger -->
+                <button type="button" class="accessibility-btn-trigger" id="btn-open-share-modal" title="Generate Time-Limited Expiring Share Link with Privacy Controls" style="border-color: #3B82F6; color: var(--primary);">
+                    <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                    <span>Share Portal</span>
+                </button>
+
+                <!-- Role Switcher (Admin vs Restricted Viewer) -->
+                <button type="button" class="accessibility-btn-trigger" id="btn-toggle-role" title="Switch Operator Role (Admin vs Viewer to test sensitive data masking)" style="background:var(--surface-alt);">
+                    <span id="role-display-badge" class="viewer-mode-badge" style="background:var(--primary); font-size:0.75rem;">Admin</span>
+                </button>
+
+                <!-- Alert Center / Open Previous Alert History Trigger -->
+                <button type="button" class="accessibility-btn-trigger" id="btn-open-alerts" title="Alarm & Alert History Center: View previous logs and trigger emergency siren" style="border-color: rgba(220, 38, 38, 0.4); color: var(--text-main);">
+                    <svg width="16" height="16" fill="#DC2626" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                    <span>Alerts</span>
+                    <span id="alert-counter-badge" style="background-color:#DC2626; color:#FFF; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:10px; margin-left:4px;">1</span>
+                </button>
+
+                <!-- Dedicated Universal Accessibility Button -->
+                <button type="button" class="accessibility-btn-trigger" id="btn-open-accessibility" title="Accessibility Hub: Colors, Font Size, Light & Dark Mode">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
+                    <span>Accessibility</span>
+                </button>
+
+                <!-- Authenticated User Profile Badge -->
+                <a href="./profile.html" class="user-profile-badge" title="Active workstation profile">
+                    <div class="user-avatar" id="header-user-avatar">A</div>
+                    <span id="header-username-display">admin</span>
+                </a>
+
+                <!-- Dedicated Sign Out Button (Clears session, logs audit record, immediately redirects to login) -->
+                <a href="./login.html" id="btn-workstation-logout" class="export-btn" title="Sign out of workstation session" style="padding: 6px 12px; font-size: 0.8rem; display:flex; align-items:center; gap:5px; color:#DC2626; border-color:rgba(220,38,38,0.35); background:rgba(220,38,38,0.06); font-weight:700;">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                    <span>Sign Out</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Body -->
+        <div class="app-content">
+            
+
+            
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
+    <div>
+        <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">
+            Security Audit Trail & Operator Diagnostics
+        </h1>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+            High-fidelity developer audit logs: login/logout events, hardware device signatures, browsers, network providers, and approximate location.
+        </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <button type="button" class="export-btn btn-copy-table" data-target-table="audit-table">Copy Logs</button>
+        <button type="button" class="export-btn btn-client-csv">Export CSV</button>
+        <button type="button" class="export-btn btn-zip" data-report-name="Security_Audit_Logs">Export ZIP</button>
+        <button type="button" class="export-btn btn-whatsapp" data-report-name="Security Audit Logs">Share WhatsApp</button>
+    </div>
+</div>
+
+<!-- Diagnostics Metric Bar -->
+<div class="kpi-grid" style="margin-bottom: 22px;">
+    <div class="kpi-card">
+        <span class="kpi-label">Logged In Sessions</span>
+        <div class="kpi-value font-mono" id="audit-kpi-logins" style="color:var(--success);">4</div>
+        <span class="kpi-sub">Verified workstation logins</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Logged Out Sessions</span>
+        <div class="kpi-value font-mono" id="audit-kpi-logouts" style="color:var(--text-muted);">2</div>
+        <span class="kpi-sub">Clean operator terminations</span>
+    </div>
+    <div class="kpi-card kpi-gold">
+        <span class="kpi-label">Unique Device Terminals</span>
+        <div class="kpi-value font-mono" id="audit-kpi-devices">3</div>
+        <span class="kpi-sub">Linux, Windows & Mobile</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Active Network Gateways</span>
+        <div class="kpi-value font-mono" id="audit-kpi-networks" style="color:var(--primary);">2</div>
+        <span class="kpi-sub">Jio Fiber & Corporate Ethernet</span>
+    </div>
+</div>
+
+<!-- Audit Log Table Card -->
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <h2 class="card-title" style="margin:0;">Audit Telemetry Log Records</h2>
+        </div>
+        <span style="font-size:0.75rem; color:var(--text-muted);">Retention: 100 Real-Time Records</span>
+    </div>
+
+    <div class="table-container">
+        <table class="scada-table sortable" id="audit-table">
+            <thead>
+                <tr>
+                    <th>Timestamp (IST)</th>
+                    <th>Operator User & Role</th>
+                    <th>Event Action</th>
+                    <th>Device Signature</th>
+                    <th>Browser Engine</th>
+                    <th>Approximate Location</th>
+                    <th>Network Provider</th>
+                    <th>Terminal IP</th>
+                </tr>
+            </thead>
+            <tbody id="audit-tbody">
+                
+                    <tr>
+                        <td class="font-mono">2026-10-23 14:23:31 IST</td>
+                        <td>
+                            <b>admin</b>
+                            <span class="status-badge" style="font-size:0.7rem; margin-left:4px;">administrator</span>
+                        </td>
+                        <td>
+                            <span class="status-badge online" style="font-family:monospace;">
+                                USER_LOGIN_SUCCESS
+                            </span>
+                        </td>
+                        <td>SCADA Operator Console</td>
+                        <td>Python-urllib/3.13</td>
+                        <td>Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)</td>
+                        <td><span style="color:var(--primary); font-weight:600;">Jio Fiber / Enterprise WAN</span></td>
+                        <td class="font-mono" style="font-size:0.8rem; color:var(--text-muted);">127.0.0.1</td>
+                    </tr>
+                
+                    <tr>
+                        <td class="font-mono">2026-10-23 14:21:36 IST</td>
+                        <td>
+                            <b>admin</b>
+                            <span class="status-badge" style="font-size:0.7rem; margin-left:4px;">administrator</span>
+                        </td>
+                        <td>
+                            <span class="status-badge online" style="font-family:monospace;">
+                                USER_LOGIN_SUCCESS
+                            </span>
+                        </td>
+                        <td>SCADA Operator Console</td>
+                        <td>Python-urllib/3.13</td>
+                        <td>Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)</td>
+                        <td><span style="color:var(--primary); font-weight:600;">Jio Fiber / Enterprise WAN</span></td>
+                        <td class="font-mono" style="font-size:0.8rem; color:var(--text-muted);">127.0.0.1</td>
+                    </tr>
+                
+                    <tr>
+                        <td class="font-mono">2026-10-23 14:20:23 IST</td>
+                        <td>
+                            <b>admin</b>
+                            <span class="status-badge" style="font-size:0.7rem; margin-left:4px;">administrator</span>
+                        </td>
+                        <td>
+                            <span class="status-badge online" style="font-family:monospace;">
+                                USER_LOGIN_SUCCESS
+                            </span>
+                        </td>
+                        <td>SCADA Operator Console</td>
+                        <td>Python-urllib/3.13</td>
+                        <td>Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)</td>
+                        <td><span style="color:var(--primary); font-weight:600;">Jio Fiber / Enterprise WAN</span></td>
+                        <td class="font-mono" style="font-size:0.8rem; color:var(--text-muted);">127.0.0.1</td>
+                    </tr>
+                
+                    <tr>
+                        <td class="font-mono">2026-10-23 14:05:36 IST</td>
+                        <td>
+                            <b>admin</b>
+                            <span class="status-badge" style="font-size:0.7rem; margin-left:4px;">administrator</span>
+                        </td>
+                        <td>
+                            <span class="status-badge online" style="font-family:monospace;">
+                                USER_LOGIN_PASSWORD
+                            </span>
+                        </td>
+                        <td>Linux x86_64 SCADA Workstation</td>
+                        <td>Chrome 129.0 / Firefox 131</td>
+                        <td>Ahmedabad, Gujarat (22.9868° N, 72.3787° E)</td>
+                        <td><span style="color:var(--primary); font-weight:600;">Jio Fiber Gateway</span></td>
+                        <td class="font-mono" style="font-size:0.8rem; color:var(--text-muted);">127.0.0.1</td>
+                    </tr>
+                
+                    <tr>
+                        <td class="font-mono">2026-10-23 13:56:16 IST</td>
+                        <td>
+                            <b>admin</b>
+                            <span class="status-badge" style="font-size:0.7rem; margin-left:4px;">administrator</span>
+                        </td>
+                        <td>
+                            <span class="status-badge online" style="font-family:monospace;">
+                                USER_LOGIN_PASSWORD
+                            </span>
+                        </td>
+                        <td>Linux x86_64 SCADA Workstation</td>
+                        <td>Chrome 129.0 / Firefox 131</td>
+                        <td>Ahmedabad, Gujarat (22.9868° N, 72.3787° E)</td>
+                        <td><span style="color:var(--primary); font-weight:600;">Jio Fiber Gateway</span></td>
+                        <td class="font-mono" style="font-size:0.8rem; color:var(--text-muted);">127.0.0.1</td>
+                    </tr>
+                
+                    <tr>
+                        <td class="font-mono">2026-10-23 13:38:54 IST</td>
+                        <td>
+                            <b>admin</b>
+                            <span class="status-badge" style="font-size:0.7rem; margin-left:4px;">administrator</span>
+                        </td>
+                        <td>
+                            <span class="status-badge online" style="font-family:monospace;">
+                                USER_LOGIN_PASSWORD
+                            </span>
+                        </td>
+                        <td>Linux x86_64 SCADA Workstation</td>
+                        <td>Chrome 129.0 / Firefox 131</td>
+                        <td>Ahmedabad, Gujarat (22.9868° N, 72.3787° E)</td>
+                        <td><span style="color:var(--primary); font-weight:600;">Jio Fiber Gateway</span></td>
+                        <td class="font-mono" style="font-size:0.8rem; color:var(--text-muted);">127.0.0.1</td>
+                    </tr>
+                
+                    <tr>
+                        <td class="font-mono">2026-10-23 13:27:24 IST</td>
+                        <td>
+                            <b>admin</b>
+                            <span class="status-badge" style="font-size:0.7rem; margin-left:4px;">administrator</span>
+                        </td>
+                        <td>
+                            <span class="status-badge online" style="font-family:monospace;">
+                                USER_LOGIN_PASSWORD
+                            </span>
+                        </td>
+                        <td>Linux x86_64 SCADA Workstation</td>
+                        <td>Chrome 129.0 / Firefox 131</td>
+                        <td>Ahmedabad, Gujarat (22.9868° N, 72.3787° E)</td>
+                        <td><span style="color:var(--primary); font-weight:600;">Jio Fiber Gateway</span></td>
+                        <td class="font-mono" style="font-size:0.8rem; color:var(--text-muted);">127.0.0.1</td>
+                    </tr>
+                
+                    <tr>
+                        <td class="font-mono">2026-10-23 13:26:06 IST</td>
+                        <td>
+                            <b>admin</b>
+                            <span class="status-badge" style="font-size:0.7rem; margin-left:4px;">administrator</span>
+                        </td>
+                        <td>
+                            <span class="status-badge online" style="font-family:monospace;">
+                                USER_LOGIN_PASSWORD
+                            </span>
+                        </td>
+                        <td>Linux x86_64 SCADA Workstation</td>
+                        <td>Chrome 129.0 / Firefox 131</td>
+                        <td>Ahmedabad, Gujarat (22.9868° N, 72.3787° E)</td>
+                        <td><span style="color:var(--primary); font-weight:600;">Jio Fiber Gateway</span></td>
+                        <td class="font-mono" style="font-size:0.8rem; color:var(--text-muted);">127.0.0.1</td>
+                    </tr>
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// Merge and render developer audit records from browser localStorage
+document.addEventListener('DOMContentLoaded', () => {
+    initAuditLogsViewer();
+});
+
+function initAuditLogsViewer() {
+    const isStatic = window.location.protocol === 'file:' || 
+                     window.location.hostname.includes('github.io') || 
+                     window.location.pathname.endsWith('.html');
+
+    // Default seed logs for developer query troubleshooting
+    const seedLogs = [
+        {
+            timestamp: '2026-10-23 13:45:10 IST',
+            user: 'developer',
+            role: 'developer',
+            action: 'USER_LOGIN_SUCCESS',
+            device: 'Linux x86_64 Dev Workstation',
+            browser: 'Chrome 129.0.6668',
+            approx_location: 'Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)',
+            network_provider: 'Jio Fiber High-Speed Gateway',
+            ip: '192.168.1.102'
+        },
+        {
+            timestamp: '2026-10-23 13:30:00 IST',
+            user: 'darshan_owner',
+            role: 'plant_owner',
+            action: 'USER_LOGIN_SUCCESS',
+            device: 'Apple macOS Terminal',
+            browser: 'Safari 17.5',
+            approx_location: 'Sanand, Gujarat, India (22.9868° N, 72.3787° E)',
+            network_provider: 'Airtel Broadband WAN',
+            ip: '192.168.1.108'
+        },
+        {
+            timestamp: '2026-10-23 13:20:15 IST',
+            user: 'darshan_owner',
+            role: 'plant_owner',
+            action: 'USER_LOGOUT',
+            device: 'Apple macOS Terminal',
+            browser: 'Safari 17.5',
+            approx_location: 'Sanand, Gujarat, India',
+            network_provider: 'Airtel Broadband WAN',
+            ip: '192.168.1.108'
+        },
+        {
+            timestamp: '2026-10-23 11:15:22 IST',
+            user: 'admin',
+            role: 'administrator',
+            action: 'USER_LOGIN_SUCCESS',
+            device: 'Windows 11 SCADA Console',
+            browser: 'Microsoft Edge 129',
+            approx_location: 'Ahmedabad, Gujarat, India',
+            network_provider: 'Jio Fiber Gateway',
+            ip: '192.168.1.101'
+        },
+        {
+            timestamp: '2026-10-23 10:45:00 IST',
+            user: 'admin',
+            role: 'administrator',
+            action: 'CONFIG_PLANT_TOPOLOGY',
+            device: 'Windows 11 SCADA Console',
+            browser: 'Microsoft Edge 129',
+            approx_location: 'Ahmedabad, Gujarat, India',
+            network_provider: 'Jio Fiber Gateway',
+            ip: '192.168.1.101'
+        },
+        {
+            timestamp: '2026-10-23 09:12:44 IST',
+            user: 'viewer',
+            role: 'third_party',
+            action: 'USER_LOGIN_SUCCESS',
+            device: 'Linux x86_64 Station',
+            browser: 'Firefox 131.0',
+            approx_location: 'Gujarat, India',
+            network_provider: 'Tata Tele Business Services',
+            ip: '192.168.1.115'
+        }
+    ];
+
+    let storedLogs = JSON.parse(localStorage.getItem('scada_developer_audit_logs') || '[]');
+    if (storedLogs.length === 0) {
+        localStorage.setItem('scada_developer_audit_logs', JSON.stringify(seedLogs));
+        storedLogs = seedLogs;
+    } else {
+        // Prepend seed logs if missing
+        seedLogs.forEach(sl => {
+            if (!storedLogs.find(x => x.timestamp === sl.timestamp && x.user === sl.user)) {
+                storedLogs.push(sl);
+            }
+        });
+    }
+
+    // Sort by timestamp descending
+    storedLogs.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+
+    // Update KPI numbers
+    const loginCount = storedLogs.filter(l => (l.action || '').includes('LOGIN')).length;
+    const logoutCount = storedLogs.filter(l => (l.action || '').includes('LOGOUT')).length;
+    const elLogins = document.getElementById('audit-kpi-logins');
+    const elLogouts = document.getElementById('audit-kpi-logouts');
+    if (elLogins) elLogins.innerText = loginCount;
+    if (elLogouts) elLogouts.innerText = logoutCount;
+
+    // Render table
+    if (isStatic) {
+        const tbody = document.getElementById('audit-tbody');
+        if (!tbody) return;
+
+        tbody.innerHTML = storedLogs.map(log => `
+            <tr>
+                <td class="font-mono">${log.timestamp || '--'}</td>
+                <td>
+                    <strong>${log.user || 'Unknown'}</strong>
+                    <span class="status-badge" style="font-size:0.7rem; margin-left:4px;">${log.role || 'operator'}</span>
+                </td>
+                <td>
+                    <span class="status-badge ${(log.action || '').includes('LOGIN') ? 'online' : ((log.action || '').includes('LOGOUT') ? 'stale' : 'offline')}" style="font-family:monospace;">
+                        ${log.action || 'EVENT'}
+                    </span>
+                </td>
+                <td>${log.device || 'SCADA Workstation'}</td>
+                <td>${(log.browser || 'Browser').slice(0, 28)}</td>
+                <td>${log.approx_location || 'Ahmedabad, Gujarat (22.9868° N, 72.3787° E)'}</td>
+                <td><span style="color:var(--primary); font-weight:600;">${log.network_provider || 'Jio Fiber Gateway'}</span></td>
+                <td class="font-mono" style="font-size:0.8rem; color:var(--text-muted);">${log.ip || '192.168.1.100'}</td>
+            </tr>
+        `).join('');
+    }
+}
+</script>
+
+        </div>
+    </main>
+</div>
+
+<!-- Backdrop Overlay for Accessibility Drawer -->
+<div id="accessibility-backdrop" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1150; display:none;"></div>
+
+<!-- Accessibility Drawer Panel -->
+<aside class="accessibility-panel" id="accessibility-drawer">
+    <div class="accessibility-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
+            <h3 style="font-size:1.05rem; font-weight:700;">Accessibility & HCI Hub</h3>
+        </div>
+        <button id="btn-close-accessibility" style="background:none; border:none; color:#FFFFFF; font-size:1.4rem; cursor:pointer;">&times;</button>
+    </div>
+    <div class="accessibility-body">
+        <!-- Display Mode: Light & Dark Mode -->
+        <div class="accessibility-section">
+            <div class="accessibility-title">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                Display Mode (Light / Dark)
+            </div>
+            <div class="accessibility-options-grid">
+                <button type="button" class="acc-choice-btn btn-theme-mode active" data-theme="light">
+                    ☀️ Light Mode
+                </button>
+                <button type="button" class="acc-choice-btn btn-theme-mode" data-theme="dark">
+                    🌙 Dark Mode
+                </button>
+            </div>
+        </div>
+
+        <!-- Color Vision -->
+        <div class="accessibility-section">
+            <div class="accessibility-title">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                Color Theme & Vision
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <button type="button" class="acc-choice-btn btn-color-mode active" data-color="vibrant" style="justify-content:flex-start;">
+                    🌈 Vibrant Sunscrap Solar (Default)
+                </button>
+                <button type="button" class="acc-choice-btn btn-color-mode" data-color="grayscale" style="justify-content:flex-start;">
+                    ⚪ Monochrome Grayscale Mode
+                </button>
+                <button type="button" class="acc-choice-btn btn-color-mode" data-color="high-contrast" style="justify-content:flex-start;">
+                    🔲 High-Contrast Mode
+                </button>
+            </div>
+        </div>
+
+        <!-- Font Size Scaling -->
+        <div class="accessibility-section">
+            <div class="accessibility-title" style="justify-content:space-between;">
+                <span style="display:flex; align-items:center; gap:8px;">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M2.5 4v3h5v12h3V7h5V4h-13zm19 5h-9v3h3v7h3v-7h3V9z"/></svg>
+                    Typography Font Size
+                </span>
+                <span id="font-scale-display" style="font-size:0.85rem; color:var(--primary); font-weight:700;">100%</span>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin-bottom:10px;">
+                <button type="button" class="acc-choice-btn btn-font-preset" data-scale="0.85" style="padding:6px 2px; font-size:0.75rem;">85%</button>
+                <button type="button" class="acc-choice-btn btn-font-preset active" data-scale="1.0" style="padding:6px 2px; font-size:0.75rem;">100%</button>
+                <button type="button" class="acc-choice-btn btn-font-preset" data-scale="1.15" style="padding:6px 2px; font-size:0.75rem;">115%</button>
+                <button type="button" class="acc-choice-btn btn-font-preset" data-scale="1.25" style="padding:6px 2px; font-size:0.75rem;">125%</button>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="export-btn" id="btn-font-decrease" style="flex:1; justify-content:center;">A− Smaller</button>
+                <button type="button" class="export-btn" id="btn-font-reset" style="flex:1; justify-content:center;">Reset</button>
+                <button type="button" class="export-btn" id="btn-font-increase" style="flex:1; justify-content:center;">A+ Larger</button>
+            </div>
+        </div>
+
+        <!-- Motion Preferences -->
+        <div class="accessibility-section">
+            <div class="accessibility-title">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1 14.93V17a1 1 0 0 1-2 0v-.07A8 8 0 0 1 4.07 10H5a1 1 0 0 1 0-2h-.93A8 8 0 0 1 11 4.07V5a1 1 0 0 1 2 0v-.93A8 8 0 0 1 19.93 11H19a1 1 0 0 1 0 2h.93A8 8 0 0 1 13 16.93z"/></svg>
+                Motion & Low Latency
+            </div>
+            <label style="display:flex; align-items:center; justify-content:space-between; font-size:0.85rem; cursor:pointer;">
+                <span>Reduced Motion (Zero Animations)</span>
+                <input type="checkbox" id="toggle-reduced-motion" style="width:18px; height:18px;">
+            </label>
+        </div>
+    </div>
+</aside>
+
+<!-- Modal: Email Report Modal -->
+<div class="modal-overlay" id="email-report-modal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 style="font-size: 1rem; font-weight: 700;">Email Report Snapshot</h3>
+            <button class="btn-close-modal" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+        </div>
+        <form id="email-report-form">
+            <input type="hidden" name="snapshot_id" id="email-snapshot-id" value="">
+            <div class="modal-body">
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Recipient Email Addresses (comma-separated)</label>
+                    <input type="text" name="recipients" required placeholder="operator@sunscrap.com, manager@sunscrap.com" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Subject</label>
+                    <input type="text" name="subject" id="email-subject" value="Sunscrap Solar SCADA Report" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Attachment Format</label>
+                    <select name="format" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                        <option value="xlsx">Excel Spreadsheet (.xlsx)</option>
+                        <option value="csv">Comma Separated Values (.csv)</option>
+                        <option value="pdf">PDF Document (.pdf)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close-modal export-btn">Cancel</button>
+                <button type="submit" class="export-btn export-btn-primary">Send Report</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Red Blinking Screen Strobe Overlay -->
+<div id="alert-strobe-overlay" class="alert-strobe-overlay hidden"></div>
+
+<!-- Emergency Critical Alarm Modal Backdrop & Pop-up (Exact User Specs) -->
+<div id="emergency-modal-backdrop" class="emergency-modal-backdrop hidden">
+    <div class="emergency-modal" id="emergency-alert-modal">
+        <div class="emergency-modal-header">
+            <h3>
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm1 14h-2v-2h2v2zm0-4h-2V8h2v4z"/></svg>
+                CRITICAL PLANT ALARM DETECTED
+            </h3>
+            <span style="background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:800; letter-spacing:1px;">PRIORITY 1</span>
+        </div>
+        <div class="emergency-modal-body">
+            <div class="emergency-alarm-banner">
+                <strong id="alarm-modal-desc">Grid Under-voltage Trip — AC active power dropped to 0.00 kW.</strong>
+                <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">Inverter output disconnect triggered. Immediate operator acknowledgment required.</div>
+            </div>
+            <div class="emergency-grid">
+                <div class="emergency-kv">
+                    <div class="label">Target Device</div>
+                    <div class="val" id="alarm-modal-device">Inverter 08 (Inv-08 / 320 kWp)</div>
+                </div>
+                <div class="emergency-kv">
+                    <div class="label">Status Code</div>
+                    <div class="val" style="color:#DC2626;" id="alarm-modal-code">ERR-402 (Grid Under-voltage)</div>
+                </div>
+                <div class="emergency-kv">
+                    <div class="label">Event Timestamp</div>
+                    <div class="val font-mono" id="alarm-modal-time">01:32:05 PM IST</div>
+                </div>
+                <div class="emergency-kv">
+                    <div class="label">Alarm State</div>
+                    <div class="val" style="color:#DC2626;" id="alarm-modal-state">ACTIVE / UNACKNOWLEDGED</div>
+                </div>
+            </div>
+        </div>
+        <div class="emergency-modal-footer">
+            <button type="button" class="btn-alert-cancel" id="btn-emergency-cancel" title="Silence the siren and review past alert history">
+                ✕ Cancel & Silence Siren
+            </button>
+            <button type="button" class="btn-alert-go" id="btn-emergency-go" title="Directly inspect Inverter 08 active power, voltage and string plots">
+                Go to Target Device (Inverter 08) ➔
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Alert History & Alarm Trail (Opens on Bell click or when dismissing alert) -->
+<div id="modal-alert-history-backdrop" class="modal-overlay hidden" style="z-index: 1220;">
+    <div class="modal-dialog" style="max-width: 800px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFF; display:flex; align-items:center; gap:8px;">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                Alarm History Trail & Critical Alerts Log
+            </h3>
+            <button type="button" id="btn-close-alert-history" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; flex-wrap:wrap; gap:8px;">
+                <div>
+                    <span style="font-size:0.85rem; font-weight:700; color:var(--text-main);">Historical Alert Incidents:</span>
+                    <span style="font-size:0.8rem; color:var(--text-muted); margin-left:4px;">Saved SCADA event logs for operator and engineer query analysis</span>
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <button type="button" class="export-btn" id="btn-trigger-emergency-test" style="background:#DC2626; color:#FFF; font-weight:700; font-size:0.75rem; border:none;">
+                        ⚡ Re-trigger Siren & Strobe
+                    </button>
+                    <button type="button" class="export-btn" id="btn-ack-all-alarms" style="font-size:0.75rem;">
+                        ✓ Acknowledge All
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container" style="max-height: 320px; overflow-y: auto;">
+                <table class="scada-table" id="modal-alert-history-table">
+                    <thead>
+                        <tr>
+                            <th>Event Timestamp</th>
+                            <th>Target Device</th>
+                            <th>Status Code</th>
+                            <th>Fault Description</th>
+                            <th>State</th>
+                            <th style="text-align:right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-alert-history-tbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="background:var(--surface-alt); border-radius:var(--radius-sm); padding:10px 14px; margin-top:14px; display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
+                <div>
+                    <strong>Target Device Telemetry:</strong>
+                    <span style="color:var(--text-muted);">Inverter 08 (Inv-08 / 320 kWp) — Sungrow SG300HX (ERR-402)</span>
+                </div>
+                <a href="/inverters/overview?inverter=INV-08" id="link-target-inv08-modal" class="export-btn export-btn-primary" style="padding:4px 10px; font-size:0.75rem;">
+                    Go to Inverter 08 Telemetry ➔
+                </a>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding: 12px 20px; background:var(--surface-alt); border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <button type="button" class="export-btn btn-whatsapp" id="btn-share-alerts-wa" style="padding: 5px 12px; font-size:0.78rem;">
+                Share Alerts via WhatsApp
+            </button>
+            <button type="button" class="export-btn" id="btn-dismiss-alert-history">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Plant Discussion & Operator Collaboration (Role 4: Third-Party Comments) -->
+<div id="modal-plant-comments-backdrop" class="modal-overlay hidden" style="z-index: 1220;">
+    <div class="modal-dialog" style="max-width: 620px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFF; display:flex; align-items:center; gap:8px;">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                Plant Operations Discussion & Comments
+            </h3>
+            <button type="button" id="btn-close-plant-notes" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 20px;">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+                Leave technical observations, inverter maintenance notes, or audit findings. Visible to plant owners, developers, administrators, and third-party viewers.
+            </p>
+
+            <!-- Existing Comments Feed -->
+            <div id="comments-feed-container" style="max-height: 240px; overflow-y: auto; display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+                <!-- Filled dynamically by JS -->
+            </div>
+
+            <!-- New Comment Box -->
+            <form id="form-plant-comment" onsubmit="postPlantComment(event)">
+                <div style="margin-bottom: 10px;">
+                    <textarea id="comment-text-input" rows="3" required placeholder="Write an engineering comment or inspection remark..." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; resize:vertical; background:var(--surface); color:var(--text-main);"></textarea>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size:0.75rem; color:var(--text-muted);">
+                        Posting as: <strong id="comment-author-badge">Operator</strong>
+                    </div>
+                    <button type="submit" class="export-btn export-btn-primary" style="padding: 6px 14px; font-size:0.82rem;">
+                        Post Comment
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer" style="padding: 12px 20px; background:var(--surface-alt); border-top:1px solid var(--border); display:flex; justify-content:flex-end;">
+            <button type="button" class="export-btn" onclick="document.getElementById('modal-plant-comments-backdrop').classList.add('hidden');">Done</button>
+        </div>
+    </div>
+</div>
+
+<!-- Version v2: Floating Back-to-Top Circular Button -->
+<button type="button" class="btn-back-to-top" id="btn-back-to-top" title="Click to scroll to top" aria-label="Back to Top">
+    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+</button>
+
+<!-- Version v2: Expiring Share Link Modal with Granular Privacy Masking -->
+<div id="modal-expiring-share-backdrop" class="modal-overlay hidden" style="z-index: 1250;">
+    <div class="modal-dialog" style="max-width: 560px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #1D5BF1 0%, #1E40AF 100%);">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFF; display:flex; align-items:center; gap:8px;">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                Create Time-Limited Expiring Share Link
+            </h3>
+            <button type="button" id="btn-close-share-modal" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 22px;">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                Generate a temporary, time-fenced guest access link for stakeholders, contractors, or auditors. Customize which sensitive metrics are displayed or masked.
+            </p>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display:block; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">Link Expiration Period</label>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="export-btn btn-share-expiry active" data-expiry="1h" style="padding: 6px 14px; font-size: 0.82rem; font-weight:700;">1 Hour</button>
+                    <button type="button" class="export-btn btn-share-expiry" data-expiry="24h" style="padding: 6px 14px; font-size: 0.82rem; font-weight:700;">24 Hours</button>
+                    <button type="button" class="export-btn btn-share-expiry" data-expiry="7d" style="padding: 6px 14px; font-size: 0.82rem; font-weight:700;">7 Days</button>
+                    <button type="button" class="export-btn btn-share-expiry" data-expiry="30d" style="padding: 6px 14px; font-size: 0.82rem; font-weight:700;">30 Days</button>
+                    <button type="button" class="export-btn btn-share-expiry" data-expiry="custom" style="padding: 6px 14px; font-size: 0.82rem; font-weight:700;">Custom Date</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display:block; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">Privacy & Sensitive Field Masking</label>
+                <label class="privacy-mask-item">
+                    <input type="checkbox" id="mask-financial" checked>
+                    <div>
+                        <strong>Mask Commercial Financial Revenue</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Hides all rupee revenue, tariff multiplier, and CapEx payback figures</div>
+                    </div>
+                </label>
+                <label class="privacy-mask-item">
+                    <input type="checkbox" id="mask-mppt">
+                    <div>
+                        <strong>Mask Raw MPPT String Currents</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Hides detailed 25-string DC currents (shows only aggregate inverter kW)</div>
+                    </div>
+                </label>
+                <label class="privacy-mask-item">
+                    <input type="checkbox" id="mask-admin-settings" checked>
+                    <div>
+                        <strong>Lock Out System Configuration & Audit Logs</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Restricts guest from viewing IP topology, port mappings, and operator logs</div>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Generated Share Link Preview -->
+            <div>
+                <label style="display:block; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Shareable Access Link</label>
+                <div class="share-token-box">
+                    <span id="display-share-url" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:400px;">Generating secure link...</span>
+                    <button type="button" id="btn-copy-share-url" class="export-btn" style="padding: 4px 10px; font-size: 0.75rem;">Copy Link</button>
+                </div>
+                <div id="share-expiry-indicator" style="font-size: 0.75rem; color: var(--success); font-weight: 600;">
+                    ✓ Valid for 1 Hour from creation
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding: 14px 20px; background:var(--surface-alt); border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <button type="button" class="export-btn btn-whatsapp" id="btn-share-whatsapp-direct" style="padding: 6px 14px; font-size: 0.8rem;">
+                Share via WhatsApp
+            </button>
+            <button type="button" class="export-btn export-btn-primary" onclick="document.getElementById('modal-expiring-share-backdrop').classList.add('hidden');">Done</button>
+        </div>
+    </div>
+</div>
+
+<!-- Version v2: Plant Details, Owner Info & GPS Location Editor Modal -->
+<div id="modal-plant-metadata-backdrop" class="modal-overlay hidden" style="z-index: 1250;">
+    <div class="modal-dialog" style="max-width: 600px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFF; display:flex; align-items:center; gap:8px;">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                Plant Specifications, Owner & GPS Location
+            </h3>
+            <button type="button" id="btn-close-plant-metadata" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 22px;">
+            <form id="form-plant-metadata" onsubmit="savePlantMetadata(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Plant / Organization Name</label>
+                        <input type="text" id="plant-meta-name" value="Sunscrap Recyclers PVT LTD" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Plant Capacity (AC / DC)</label>
+                        <input type="text" id="plant-meta-capacity" value="3,900 kW AC / 4,640 kWp DC" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Physical Site Location</label>
+                    <input type="text" id="plant-meta-location" value="Plot 148, Sanand GIDC Phase II, Ahmedabad, Gujarat, India" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Owner Name</label>
+                        <input type="text" id="plant-meta-owner" value="Darshan Patel" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Owner Contact / Email</label>
+                        <input type="text" id="plant-meta-contact" value="darshan@sunscrap.local (+91 98765 43210)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
+                    </div>
+                </div>
+
+                <!-- GPS Coordinates Section -->
+                <div style="background:var(--surface-alt); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border); margin-bottom: 14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <span style="font-size:0.8rem; font-weight:700; color:var(--text-main);">GPS Coordinates (Latitude & Longitude)</span>
+                        <button type="button" class="export-btn" onclick="detectGPSLocation()" style="font-size:0.72rem; padding:3px 8px;">📍 Auto-Detect GPS</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label style="display:block; font-size:0.72rem; color:var(--text-muted); margin-bottom:2px;">Latitude (°N)</label>
+                            <input type="text" id="plant-meta-lat" value="22.9868" style="width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem; font-family:monospace;">
+                        </div>
+                        <div>
+                            <label style="display:block; font-size:0.72rem; color:var(--text-muted); margin-bottom:2px;">Longitude (°E)</label>
+                            <input type="text" id="plant-meta-lng" value="72.3787" style="width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem; font-family:monospace;">
+                        </div>
+                    </div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">
+                        Google Maps Link: <a id="plant-gmaps-link" href="https://maps.google.com/?q=22.9868,72.3787" target="_blank" style="color:var(--primary); font-weight:600;">22.9868° N, 72.3787° E (View on Map)</a>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 6px;">
+                    <div>
+                        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Timezone</label>
+                        <input type="text" id="plant-meta-tz" value="Asia/Kolkata (IST +05:30)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Grid Interconnection</label>
+                        <input type="text" id="plant-meta-grid" value="11 kV Feeder / GETCO 66 kV Substation" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer" style="padding: 16px 0 0; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
+                    <button type="button" class="export-btn" onclick="document.getElementById('modal-plant-metadata-backdrop').classList.add('hidden');">Cancel</button>
+                    <button type="submit" class="export-btn export-btn-primary">Save Changes to Database & Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

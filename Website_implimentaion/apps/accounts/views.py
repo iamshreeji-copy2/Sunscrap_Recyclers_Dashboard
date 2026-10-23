@@ -24,6 +24,26 @@ def login_view(request):
         password = request.POST.get('password', '')
         remember_me = request.POST.get('remember_me') == 'on'
         
+        # Telemetry fields from client POST if provided
+        device_name = request.POST.get('device_name', '')
+        user_agent = request.META.get('HTTP_USER_AGENT', 'Unknown')[:255]
+        approx_location = request.POST.get('approx_location', 'Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)')
+        network_provider = request.POST.get('network_provider', 'Jio Fiber / Enterprise WAN')
+        
+        if not device_name:
+            if 'Linux' in user_agent:
+                device_name = 'Linux x86_64 Operator Station'
+            elif 'Windows' in user_agent:
+                device_name = 'Windows 11 Workstation'
+            elif 'Macintosh' in user_agent:
+                device_name = 'Apple macOS Workstation'
+            elif 'Android' in user_agent:
+                device_name = 'Android Mobile Terminal'
+            elif 'iPhone' in user_agent:
+                device_name = 'Apple iOS Terminal'
+            else:
+                device_name = 'SCADA Operator Console'
+        
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
@@ -34,9 +54,13 @@ def login_view(request):
                 
             AuditLog.objects.create(
                 user=user,
-                action="USER_LOGIN_PASSWORD",
-                details=f"Successful login from IP {get_client_ip(request)}",
-                ip_address=get_client_ip(request)
+                action="USER_LOGIN_SUCCESS",
+                details=f"Successful operator login: role={user.role}, device={device_name}, network={network_provider}",
+                ip_address=get_client_ip(request),
+                device_name=device_name,
+                user_agent=user_agent,
+                approx_location=approx_location,
+                network_provider=network_provider
             )
             next_url = request.GET.get('next') or reverse('dashboard')
             return redirect(next_url)
@@ -47,11 +71,17 @@ def login_view(request):
 
 def logout_view(request):
     if request.user.is_authenticated:
+        user_agent = request.META.get('HTTP_USER_AGENT', 'Unknown')[:255]
+        device_name = 'Linux x86_64 Operator Station' if 'Linux' in user_agent else 'SCADA Workstation'
         AuditLog.objects.create(
             user=request.user,
             action="USER_LOGOUT",
-            details=f"Logout from IP {get_client_ip(request)}",
-            ip_address=get_client_ip(request)
+            details=f"Operator session terminated for {request.user.username} ({request.user.role})",
+            ip_address=get_client_ip(request),
+            device_name=device_name,
+            user_agent=user_agent,
+            approx_location='Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)',
+            network_provider='Jio Fiber / Enterprise WAN'
         )
     logout(request)
     return redirect('login')

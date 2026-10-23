@@ -4,1014 +4,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plant Dashboard (Technical SCADA) — Sunscrap Solar SCADA</title>
-    
-    <!-- Local Static CSS Tokens -->
+    <title>Operator Sign In — Sunscrap Solar SCADA</title>
     <link rel="stylesheet" href="./static/css/theme.css">
-    
-    <!-- Local Offline Vendored JavaScript: HTMX & Apache ECharts -->
-    <script src="./static/vendor/htmx.min.js"></script>
-    <script src="./static/vendor/echarts.min.js"></script>
-    
-    <!-- Application Scripts -->
-    <script src="./static/js/charts.js"></script>
-    <script src="./static/js/app.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0B1329 0%, #172554 50%, #0F172A 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .login-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 480px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+        .login-banner {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            display: block;
+        }
+        .login-body {
+            padding: 28px;
+        }
+        .login-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--nav-bg);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .login-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.92rem;
+            color: var(--text-main);
+            outline: none;
+            transition: var(--transition);
+            background: var(--surface);
+        }
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        .pwd-container {
+            position: relative;
+        }
+        .btn-toggle-pwd {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #1D5BF1 0%, #1E40AF 100%);
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-submit:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+        .role-chip {
+            padding: 4px 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+        .role-chip:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .login-footer-links {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 18px;
+            font-size: 0.82rem;
+        }
+        .login-footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .login-footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<div class="app-container">
-    <!-- Desktop 248px Sidebar -->
-    <aside class="app-sidebar">
-        <div class="sidebar-brand">
-            <a href="./index.html" style="display: flex; align-items: center; text-decoration: none;">
-                <img src="./static/assets/sunscrap-logo.svg" alt="Sunscrap Solar SCADA" onerror="this.src='/static/assets/sunscrap-logo.png'">
-            </a>
-        </div>
-        
-        <nav class="sidebar-nav">
-            <div class="nav-section-title">Dashboard & Monitoring</div>
-            <a href="./index.html" class="nav-item active">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-                <span>Technical SCADA Dashboard</span>
-            </a>
-            <a href="./dashboard_analytical.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-                <span>Analytical Dashboard (AI/ML)</span>
-            </a>
-            <a href="./inverter_overview.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-                <span>Inverter Overview (13)</span>
-            </a>
-            <a href="./mfm_overview.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
-                <span>MFM Overview (LT/Out)</span>
-            </a>
 
-            <div class="nav-section-title">Reports & Analytics</div>
-            <a href="./report_summary.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-                <span>Plant Summary</span>
-            </a>
-            <a href="./report_energy_generation.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></svg>
-                <span>Energy Generation</span>
-            </a>
-            <a href="./report_inverter_generation.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 3v18h18v-2H5V3H3zm4 14h2v-4H7v4zm4 0h2v-8h-2v8zm4 0h2v-6h-2v6zm4 0h2v-11h-2v11z"/></svg>
-                <span>Inverter Generation</span>
-            </a>
-            <a href="./report_alarm.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                <span>Alarm & Faults</span>
-            </a>
-            <a href="./report_trends.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
-                <span>Multi-Trends (4-Panel)</span>
-            </a>
-            <a href="./report_custom.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                <span>Custom Report Builder</span>
-            </a>
-            <a href="./report_inverter_parameter.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
-                <span>Inverter Parameters (69 Col)</span>
-            </a>
-            <a href="./report_mfm_parameter.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
-                <span>MFM Parameters</span>
-            </a>
-            <a href="./report_wms_parameter.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
-                <span>WMS Parameters</span>
-            </a>
-            <a href="./report_communication.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
-                <span>Communication Health</span>
-            </a>
-
-            <div class="nav-section-title">Jobs & Delivery</div>
-            <a href="./downloads.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
-                <span>Downloads Center</span>
-            </a>
-            <a href="./schedules.html" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                <span>Report Schedules</span>
-            </a>
-
-            <div class="nav-section-title">System Settings</div>
-            <a href="/settings/plant" class="nav-item ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-                <span>Plant & Capacity</span>
-            </a>
-            <a href="/settings/devices" class="nav-item sensitive-admin-only ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/></svg>
-                <span>Device Topology</span>
-            </a>
-            <a href="/settings/system-health" class="nav-item sensitive-admin-only ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                <span>System Health</span>
-            </a>
-            <a href="/settings/audit" class="nav-item sensitive-admin-only ">
-                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                <span>Security Audit</span>
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            Sunscrap Solar SCADA v2.4<br>
-            Sunscrap Recyclers PVT LTD<br>
-            Timezone: Asia/Kolkata
-        </div>
-    </aside>
-
-    <!-- Main Content Shell -->
-    <main class="app-main">
-        <!-- Sticky Header (70px) -->
-        <header class="app-header">
-            <div class="header-left">
-                <div class="plant-title">
-                    Sunscrap Solar Plant
-                    
-                        <span class="badge-demo">Demo Data</span>
-                    
-                </div>
-                <div style="font-size: 0.8rem; color: var(--text-muted);">
-                    3900 kW AC / 4640 kWp DC
-                </div>
-            </div>
-
-            <div class="header-right">
-                <!-- Plant Details & GPS Settings Trigger -->
-                <button type="button" class="accessibility-btn-trigger" id="btn-open-plant-details" title="Plant Location, Owner Details & GPS Coordinates">
-                    <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                    <span>Plant & GPS</span>
-                </button>
-
-                <!-- Expiring Share Link Trigger -->
-                <button type="button" class="accessibility-btn-trigger" id="btn-open-share-modal" title="Generate Time-Limited Expiring Share Link with Privacy Controls" style="border-color: #3B82F6; color: var(--primary);">
-                    <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-                    <span>Share Portal</span>
-                </button>
-
-                <!-- Role Switcher (Admin vs Restricted Viewer) -->
-                <button type="button" class="accessibility-btn-trigger" id="btn-toggle-role" title="Switch Operator Role (Admin vs Viewer to test sensitive data masking)" style="background:var(--surface-alt);">
-                    <span id="role-display-badge" class="viewer-mode-badge" style="background:var(--primary); font-size:0.75rem;">Admin</span>
-                </button>
-
-                <!-- Alert Center / Set Alert Trigger -->
-                <button type="button" class="accessibility-btn-trigger" id="btn-open-alerts" title="Alarm & Alert Center: Configure Thresholds & Test Emergency Siren" style="border-color: rgba(220, 38, 38, 0.4); color: var(--text-main);">
-                    <svg width="16" height="16" fill="#DC2626" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                    <span>Alerts</span>
-                    <span style="background-color:#DC2626; color:#FFF; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:10px; margin-left:4px;">1</span>
-                </button>
-
-                <!-- Dedicated Universal Accessibility Button -->
-                <button type="button" class="accessibility-btn-trigger" id="btn-open-accessibility" title="Accessibility Hub: Colors, Font Size, Light & Dark Mode">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
-                    <span>Accessibility</span>
-                </button>
-
-                <!-- User profile badge -->
-                <a href="./profile.html" class="user-profile-badge">
-                    <div class="user-avatar">A</div>
-                    <span>admin</span>
-                </a>
-
-                <!-- Quick Login / Lock Button -->
-                <a href="./login.html" class="export-btn" title="Sign out or switch operator workstation account" style="padding: 6px 10px; font-size: 0.8rem; display:flex; align-items:center; gap:4px;">
-                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
-                    <span>Login</span>
-                </a>
-            </div>
-        </header>
-
-        <!-- Dynamic Content Body -->
-        <div class="app-content">
-            
-
-            
-<!-- Top Segmented Dashboard Toggle: Technical vs Analytical -->
-<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px;">
-    <div>
-        <h1 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin-bottom: 2px;">
-            Technical SCADA Operational Dashboard
+<div class="login-card">
+    <img src="./static/assets/solar-banner.png" alt="Sunscrap Solar Plant" class="login-banner" onerror="this.style.background='linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%)'; this.style.height='90px';">
+    
+    <div class="login-body">
+        <h1 class="login-title">
+            <svg width="22" height="22" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-5c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1s-1-.45-1-1V3c0-.55.45-1 1-1zm0 18c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1s-1-.45-1-1v-2c0-.55.45-1 1-1zm10-9c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1s.45-1 1-1h2c.55 0 1 .45 1 1zM5 12c0 .55-.45 1-1 1H2c-.55 0-1-.45-1-1s.45-1 1-1h2c.55 0 1 .45 1 1z"/></svg>
+            Sunscrap Solar SCADA v2.4
         </h1>
-        <div style="font-size: 0.8rem; color: var(--text-muted);">
-            Real-time telemetry, 13 inverter MPPT strings, Outgoing MFM grid power, and Kipp & Zonen WMS sensors.
-        </div>
-    </div>
-    <div class="dashboard-segmented-toggle">
-        <a href="./index.html" class="dashboard-segmented-btn active">
-            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></svg>
-            ⚡ Technical SCADA
-        </a>
-        <a href="./dashboard_analytical.html" class="dashboard-segmented-btn">
-            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-            📊 Analytical & Forecasting
-        </a>
-    </div>
-</div>
+        <p class="login-sub">Authorized Station Access • 3,900 kW AC / 4,640 kWp DC</p>
 
-<!-- Screenshot Parity Notification Banners -->
-<div class="banner-info-otp">
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 1.2rem;">📧</span>
-        <span><strong>Passwordless OTP Login is now available</strong> — Sign in securely using a 6-digit OTP sent to your registered email.</span>
-    </div>
-    <a href="./login.html" style="color: #FFF; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: 700;">Try OTP Login</a>
-</div>
-
-<div class="banner-warning-email">
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 1.1rem; background: #FFF; color: #B45309; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; font-weight: 800;">IMPORTANT</span>
-        <span><strong>Keep your registered email up to date</strong> — Please visit the Profile section to update or change your email address.</span>
-    </div>
-    <a href="./profile.html" style="color: #FFF; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: 700;">Go to Profile</a>
-</div>
-
-<!-- Top Communication & Device Config Summary matching Screenshot -->
-<div class="card" style="padding: 16px 20px; margin-bottom: 20px; background: linear-gradient(to right, var(--surface), var(--surface-alt));">
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <div>
-                <span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); display: block; letter-spacing: 0.5px;">PLANT OVERVIEW</span>
-                <span style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
-                    Device Config: 16
-                </span>
-            </div>
-            <div style="display: flex; gap: 12px; align-items: center;">
-                <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Total Devices: <strong>16</strong></span>
-                <span class="status-badge online" style="font-weight: 700;">Online: 16</span>
-                <span class="status-badge" style="background:#F1F5F9; color:#64748B; font-weight: 700;">Offline: 0</span>
+        <!-- Active Session Banner (if already logged in) -->
+        <div id="active-session-banner" style="display:none; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:var(--radius-sm); padding:10px 14px; margin-bottom:16px; font-size:0.82rem; color:#1E40AF;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    Active session: <strong id="active-session-username">admin</strong> (<span id="active-session-role">Administrator</span>)
+                </div>
+                <a href="index.html" class="export-btn export-btn-primary" style="padding:3px 8px; font-size:0.75rem;">Enter ➔</a>
             </div>
         </div>
 
-        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 0.85rem;">
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="color: var(--primary); font-weight: 700;">Inverters:</span>
-                <span class="status-badge online">13 / 13 Online</span>
+        <!-- Authorized Roles Quick Selector -->
+        <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:18px;">
+            <div style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Authorized Operator Roles (1-Click Fill)</span>
+                <span style="font-size:0.68rem; color:var(--success); font-weight:700;">● RBAC Active</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="color: var(--primary); font-weight: 700;">MFM:</span>
-                <span class="status-badge online">2 / 2 Online</span>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                <button type="button" class="role-chip" onclick="selectRolePreset('developer', 'Dev@2026', 'developer')" style="text-align:left;">
+                    <strong style="color:#6366F1;">1. Developer</strong><br>
+                    <span style="font-size:0.68rem; color:var(--text-muted);">developer / Dev@2026</span>
+                </button>
+                <button type="button" class="role-chip" onclick="selectRolePreset('admin', 'Sunscrap@2026', 'administrator')" style="text-align:left;">
+                    <strong style="color:var(--primary);">2. Administrator</strong><br>
+                    <span style="font-size:0.68rem; color:var(--text-muted);">admin / Sunscrap@2026</span>
+                </button>
+                <button type="button" class="role-chip" onclick="selectRolePreset('darshan_owner', 'Owner@2026', 'plant_owner')" style="text-align:left;">
+                    <strong style="color:#D97706;">3. Plant Owner</strong><br>
+                    <span style="font-size:0.68rem; color:var(--text-muted);">darshan_owner / Owner@2026</span>
+                </button>
+                <button type="button" class="role-chip" onclick="selectRolePreset('viewer', 'Viewer@2026', 'third_party')" style="text-align:left;">
+                    <strong style="color:#10B981;">4. Third Party</strong><br>
+                    <span style="font-size:0.68rem; color:var(--text-muted);">viewer / Viewer@2026</span>
+                </button>
             </div>
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="color: var(--primary); font-weight: 700;">WMS:</span>
-                <span class="status-badge online">1 / 1 Online</span>
-            </div>
-            <a href="/settings/devices" class="export-btn" style="font-size: 0.78rem; padding: 4px 10px;">View Details</a>
-        </div>
-    </div>
-</div>
-
-<!-- Primary Scientific KPIs -->
-<div class="kpi-grid">
-    <div class="kpi-card kpi-gold">
-        <span class="kpi-label">Specific Yield</span>
-        <div class="kpi-value">2.57 <span class="kpi-unit">kWh/kWp</span></div>
-        <span class="kpi-sub">Basis: Summed Inverter AC / 4,640 kWp DC</span>
-    </div>
-
-    <div class="kpi-card kpi-green">
-        <span class="kpi-label">Plant CUF (24-Hour)</span>
-        <div class="kpi-value">12.74 <span class="kpi-unit">%</span></div>
-        <span class="kpi-sub">Basis: E_AC / (3,900 kW × 24 h)</span>
-    </div>
-
-    <div class="kpi-card kpi-cyan">
-        <span class="kpi-label">Performance Ratio (PR)</span>
-        <div class="kpi-value">43.25 <span class="kpi-unit">%</span></div>
-        <span class="kpi-sub">Basis: GTI POA Insolation (5.94 kWh/m²)</span>
-    </div>
-
-    <div class="kpi-card">
-        <span class="kpi-label">Plant Efficiency</span>
-        <div class="kpi-value" style="font-size: 1.4rem; color: var(--text-muted);">N/A</div>
-        <span class="kpi-sub">Preserved N/A (Requires engineering definition)</span>
-    </div>
-</div>
-
-<!-- Energy Generation Summary Cards -->
-<div class="kpi-grid">
-    <div class="kpi-card">
-        <span class="kpi-label">Inverter Total Active Power</span>
-        <div class="kpi-value" style="color: var(--primary);">3573.96 <span class="kpi-unit">kW</span></div>
-        <span class="kpi-sub">13 Inverters Operating Sum</span>
-    </div>
-
-    <div class="kpi-card">
-        <span class="kpi-label">Inverter Today Generation</span>
-        <div class="kpi-value">11921.30 <span class="kpi-unit">kWh</span></div>
-        <span class="kpi-sub">Cumulative Today Yield (13 Inverters)</span>
-    </div>
-
-    <div class="kpi-card">
-        <span class="kpi-label">Outgoing Meter Export Today</span>
-        <div class="kpi-value">11778.24 <span class="kpi-unit">kWh</span></div>
-        <span class="kpi-sub">Grid Substation Export (Active: 3531.07 kW)</span>
-    </div>
-
-    <div class="kpi-card">
-        <span class="kpi-label">Target Energy Achievement</span>
-        <div class="kpi-value">64.4 <span class="kpi-unit">%</span></div>
-        <span class="kpi-sub">Target: 18500 kWh</span>
-    </div>
-</div>
-
-<!-- Financial Revenue & Multi-Currency Electricity Yield Engine -->
-<div class="card" style="border: 2px solid #10B981; background: linear-gradient(to right bottom, var(--surface), var(--surface-alt));">
-    <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
-        <div>
-            <h2 class="card-title" style="color: #059669;">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                Solar Electricity Commercial Revenue (Tariff Multiplier)
-            </h2>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">
-                Real-time financial yield computation: <b>Units Generated (kWh) × Rate per Unit</b>
-            </span>
         </div>
 
-        <!-- Currency & Tariff Controls -->
-        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px;">
-            <!-- Currency Selector -->
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <label for="revenue-currency-select" style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Currency:</label>
-                <select id="revenue-currency-select" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; color: var(--text-main); background: var(--surface); cursor: pointer;">
-                    <option value="INR" selected>INR (₹) — Indian Rupee</option>
-                    <option value="USD">USD ($) — US Dollar</option>
-                    <option value="EUR">EUR (€) — Euro</option>
-                    <option value="GBP">GBP (£) — British Pound</option>
-                </select>
+        <div id="static-login-error" style="display:none; padding:10px 14px; border-radius:var(--radius-sm); font-size:0.82rem; font-weight:500; background:var(--error-bg); color:var(--error); border-left:3px solid var(--error); margin-bottom:16px;"></div>
+
+        
+
+        <form method="POST" action="./index.html" onsubmit="handleWorkstationLogin(event)">
+            <input type="hidden" name="csrfmiddlewaretoken" value="SMqyiUARenKAzvqReaFRnXxCSjoofTXCGfJDftVFpGUR88eNM9z5pCUMOZijsKnY">
+            <!-- Telemetry inputs auto-filled by client JavaScript -->
+            <input type="hidden" id="login-device-name" name="device_name" value="">
+            <input type="hidden" id="login-approx-location" name="approx_location" value="Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)">
+            <input type="hidden" id="login-network-provider" name="network_provider" value="Jio Fiber Gateway / Enterprise WAN">
+
+            <div class="form-group">
+                <label class="form-label" for="username">Operator Username or Email</label>
+                <input type="text" id="username" name="username" class="form-input" required autofocus placeholder="e.g. admin" value="admin">
             </div>
 
-            <!-- Tariff Rate Input -->
-            <div style="display: flex; align-items: center; gap: 6px;">
-                <label for="revenue-tariff-input" style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Tariff / Unit:</label>
-                <div style="display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 8px;">
-                    <span class="currency-symbol-label" style="font-weight: 800; color: #059669; font-size: 0.9rem;">₹</span>
-                    <input type="number" id="revenue-tariff-input" step="0.01" min="0" value="3.00" style="width: 70px; padding: 6px 4px; border: none; font-size: 0.9rem; font-weight: 700; outline: none; background: transparent;">
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label class="form-label" for="password" style="margin-bottom: 0;">Password</label>
+                    <a href="./forgot_password.html" style="font-size: 0.75rem; color: var(--primary); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+                </div>
+                <div class="pwd-container">
+                    <input type="password" id="password" name="password" class="form-input" required placeholder="••••••••" value="Sunscrap@2026">
+                    <button type="button" class="btn-toggle-pwd" id="btn-show-hide-pwd">Show</button>
                 </div>
             </div>
 
-            <!-- Quick Tariff Presets -->
-            <div style="display: flex; gap: 4px;">
-                <button type="button" class="export-btn btn-tariff-preset" data-rate="2.50" style="padding: 4px 8px; font-size: 0.75rem;">₹2.50</button>
-                <button type="button" class="export-btn btn-tariff-preset" data-rate="3.00" style="padding: 4px 8px; font-size: 0.75rem; background: #ECFDF5; border-color: #10B981; color: #059669; font-weight: 700;">₹3.00</button>
-                <button type="button" class="export-btn btn-tariff-preset" data-rate="3.50" style="padding: 4px 8px; font-size: 0.75rem;">₹3.50</button>
-                <button type="button" class="export-btn btn-tariff-preset" data-rate="4.20" style="padding: 4px 8px; font-size: 0.75rem;">₹4.20</button>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-muted); cursor: pointer;">
+                    <input type="checkbox" name="remember_me" checked>
+                    Remember station operator credentials
+                </label>
             </div>
-        </div>
-    </div>
 
-    <!-- Hidden Raw Data Holders for JavaScript Financial Engine -->
-    <span id="val-revenue-today-kwh" data-kwh="11921.3" style="display:none;"></span>
-    <span id="val-revenue-life-kwh" data-kwh="1567546.0" style="display:none;"></span>
-    <span id="val-revenue-export-kwh" data-kwh="11778.24" style="display:none;"></span>
+            <button type="submit" class="btn-submit" id="btn-submit-login">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+                <span>Authorize & Sign In</span>
+            </button>
+        </form>
 
-    <!-- Revenue Output KPI Cards -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 10px;">
-        <div style="background: var(--surface); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span class="kpi-label" style="margin-bottom: 0;">Today's Inverter Revenue</span>
-                <span style="font-size: 0.72rem; font-weight: 700; background: #ECFDF5; color: #059669; padding: 2px 8px; border-radius: 12px;">Solar Yield</span>
-            </div>
-            <div class="kpi-value" id="display-revenue-today" style="color: #059669; font-size: 1.85rem;">₹ 35,763.90</div>
-            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">
-                <b>11921.30 kWh</b> generated today @ <span id="display-rate-unit">₹3.00/unit</span>
-            </div>
+        <div class="login-footer-links">
+            <a href="./login_otp.html">Sign in with Email OTP</a>
+            <span style="color: var(--text-dim);">•</span>
+            <span style="color: var(--text-muted); font-size:0.78rem;">Security Audit Telemetry Active</span>
         </div>
-
-        <div style="background: var(--surface); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span class="kpi-label" style="margin-bottom: 0;">Grid Substation Export Revenue</span>
-                <span style="font-size: 0.72rem; font-weight: 700; background: var(--primary-light); color: var(--primary); padding: 2px 8px; border-radius: 12px;">Discom Feed-in</span>
-            </div>
-            <div class="kpi-value" id="display-revenue-export" style="color: var(--primary); font-size: 1.85rem;">₹ 35,334.72</div>
-            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">
-                <b>11778.24 kWh</b> export through Outgoing MFM
-            </div>
-        </div>
-
-        <div style="background: var(--surface); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span class="kpi-label" style="margin-bottom: 0;">Lifetime Plant Commercial Value</span>
-                <span style="font-size: 0.72rem; font-weight: 700; background: #FEF3C7; color: #B45309; padding: 2px 8px; border-radius: 12px;">Cumulative</span>
-            </div>
-            <div class="kpi-value" id="display-revenue-lifetime" style="color: #D97706; font-size: 1.85rem;">₹ 47,02,638.00</div>
-            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">
-                <b>1567546 kWh</b> cumulative solar generation
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Weather & Environmental Cards -->
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 24px;">
-    <!-- Meteorological Overview -->
-    <div class="card" style="margin-bottom: 0;">
-        <div class="card-header">
-            <h2 class="card-title">
-                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V17a1 1 0 0 1-2 0v-.07A8 8 0 0 1 4.07 10H5a1 1 0 0 1 0-2h-.93A8 8 0 0 1 11 4.07V5a1 1 0 0 1 2 0v-.93A8 8 0 0 1 19.93 11H19a1 1 0 0 1 0 2h.93A8 8 0 0 1 13 16.93z"/></svg>
-                Meteorological Station (WMS-01)
-            </h2>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">Kipp & Zonen Calibrated Sensors</span>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; text-align: center;">
-            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
-                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">GHI</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">905.0</div>
-                <span style="font-size: 0.75rem; color: var(--text-dim);">W/m²</span>
-            </div>
-            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
-                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">GTI</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">1165.0</div>
-                <span style="font-size: 0.75rem; color: var(--text-dim);">W/m²</span>
-            </div>
-            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
-                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Ambient Temp</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">38.1</div>
-                <span style="font-size: 0.75rem; color: var(--text-dim);">°C</span>
-            </div>
-            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
-                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Module Temp</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">51.0</div>
-                <span style="font-size: 0.75rem; color: var(--text-dim);">°C</span>
-            </div>
-            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
-                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Humidity</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">23.1</div>
-                <span style="font-size: 0.75rem; color: var(--text-dim);">%RH</span>
-            </div>
-            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
-                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">GTI Insolation</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">5.94</div>
-                <span style="font-size: 0.75rem; color: var(--text-dim);">kWh/m²</span>
-            </div>
-            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
-                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Wind Speed</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">3.4</div>
-                <span style="font-size: 0.75rem; color: var(--text-dim);">m/s</span>
-            </div>
-            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
-                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Cloud Cover</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">8.0</div>
-                <span style="font-size: 0.75rem; color: var(--text-dim);">%</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Environmental Savings -->
-    <div class="card" style="margin-bottom: 0;">
-        <div class="card-header">
-            <h2 class="card-title">Environmental Offset</h2>
-            <span style="font-size: 0.75rem; color: var(--text-dim);">IEC Factors</span>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 14px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
-                <span style="font-size: 0.85rem; color: var(--text-muted);">Avoided CO₂</span>
-                <span style="font-size: 1.15rem; font-weight: 800; color: var(--success);">9.78 <span style="font-size: 0.8rem; font-weight: 600;">tCO₂</span></span>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
-                <span style="font-size: 0.85rem; color: var(--text-muted);">Trees Equivalent</span>
-                <span style="font-size: 1.15rem; font-weight: 800; color: var(--primary);">477 <span style="font-size: 0.8rem; font-weight: 600;">trees</span></span>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span style="font-size: 0.85rem; color: var(--text-muted);">Coal Avoided</span>
-                <span style="font-size: 1.15rem; font-weight: 800; color: var(--accent-gold);">4.77 <span style="font-size: 0.8rem; font-weight: 600;">tonnes</span></span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Interactive Apache ECharts Section -->
-<div class="card">
-    <div class="card-header">
-        <h2 class="card-title">Real-Time Power & Solar Irradiance Profiles</h2>
-        <div style="display: flex; gap: 8px;">
-            <span style="font-size: 0.8rem; color: var(--text-muted);">Dual-Axis: Active Power (kW) vs GTI/GHI (W/m²)</span>
-        </div>
-    </div>
-    <div id="dashboard-power-irradiance-chart" style="width: 100%; height: 380px;"></div>
-</div>
-
-<div class="card">
-    <div class="card-header">
-        <h2 class="card-title">Inverter Cumulative Yield vs Meter Export</h2>
-        <span style="font-size: 0.8rem; color: var(--text-muted);">Comparison of Generation against Export (Daily / Interval 1 Hour)</span>
-    </div>
-    <div id="dashboard-generation-export-chart" style="width: 100%; height: 320px;"></div>
-    <div style="font-size:0.8rem; color:#B45309; background:#FEF3C7; border-left:4px solid #D97706; padding:8px 14px; border-radius:var(--radius-sm); margin-top:14px; font-weight:600;">
-        ⚠️ Date Range is limited to a maximum of 7 DAYS. Please select a shorter range.
     </div>
 </div>
 
 <script>
+// Known seeded credential dictionary for static fallback
+const AUTH_DICTIONARY = {
+    'developer': { pwd: 'Dev@2026', role: 'developer', name: 'Lead Developer' },
+    'dev_admin': { pwd: 'Dev@2026', role: 'developer', name: 'Lead Developer' },
+    'admin': { pwd: 'Sunscrap@2026', role: 'administrator', name: 'System Administrator' },
+    'darshan_owner': { pwd: 'Owner@2026', role: 'plant_owner', name: 'Darshan Patel' },
+    'owner': { pwd: 'Owner@2026', role: 'plant_owner', name: 'Darshan Patel' },
+    'viewer': { pwd: 'Viewer@2026', role: 'third_party', name: 'Third Party Auditor' },
+    'third_party': { pwd: 'Viewer@2026', role: 'third_party', name: 'Third Party Auditor' }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    const times = ["06:00", "06:15", "06:30", "06:45", "07:00", "07:15", "07:30", "07:45", "07:52"];
-    const ghi = [0.0, 61.7, 123.0, 172.2, 229.6, 305.2, 362.3, 409.4, 905.0];
-    const gti = [0.0, 70.9, 143.4, 225.0, 291.6, 373.4, 452.4, 498.4, 1165.0];
-    const p_out = [0.0, 233.21, 464.47, 676.97, 920.74, 1128.28, 1349.01, 1552.08, 3531.07];
-    const p_inv = [0.0, 236.0, 470.0, 685.1, 931.8, 1141.8, 1365.2, 1570.7, 3573.4];
-    const inv_yield = [0.0, 59.0, 176.5, 347.8, 580.7, 866.2, 1207.5, 1600.2, 11919.6];
-    const exp_yield = [0.0, 58.3, 174.42, 343.67, 573.85, 855.92, 1193.18, 1581.2, 11778.24];
+    // Populate client telemetry
+    const devInput = document.getElementById('login-device-name');
+    if (devInput) {
+        devInput.value = navigator.platform + ' (' + (navigator.userAgentData ? navigator.userAgentData.platform : 'SCADA Workstation') + ')';
+    }
 
-    // 1. Dual-Axis Power & Irradiance Chart
-    ChartRegistry.init('dashboard-power-irradiance-chart', {
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: { type: 'cross' }
-        },
-        legend: {
-            data: ['Inverter Total Power (kW)', 'Outgoing Export Power (kW)', 'GTI (W/m²)', 'GHI (W/m²)'],
-            top: 0
-        },
-        grid: { left: '3%', right: '4%', bottom: '10%', top: '14%', containLabel: true },
-        xAxis: {
-            type: 'category',
-            name: 'Timeline (15m Intervals IST)',
-            nameLocation: 'middle',
-            nameGap: 30,
-            data: times,
-            boundaryGap: false
-        },
-        yAxis: [
-            {
-                type: 'value',
-                name: 'Active Power (kW)',
-                nameLocation: 'middle',
-                nameGap: 55,
-                position: 'left',
-                axisLabel: { formatter: '{value} kW' }
-            },
-            {
-                type: 'value',
-                name: 'Solar Irradiance (W/m²)',
-                nameLocation: 'middle',
-                nameGap: 45,
-                position: 'right',
-                axisLabel: { formatter: '{value} W/m²' },
-                splitLine: { show: false }
+    // Toggle password
+    const toggleBtn = document.getElementById('btn-show-hide-pwd');
+    const pwdInput = document.getElementById('password');
+    if (toggleBtn && pwdInput) {
+        toggleBtn.addEventListener('click', () => {
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                toggleBtn.innerText = 'Hide';
+            } else {
+                pwdInput.type = 'password';
+                toggleBtn.innerText = 'Show';
             }
-        ],
-        dataZoom: [
-            { type: 'inside', start: 0, end: 100 },
-            { type: 'slider', start: 0, end: 100, bottom: 0, height: 20 }
-        ],
-        series: [
-            {
-                name: 'Inverter Total Power (kW)',
-                type: 'line',
-                data: p_inv,
-                smooth: true,
-                yAxisIndex: 0,
-                itemStyle: { color: '#1D5BF1' },
-                lineStyle: { width: 3 }
-            },
-            {
-                name: 'Outgoing Export Power (kW)',
-                type: 'line',
-                data: p_out,
-                smooth: true,
-                yAxisIndex: 0,
-                itemStyle: { color: '#10B981' },
-                lineStyle: { width: 2, type: 'dashed' }
-            },
-            {
-                name: 'GTI (W/m²)',
-                type: 'line',
-                data: gti,
-                smooth: true,
-                yAxisIndex: 1,
-                itemStyle: { color: '#F59E0B' },
-                areaStyle: { opacity: 0.15, color: '#F59E0B' }
-            },
-            {
-                name: 'GHI (W/m²)',
-                type: 'line',
-                data: ghi,
-                smooth: true,
-                yAxisIndex: 1,
-                itemStyle: { color: '#EF4444' }
-            }
-        ]
-    });
+        });
+    }
 
-    // 2. Generation vs Export Bar Chart
-    ChartRegistry.init('dashboard-generation-export-chart', {
-        tooltip: { trigger: 'axis' },
-        legend: { data: ['Inverter Generation (kWh)', 'Meter Export (kWh)'], top: 0 },
-        grid: { left: '3%', right: '3%', bottom: '10%', top: '15%', containLabel: true },
-        xAxis: { 
-            type: 'category', 
-            name: 'Observation Intervals (15-Minute Timeline)',
-            nameLocation: 'middle',
-            nameGap: 30,
-            data: times 
-        },
-        yAxis: { 
-            type: 'value', 
-            name: 'Energy Generated / Exported (kWh)',
-            nameLocation: 'middle',
-            nameGap: 55,
-            axisLabel: { formatter: '{value} kWh' }
-        },
-        series: [
-            {
-                name: 'Inverter Generation (kWh)',
-                type: 'bar',
-                data: inv_yield,
-                itemStyle: { color: '#1D5BF1' }
-            },
-            {
-                name: 'Meter Export (kWh)',
-                type: 'bar',
-                data: exp_yield,
-                itemStyle: { color: '#10B981' }
-            }
-        ]
-    });
+    // Check if session already exists
+    const existing = localStorage.getItem('scada_session_user');
+    if (existing) {
+        const banner = document.getElementById('active-session-banner');
+        const userEl = document.getElementById('active-session-username');
+        const roleEl = document.getElementById('active-session-role');
+        if (banner) banner.style.display = 'block';
+        if (userEl) userEl.innerText = existing;
+        if (roleEl) roleEl.innerText = localStorage.getItem('scada_session_role') || 'Authorized';
+    }
 });
+
+function selectRolePreset(username, password, role) {
+    document.getElementById('username').value = username;
+    document.getElementById('password').value = password;
+    showError(null);
+}
+
+function showError(msg) {
+    const errBox = document.getElementById('static-login-error');
+    if (!errBox) return;
+    if (msg) {
+        errBox.innerText = msg;
+        errBox.style.display = 'block';
+    } else {
+        errBox.style.display = 'none';
+    }
+}
+
+function handleWorkstationLogin(event) {
+    const isStatic = window.location.protocol === 'file:' || 
+                     window.location.hostname.includes('github.io') || 
+                     window.location.pathname.endsWith('.html');
+
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value;
+
+    // Check against seeded dict or dynamically created users in localStorage
+    let userRecord = AUTH_DICTIONARY[u.toLowerCase()];
+    if (!userRecord) {
+        try {
+            const dynamicUsers = JSON.parse(localStorage.getItem('scada_users_list') || '[]');
+            const found = dynamicUsers.find(item => item.username.toLowerCase() === u.toLowerCase());
+            if (found) {
+                userRecord = { pwd: found.password || 'Operator@2026', role: found.role, name: found.name };
+            }
+        } catch(e) {}
+    }
+
+    if (isStatic) {
+        event.preventDefault();
+
+        if (!userRecord || userRecord.pwd !== p) {
+            showError("Authentication failed: Invalid operator username or password. Please verify credentials.");
+            return;
+        }
+
+        // Establish session in browser
+        localStorage.setItem('scada_session_user', u);
+        localStorage.setItem('scada_session_role', userRecord.role);
+        localStorage.setItem('scada_session_name', userRecord.name || u);
+
+        // Record developer audit log with telemetry
+        try {
+            const auditLog = {
+                action: 'USER_LOGIN_SUCCESS',
+                user: u,
+                role: userRecord.role,
+                details: `Successful operator authentication (${userRecord.role})`,
+                timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB') + ' IST',
+                device: navigator.platform + ' Terminal',
+                browser: navigator.userAgent.split(' ')[0],
+                approx_location: 'Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)',
+                network_provider: 'Jio Fiber High-Speed Gateway'
+            };
+            let logs = JSON.parse(localStorage.getItem('scada_developer_audit_logs') || '[]');
+            logs.unshift(auditLog);
+            localStorage.setItem('scada_developer_audit_logs', JSON.stringify(logs.slice(0, 100)));
+        } catch(e) {}
+
+        // Navigate to dashboard
+        const currentPath = window.location.pathname;
+        const target = currentPath.includes('Sunscrap_Recyclers_Dashboard') ? 
+                       '/Sunscrap_Recyclers_Dashboard/index.html' : './index.html';
+        window.location.replace(target);
+    } else {
+        // Django backend form submit: also update localStorage session
+        if (userRecord) {
+            localStorage.setItem('scada_session_user', u);
+            localStorage.setItem('scada_session_role', userRecord.role);
+        }
+    }
+}
 </script>
-
-        </div>
-    </main>
-</div>
-
-<!-- Backdrop Overlay for Accessibility Drawer -->
-<div id="accessibility-backdrop" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1150; display:none;"></div>
-
-<!-- Accessibility Drawer Panel -->
-<aside class="accessibility-panel" id="accessibility-drawer">
-    <div class="accessibility-header">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
-            <h3 style="font-size:1.05rem; font-weight:700;">Accessibility & HCI Hub</h3>
-        </div>
-        <button id="btn-close-accessibility" style="background:none; border:none; color:#FFFFFF; font-size:1.4rem; cursor:pointer;">&times;</button>
-    </div>
-    <div class="accessibility-body">
-        <!-- Display Mode: Light & Dark Mode -->
-        <div class="accessibility-section">
-            <div class="accessibility-title">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
-                Display Mode (Light / Dark)
-            </div>
-            <div class="accessibility-options-grid">
-                <button type="button" class="acc-choice-btn btn-theme-mode active" data-theme="light">
-                    ☀️ Light Mode
-                </button>
-                <button type="button" class="acc-choice-btn btn-theme-mode" data-theme="dark">
-                    🌙 Dark Mode
-                </button>
-            </div>
-        </div>
-
-        <!-- Color Vision -->
-        <div class="accessibility-section">
-            <div class="accessibility-title">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                Color Theme & Vision
-            </div>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-                <button type="button" class="acc-choice-btn btn-color-mode active" data-color="vibrant" style="justify-content:flex-start;">
-                    🌈 Vibrant Sunscrap Solar (Default)
-                </button>
-                <button type="button" class="acc-choice-btn btn-color-mode" data-color="grayscale" style="justify-content:flex-start;">
-                    ⚪ Monochrome Grayscale Mode
-                </button>
-                <button type="button" class="acc-choice-btn btn-color-mode" data-color="high-contrast" style="justify-content:flex-start;">
-                    🔲 High-Contrast Mode
-                </button>
-            </div>
-        </div>
-
-        <!-- Font Size Scaling -->
-        <div class="accessibility-section">
-            <div class="accessibility-title" style="justify-content:space-between;">
-                <span style="display:flex; align-items:center; gap:8px;">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M2.5 4v3h5v12h3V7h5V4h-13zm19 5h-9v3h3v7h3v-7h3V9z"/></svg>
-                    Typography Font Size
-                </span>
-                <span id="font-scale-display" style="font-size:0.85rem; color:var(--primary); font-weight:700;">100%</span>
-            </div>
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin-bottom:10px;">
-                <button type="button" class="acc-choice-btn btn-font-preset" data-scale="0.85" style="padding:6px 2px; font-size:0.75rem;">85%</button>
-                <button type="button" class="acc-choice-btn btn-font-preset active" data-scale="1.0" style="padding:6px 2px; font-size:0.75rem;">100%</button>
-                <button type="button" class="acc-choice-btn btn-font-preset" data-scale="1.15" style="padding:6px 2px; font-size:0.75rem;">115%</button>
-                <button type="button" class="acc-choice-btn btn-font-preset" data-scale="1.25" style="padding:6px 2px; font-size:0.75rem;">125%</button>
-            </div>
-            <div style="display:flex; gap:8px;">
-                <button type="button" class="export-btn" id="btn-font-decrease" style="flex:1; justify-content:center;">A− Smaller</button>
-                <button type="button" class="export-btn" id="btn-font-reset" style="flex:1; justify-content:center;">Reset</button>
-                <button type="button" class="export-btn" id="btn-font-increase" style="flex:1; justify-content:center;">A+ Larger</button>
-            </div>
-        </div>
-
-        <!-- Motion Preferences -->
-        <div class="accessibility-section">
-            <div class="accessibility-title">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1 14.93V17a1 1 0 0 1-2 0v-.07A8 8 0 0 1 4.07 10H5a1 1 0 0 1 0-2h-.93A8 8 0 0 1 11 4.07V5a1 1 0 0 1 2 0v-.93A8 8 0 0 1 19.93 11H19a1 1 0 0 1 0 2h.93A8 8 0 0 1 13 16.93z"/></svg>
-                Motion & Low Latency
-            </div>
-            <label style="display:flex; align-items:center; justify-content:space-between; font-size:0.85rem; cursor:pointer;">
-                <span>Reduced Motion (Zero Animations)</span>
-                <input type="checkbox" id="toggle-reduced-motion" style="width:18px; height:18px;">
-            </label>
-        </div>
-    </div>
-</aside>
-
-<!-- Modal: Email Report Modal -->
-<div class="modal-overlay" id="email-report-modal">
-    <div class="modal-dialog">
-        <div class="modal-header">
-            <h3 style="font-size: 1rem; font-weight: 700;">Email Report Snapshot</h3>
-            <button class="btn-close-modal" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
-        </div>
-        <form id="email-report-form">
-            <input type="hidden" name="snapshot_id" id="email-snapshot-id" value="">
-            <div class="modal-body">
-                <div style="margin-bottom: 14px;">
-                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Recipient Email Addresses (comma-separated)</label>
-                    <input type="text" name="recipients" required placeholder="operator@sunscrap.com, manager@sunscrap.com" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                </div>
-                <div style="margin-bottom: 14px;">
-                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Subject</label>
-                    <input type="text" name="subject" id="email-subject" value="Sunscrap Solar SCADA Report" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                </div>
-                <div style="margin-bottom: 14px;">
-                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Attachment Format</label>
-                    <select name="format" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                        <option value="xlsx">Excel Spreadsheet (.xlsx)</option>
-                        <option value="csv">Comma Separated Values (.csv)</option>
-                        <option value="pdf">PDF Document (.pdf)</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-close-modal export-btn">Cancel</button>
-                <button type="submit" class="export-btn export-btn-primary">Send Report</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Red Blinking Screen Strobe Overlay -->
-<div id="alert-strobe-overlay" class="alert-strobe-overlay hidden"></div>
-
-<!-- Emergency Critical Alarm Modal Backdrop & Pop-up -->
-<div id="emergency-modal-backdrop" class="emergency-modal-backdrop hidden">
-    <div class="emergency-modal" id="emergency-alert-modal">
-        <div class="emergency-modal-header">
-            <h3>
-                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm1 14h-2v-2h2v2zm0-4h-2V8h2v4z"/></svg>
-                CRITICAL PLANT ALARM DETECTED
-            </h3>
-            <span style="background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:800; letter-spacing:1px;">PRIORITY 1</span>
-        </div>
-        <div class="emergency-modal-body">
-            <div class="emergency-alarm-banner">
-                <strong id="alarm-modal-desc">Grid Under-voltage Trip — AC active power dropped to 0.00 kW.</strong>
-                <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">Inverter output disconnect triggered. Immediate operator acknowledgment required.</div>
-            </div>
-            <div class="emergency-grid">
-                <div class="emergency-kv">
-                    <div class="label">Target Device</div>
-                    <div class="val" id="alarm-modal-device">Inverter 08 (Inv-08 / 320 kWp)</div>
-                </div>
-                <div class="emergency-kv">
-                    <div class="label">Status Code</div>
-                    <div class="val" style="color:#DC2626;" id="alarm-modal-code">ERR-402 (Grid Under-voltage)</div>
-                </div>
-                <div class="emergency-kv">
-                    <div class="label">Event Timestamp</div>
-                    <div class="val font-mono" id="alarm-modal-time">01:32:05 PM IST</div>
-                </div>
-                <div class="emergency-kv">
-                    <div class="label">Alarm State</div>
-                    <div class="val" style="color:#DC2626;">ACTIVE / UNACKNOWLEDGED</div>
-                </div>
-            </div>
-        </div>
-        <div class="emergency-modal-footer">
-            <button type="button" class="btn-alert-cancel" id="btn-emergency-cancel">
-                ✕ Cancel & Silence Siren
-            </button>
-            <button type="button" class="btn-alert-go" id="btn-emergency-go">
-                Go to Alert Logs ➔
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Alert Configuration & Threshold Setting Modal -->
-<div id="alert-config-backdrop" class="modal-overlay hidden" style="z-index: 1200;">
-    <div class="modal-dialog" id="alert-config-modal" style="max-width: 540px;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);">
-            <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFF; display:flex; align-items:center; gap:8px;">
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                SCADA Alert Center & Threshold Settings
-            </h3>
-            <button type="button" id="btn-close-alert-config" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
-        </div>
-        <div class="modal-body" style="padding: 20px;">
-            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
-                Configure real-time monitoring alarm trip thresholds for inverters, MFM meters, and WMS environmental sensors.
-            </p>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-                <div>
-                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px; text-transform:uppercase; color:var(--text-muted);">Inverter Power Drop Limit</label>
-                    <input type="text" value="< 100 kW (Daytime)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;">
-                </div>
-                <div>
-                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px; text-transform:uppercase; color:var(--text-muted);">High Module Temp Limit</label>
-                    <input type="text" value="> 65.0 °C" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;">
-                </div>
-                <div>
-                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px; text-transform:uppercase; color:var(--text-muted);">Grid Voltage Lower Limit</label>
-                    <input type="text" value="< 380 V (3-Phase)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;">
-                </div>
-                <div>
-                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px; text-transform:uppercase; color:var(--text-muted);">Communication Timeout</label>
-                    <input type="text" value="> 120 seconds" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;">
-                </div>
-            </div>
-
-            <div style="background-color: var(--surface-alt); border: 1px dashed #DC2626; border-radius: var(--radius-sm); padding: 14px; margin-top: 10px;">
-                <div style="display:flex; align-items:center; justify-content:space-between;">
-                    <div>
-                        <strong style="color:#DC2626; font-size:0.9rem;">Test Emergency Alert Simulation</strong>
-                        <div style="font-size:0.78rem; color:var(--text-muted);">Triggers the dual-tone audio siren and blinking red screen popup.</div>
-                    </div>
-                    <button type="button" id="btn-test-alert-trigger" class="btn" style="background:#DC2626; color:#FFF; font-weight:700; padding:8px 14px; border-radius:var(--radius-sm); border:none; cursor:pointer;">
-                        ⚡ Test Live Alert
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer" style="padding: 14px 20px; background:var(--surface-alt); border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px;">
-            <button type="button" class="export-btn" onclick="document.getElementById('alert-config-backdrop').classList.add('hidden');">Cancel</button>
-            <button type="button" class="export-btn export-btn-primary" id="btn-save-alert-rule">Save Threshold Rules</button>
-        </div>
-    </div>
-</div>
-
-<!-- Version v2: Floating Back-to-Top Circular Button -->
-<button type="button" class="btn-back-to-top" id="btn-back-to-top" title="Click to scroll to top" aria-label="Back to Top">
-    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-</button>
-
-<!-- Version v2: Expiring Share Link Modal with Granular Privacy Masking -->
-<div id="modal-expiring-share-backdrop" class="modal-overlay hidden" style="z-index: 1250;">
-    <div class="modal-dialog" style="max-width: 560px;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #1D5BF1 0%, #1E40AF 100%);">
-            <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFF; display:flex; align-items:center; gap:8px;">
-                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-                Create Time-Limited Expiring Share Link
-            </h3>
-            <button type="button" id="btn-close-share-modal" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
-        </div>
-        <div class="modal-body" style="padding: 22px;">
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
-                Generate a temporary, time-fenced guest access link for stakeholders, contractors, or auditors. Customize which sensitive metrics are displayed or masked.
-            </p>
-
-            <div style="margin-bottom: 16px;">
-                <label style="display:block; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">Link Expiration Period</label>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button type="button" class="export-btn btn-share-expiry active" data-expiry="1h" style="padding: 6px 14px; font-size: 0.82rem; font-weight:700;">1 Hour</button>
-                    <button type="button" class="export-btn btn-share-expiry" data-expiry="24h" style="padding: 6px 14px; font-size: 0.82rem; font-weight:700;">24 Hours</button>
-                    <button type="button" class="export-btn btn-share-expiry" data-expiry="7d" style="padding: 6px 14px; font-size: 0.82rem; font-weight:700;">7 Days</button>
-                    <button type="button" class="export-btn btn-share-expiry" data-expiry="30d" style="padding: 6px 14px; font-size: 0.82rem; font-weight:700;">30 Days</button>
-                    <button type="button" class="export-btn btn-share-expiry" data-expiry="custom" style="padding: 6px 14px; font-size: 0.82rem; font-weight:700;">Custom Date</button>
-                </div>
-            </div>
-
-            <div style="margin-bottom: 16px;">
-                <label style="display:block; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">Privacy & Sensitive Field Masking</label>
-                <label class="privacy-mask-item">
-                    <input type="checkbox" id="mask-financial" checked>
-                    <div>
-                        <strong>Mask Commercial Financial Revenue</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Hides all rupee revenue, tariff multiplier, and CapEx payback figures</div>
-                    </div>
-                </label>
-                <label class="privacy-mask-item">
-                    <input type="checkbox" id="mask-mppt">
-                    <div>
-                        <strong>Mask Raw MPPT String Currents</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Hides detailed 25-string DC currents (shows only aggregate inverter kW)</div>
-                    </div>
-                </label>
-                <label class="privacy-mask-item">
-                    <input type="checkbox" id="mask-admin-settings" checked>
-                    <div>
-                        <strong>Lock Out System Configuration & Audit Logs</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Restricts guest from viewing IP topology, port mappings, and operator logs</div>
-                    </div>
-                </label>
-            </div>
-
-            <!-- Generated Share Link Preview -->
-            <div>
-                <label style="display:block; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Shareable Access Link</label>
-                <div class="share-token-box">
-                    <span id="display-share-url" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:400px;">Generating secure link...</span>
-                    <button type="button" id="btn-copy-share-url" class="export-btn" style="padding: 4px 10px; font-size: 0.75rem;">Copy Link</button>
-                </div>
-                <div id="share-expiry-indicator" style="font-size: 0.75rem; color: var(--success); font-weight: 600;">
-                    ✓ Valid for 1 Hour from creation
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer" style="padding: 14px 20px; background:var(--surface-alt); border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-            <button type="button" class="export-btn btn-whatsapp" id="btn-share-whatsapp-direct" style="padding: 6px 14px; font-size: 0.8rem;">
-                Share via WhatsApp
-            </button>
-            <button type="button" class="export-btn export-btn-primary" onclick="document.getElementById('modal-expiring-share-backdrop').classList.add('hidden');">Done</button>
-        </div>
-    </div>
-</div>
-
-<!-- Version v2: Plant Details, Owner Info & GPS Location Editor Modal -->
-<div id="modal-plant-metadata-backdrop" class="modal-overlay hidden" style="z-index: 1250;">
-    <div class="modal-dialog" style="max-width: 600px;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);">
-            <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFF; display:flex; align-items:center; gap:8px;">
-                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                Plant Specifications, Owner & GPS Location
-            </h3>
-            <button type="button" id="btn-close-plant-metadata" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
-        </div>
-        <div class="modal-body" style="padding: 22px;">
-            <form id="form-plant-metadata" onsubmit="savePlantMetadata(event)">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-                    <div>
-                        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Plant / Organization Name</label>
-                        <input type="text" id="plant-meta-name" value="Sunscrap Recyclers PVT LTD" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Plant Capacity (AC / DC)</label>
-                        <input type="text" id="plant-meta-capacity" value="3,900 kW AC / 4,640 kWp DC" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
-                    </div>
-                </div>
-
-                <div style="margin-bottom: 14px;">
-                    <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Physical Site Location</label>
-                    <input type="text" id="plant-meta-location" value="Plot 148, Sanand GIDC Phase II, Ahmedabad, Gujarat, India" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-                    <div>
-                        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Owner Name</label>
-                        <input type="text" id="plant-meta-owner" value="Darshan Patel" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Owner Contact / Email</label>
-                        <input type="text" id="plant-meta-contact" value="darshan@sunscrap.local (+91 98765 43210)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
-                    </div>
-                </div>
-
-                <!-- GPS Coordinates Section -->
-                <div style="background:var(--surface-alt); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border); margin-bottom: 14px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <span style="font-size:0.8rem; font-weight:700; color:var(--text-main);">GPS Coordinates (Latitude & Longitude)</span>
-                        <button type="button" class="export-btn" onclick="detectGPSLocation()" style="font-size:0.72rem; padding:3px 8px;">📍 Auto-Detect GPS</button>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div>
-                            <label style="display:block; font-size:0.72rem; color:var(--text-muted); margin-bottom:2px;">Latitude (°N)</label>
-                            <input type="text" id="plant-meta-lat" value="22.9868" style="width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem; font-family:monospace;">
-                        </div>
-                        <div>
-                            <label style="display:block; font-size:0.72rem; color:var(--text-muted); margin-bottom:2px;">Longitude (°E)</label>
-                            <input type="text" id="plant-meta-lng" value="72.3787" style="width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem; font-family:monospace;">
-                        </div>
-                    </div>
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">
-                        Google Maps Link: <a id="plant-gmaps-link" href="https://maps.google.com/?q=22.9868,72.3787" target="_blank" style="color:var(--primary); font-weight:600;">22.9868° N, 72.3787° E (View on Map)</a>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 6px;">
-                    <div>
-                        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Timezone</label>
-                        <input type="text" id="plant-meta-tz" value="Asia/Kolkata (IST +05:30)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Grid Interconnection</label>
-                        <input type="text" id="plant-meta-grid" value="11 kV Feeder / GETCO 66 kV Substation" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
-                    </div>
-                </div>
-
-                <div class="modal-footer" style="padding: 16px 0 0; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
-                    <button type="button" class="export-btn" onclick="document.getElementById('modal-plant-metadata-backdrop').classList.add('hidden');">Cancel</button>
-                    <button type="submit" class="export-btn export-btn-primary">Save Changes to Database & Profile</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 </body>
 </html>

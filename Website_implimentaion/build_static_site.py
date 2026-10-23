@@ -25,8 +25,15 @@ PAGES = [
     ("/reports/communication", "report_communication.html"),
     ("/reports/downloads", "downloads.html"),
     ("/reports/schedules", "schedules.html"),
+    ("/settings/users", "users_settings.html"),
+    ("/settings/audit", "audit.html"),
+    ("/settings/plant", "plant_settings.html"),
+    ("/settings/devices", "devices_settings.html"),
+    ("/settings/system-health", "system_health.html"),
     ("/profile", "profile.html"),
     ("/login", "login.html"),
+    ("/login/otp", "login_otp.html"),
+    ("/forgot/password", "forgot_password.html"),
 ]
 
 URL_REPLACEMENTS = [
@@ -47,9 +54,16 @@ URL_REPLACEMENTS = [
     (r'href="/reports/communication"', 'href="./report_communication.html"'),
     (r'href="/reports/downloads"', 'href="./downloads.html"'),
     (r'href="/reports/schedules"', 'href="./schedules.html"'),
+    (r'href="/settings/users"', 'href="./users_settings.html"'),
+    (r'href="/settings/audit"', 'href="./audit.html"'),
+    (r'href="/settings/plant"', 'href="./plant_settings.html"'),
+    (r'href="/settings/devices"', 'href="./devices_settings.html"'),
+    (r'href="/settings/system-health"', 'href="./system_health.html"'),
     (r'href="/profile"', 'href="./profile.html"'),
     (r'href="/login"', 'href="./login.html"'),
     (r'href="/logout"', 'href="./login.html"'),
+    (r'href="/login/otp"', 'href="./login_otp.html"'),
+    (r'href="/forgot/password"', 'href="./forgot_password.html"'),
     (r'href="/static/', 'href="./static/'),
     (r'src="/static/', 'src="./static/'),
     (r'action="/login"', 'action="./index.html"'),
@@ -93,7 +107,11 @@ def main():
     for route, filename in PAGES:
         url = f"{BASE_URL}{route}"
         try:
-            req = opener.open(url)
+            # Use unauthenticated connection for auth screens so Django does not redirect to dashboard
+            if filename in ('login.html', 'login_otp.html', 'forgot_password.html'):
+                req = urllib.request.urlopen(url)
+            else:
+                req = opener.open(url)
             html = req.read().decode('utf-8')
 
             # Apply relative URL replacements

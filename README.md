@@ -1,145 +1,106 @@
-# Sunscrap Solar SCADA — Telemetry & Analytics Platform
+# Sunscrap Solar SCADA v2.4 — Sunscrap Recyclers PVT LTD
 
-[![GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen?style=for-the-badge&logo=github)](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/)
-[![Plant Rating](https://img.shields.io/badge/AC%20Capacity-3%2C900%20kW-blue?style=for-the-badge)](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/)
-[![Plant Rating](https://img.shields.io/badge/DC%20Capacity-4%2C640%20kWp-orange?style=for-the-badge)](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/)
-[![Tests](https://img.shields.io/badge/Automated%20Tests-100%25%20Passing-success?style=for-the-badge)](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/)
+A production-grade Solar Photovoltaic SCADA & Intelligent Analytics Platform engineered for **Sunscrap Recyclers PVT LTD** (3,900 kW AC / 4,640 kWp DC Grid-Tied Solar Power Facility located in Sanand GIDC Phase II, Ahmedabad, Gujarat, India).
 
-> **Live Interactive GitHub Pages Demo:**  
-> 👉 **[https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/)**
-> 
-> **GitHub Repository:**  
-> 👉 **[https://github.com/iamshreeji-copy2/Sunscrap_Recyclers_Dashboard](https://github.com/iamshreeji-copy2/Sunscrap_Recyclers_Dashboard)**
-
-Independently built solar plant monitoring, operational reporting, and supervisory platform engineered for **Sunscrap Recyclers PVT LTD** (3,900 kW AC / 4,640 kWp DC, Asia/Kolkata).
+[![GitHub Pages Deployment](https://img.shields.io/badge/GitHub%20Pages-Live%20Portal-success?style=for-the-badge&logo=github)](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/)
+[![Version](https://img.shields.io/badge/Version-v2.4%20Production-blue?style=for-the-badge)](https://github.com/iamshreeji-copy2/Sunscrap_Recyclers_Dashboard)
+[![Tests](https://img.shields.io/badge/Automated%20Tests-100%25%20PASS-green?style=for-the-badge)](https://github.com/iamshreeji-copy2/Sunscrap_Recyclers_Dashboard)
 
 ---
 
-## ✨ Key Capabilities & Latest Features
-
-### 1. 🚨 Critical Alarm Siren & Blinking Red Screen Pop-up System
-An industrial-grade supervisory alarm and alert dispatch system:
-- **Audio Siren Engine:** Synthesizes an alternating dual-tone emergency acoustic siren (880 Hz / 620 Hz alternating tone) using the browser's native **HTML5 Web Audio API** (`AudioContext`). Works 100% offline with zero dependencies on external audio files.
-- **Blinking Red Screen Strobe:** When an alarm triggers, the entire screen pulses with an animated high-visibility red vignette overlay (`@keyframes alertStrobeAnim`) and glowing modal border.
-- **Emergency Action Buttons:**
-  - **Cancel & Silence Siren:** Instantly terminates the acoustic oscillator, dismisses the red strobe, and silences the warning.
-  - **Go to Alert Logs:** Silences the siren and immediately redirects the operator directly to the Alert Logs page (`report_alarm.html#alert-logs`), scrolling straight to the active log entry.
-- **Alert Center & Thresholds:** Configure trip thresholds for Inverter Active Power Drop, Module High Temperature (> 65°C), Communication Outages, and Grid Under-Voltage. Includes a **⚡ Test Live Alert** simulation button.
-- **Persistent Alert Logs:** Automatically timestamps and logs each alarm event to local storage and the database table.
+## 🌐 Live Demonstration Portal
+- **Live URL:** [https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/)
+- **Repository:** [https://github.com/iamshreeji-copy2/Sunscrap_Recyclers_Dashboard](https://github.com/iamshreeji-copy2/Sunscrap_Recyclers_Dashboard)
 
 ---
 
-### 2. 📱 Instant WhatsApp Sharing & Email Dispatch
-Integrated into every report and data table toolbar:
-- **Share on WhatsApp:** One-click WhatsApp button formatted with WhatsApp brand green (`#25D366`). Formats and encodes plant operational summary:
-  - Organization Name, Plant Rating (3,900 kW AC / 4,640 kWp DC)
-  - Report Title and Date
-  - Operational Inverters (13/13 Online)
-  - Generation and Grid Export Metrics
-  - Direct live URL to the SCADA portal
-- **Email Report:** Modal dialog enabling automated email dispatch of report snapshots in genuine XLSX, CSV, or PDF formats to operational mailing lists.
+## 🔐 Station Login Credentials & Role Hierarchy
+
+| Role | Username | Password | Key Permissions |
+|---|---|---|---|
+| **Lead Developer** | `developer` | `Dev@2026` | Full telemetry diagnostics, device signatures, browser/network audit log |
+| **System Administrator** | `admin` | `Sunscrap@2026` | Full control, User Management (Add/Delete Users), Plant topology & threshold editor |
+| **Plant Owner** | `darshan_owner` | `Owner@2026` | CapEx payback ROI tracker, revenue in INR (₹), expiring share links, plant metadata |
+| **Third-Party Viewer / Commenter**| `viewer` | `Viewer@2026` | Sanitized telemetry dashboards, plant operations discussion notes, masked admin settings |
+
+*Note: You can also use the 1-click credential presets provided directly on the sign-in screen.*
 
 ---
 
-### 3. 📦 Multi-Format ZIP Archive Downloader
-- **Download as ZIP:** Bundles report data into a genuine `.zip` archive on demand.
-- Contains:
-  - High-precision UTF-8 CSV with formula injection defense
-  - Tab-delimited TSV data
-  - Audit trail text file with organization metadata, date, timezone, and device counts
-  - Historical Excel report sheets
-- Implemented with both a Django backend generator (`/reports/export/zip`) and a pure, zero-dependency client-side PKZIP binary writer for instant browser downloads on GitHub Pages.
+## 🚀 Key Features in Version v2.4
+
+1. **Mandatory Login Gatekeeper:**
+   - Unauthenticated visitors on GitHub Pages are immediately redirected to `login.html` before any dashboard data or charts can render.
+   - Distinct **Sign Out** button in the header cleanly terminates session, clears credentials from `localStorage`, and logs a security audit event.
+
+2. **Dual Switchable Dashboards:**
+   - **⚡ Technical SCADA Dashboard:** Real-time engineering telemetry for 13 inverters, 2 MFMs, weather sensors (WMS), string currents, and dual-axis generation curves.
+   - **📊 Analytical AI/ML Dashboard:** Data science analytics, financial revenue in INR, CapEx payback tracker (₹18.5 Cr investment vs ₹47.02 Lakhs recovered), 7-day predictive ML forecast with ±95% confidence intervals, irradiance-to-power regression ($R^2 = 0.982$), and loss breakdown waterfall.
+
+3. **Interactive & Colorful ECharts with Explicit Axis Labels:**
+   - Every single chart features explicit X and Y axis titles with units placed in the middle (`nameLocation: 'middle'`) and appropriate gap padding (`nameGap: 28-42px`).
+   - Smooth animations with low-latency rendering and high-contrast accessibility options.
+
+4. **Emergency Acoustic Siren & Strobe Overlay:**
+   - High-priority emergency popup with dual-tone industrial acoustic siren synthesis using Web Audio API (oscillating 960Hz / 640Hz).
+   - Exact incident specifications:
+     - **Target Device:** `Inverter 08 (Inv-08 / 320 kWp)`
+     - **Status Code:** `ERR-402 (Grid Under-voltage)`
+     - **Event Timestamp:** `01:32:05 PM IST`
+     - **Alarm State:** `ACTIVE / UNACKNOWLEDGED`
+   - **"Go to Target Device"** button navigates directly to Inverter 08's active power curves, string currents, and telemetry tables.
+   - **"Cancel & Silence Siren"** or clicking the top header Bell icon opens the complete **Alarm History Trail & Log Retrieval** modal.
+
+5. **User Management Screen (Add & Delete Users):**
+   - Under `System Settings > User Accounts`, Administrators can create new operator accounts with designated roles or delete existing users with instantaneous synchronization to backend database and browser storage.
+
+6. **Developer Security & Telemetry Audit Trail:**
+   - Under `System Settings > Security Audit`, developers can troubleshoot workstation issues by reviewing login and logout records containing:
+     - Timestamp (IST)
+     - Username & Assigned Role
+     - Device Signature (e.g. Linux x86_64, Windows 11, Apple macOS)
+     - Browser Engine & Version (e.g. Chrome 129, Firefox 131, Safari 17)
+     - Approximate Location (Ahmedabad, Gujarat, India • 22.9868° N, 72.3787° E)
+     - Network Provider / ISP (Jio Fiber High-Speed Gateway, Airtel Broadband, Corporate WAN)
+     - Terminal IP Address
+
+7. **Plant Discussion & Collaboration Feed:**
+   - The fourth role (Third-Party Viewer / Commenter) and station engineers can post and review engineering remarks, maintenance observations, and audit notes.
+
+8. **Frozen Sidebar & Floating Back-to-Top Button:**
+   - The navigation sidebar stays fixed at 100vh height with smooth scroll.
+   - Circular Back-to-Top floating button appears at bottom-right when scrolled down.
+
+9. **Time-Limited Expiring Share Links:**
+   - Generate temporary links valid for 1 hour, 24 hours, 7 days, 30 days, or custom expiry with granular privacy masking (mask revenue figures, mask raw string currents, mask administrative settings).
+
+10. **Plant Specifications, Owner Details & GPS Location Editor:**
+    - Live editable modal for Plant Name, AC/DC rating, Site Address, Owner Name, Contact Info, auto-detect GPS coordinates, and Google Maps pin.
 
 ---
 
-### 4. 📅 Daily & Monthly Historical Reports
-Directly integrates historical production data from `/Reports`:
-- **Mode Switcher:** Toggle between **Daily** mode (viewing specific dates from `2026-10-18` to `2026-10-23`) and **Monthly** mode (viewing all days of the month for `2026-10`, `2026-09`, `2026-08`, `2026-07`, `2026-06`, `2026-05`).
-- Exact column alignment:
-  `Date` | `Inverters 1 to 13 Generation (kWh)` | `TOTAL Inverter Generation (kWh)` | `Day Export (kWh)` | `Day Import (kWh)` | `NET Generation (kWh)` | `Generation Guarantee` | `CUF Plant End (%)` | `CUF GETCO End (%)` | `GHI Energy (kWh/m²/day)` | `GHI Average (W/m²)` | `Ambient Temp (°C)` | `Module Temp (°C)`
-- Original Excel workbooks vendored in `static/data/reports/` for direct download.
-
----
-
-### 5. ⇅ Universal Interactive Table Column Sorting
-- Every table header (`<th>`) is interactive with sort indicators (`⇅`, `▲`, `▼`).
-- Click once for **Ascending**, click again for **Descending**.
-- Automatically detects and handles numeric units (`kWh`, `kW`, `°C`, `W/m²`, `₹`, `%`), timestamps, and strings.
-
----
-
-### 6. ♿ Accessibility Hub (Colors, Font Scaling, Light & Dark Mode)
-- **Display Modes:** ☀️ Light Mode & 🌙 Deep Navy Control-Room Dark Theme (`#0B132B` / `#17223B`).
-- **Color Themes:** 🌈 Vibrant Sunscrap, ⚪ Monochrome Grayscale, 🔲 High-Contrast Outdoor Tablet Mode.
-- **Typography Scaling:** `85%`, `100%`, `115%`, `125%` presets + `A-` / `A+` stepping.
-- **Preferences:** Persisted locally in browser `localStorage`.
-
----
-
-### 7. 💰 Commercial Revenue & Electricity Yield Engine
-Real-time financial yield calculator on the Plant Dashboard:
-$$\text{Revenue} = \text{Energy Units Produced (kWh)} \times \text{Tariff Rate per Unit}$$
-- **Currencies:** INR (₹), USD ($), EUR (€), GBP (£)
-- **Interactive Presets:** `₹2.50`, `₹3.00`, `₹3.50`, `₹4.20` + custom input
-- **Computed Outputs:**
-  - Today's Inverter Revenue: `11,921.30 kWh × ₹3.00 = ₹ 35,763.90`
-  - Substation Export Revenue: `11,778.24 kWh × ₹3.00 = ₹ 35,334.72`
-  - Lifetime Commercial Value: `1,567,546 kWh × ₹3.00 = ₹ 47,02,638.00` (47.02 Lakhs)
-
----
-
-## 🖥️ Screen & Route Inventory
-
-| Screen / Feature | Route | Live Demo Path |
-|---|---|---|
-| **Consolidated Plant Dashboard** | `/dashboard`, `/home` | [`index.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/index.html) |
-| **Inverter Overview (13 Inverters)** | `/inverters/overview` | [`inverter_overview.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/inverter_overview.html) |
-| **MFM Overview (LT & Outgoing)** | `/mfm/overview` | [`mfm_overview.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/mfm_overview.html) |
-| **Plant Generation Summary** | `/reports/summary` | [`report_summary.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/report_summary.html) |
-| **Energy Generation (Export/Import)** | `/reports/energy/generation` | [`report_energy_generation.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/report_energy_generation.html) |
-| **Inverter Generation Yield** | `/reports/inverter/generation` | [`report_inverter_generation.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/report_inverter_generation.html) |
-| **Hardware Alarms & Faults Lifecycle** | `/reports/alarm` | [`report_alarm.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/report_alarm.html) |
-| **Interactive Multi-Trends (4-Panel)** | `/reports/trends` | [`report_trends.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/report_trends.html) |
-| **Custom Parameterized Report Builder** | `/reports/custom-report` | [`report_custom.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/report_custom.html) |
-| **Inverter Full 69 Parameters** | `/reports/inverter/parameter` | [`report_inverter_parameter.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/report_inverter_parameter.html) |
-| **MFM Electrical Parameters** | `/reports/mfm/parameter` | [`report_mfm_parameter.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/report_mfm_parameter.html) |
-| **Weather & Environmental Parameters** | `/reports/wms/parameter` | [`report_wms_parameter.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/report_wms_parameter.html) |
-| **Communication Health & SLA Uptime** | `/reports/communication` | [`report_communication.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/report_communication.html) |
-| **Downloads Center** | `/reports/downloads` | [`downloads.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/downloads.html) |
-| **Automated Report Schedules** | `/reports/schedules` | [`schedules.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/schedules.html) |
-| **Operator Sign In & OTP Simulation** | `/login` | [`login.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/login.html) |
-| **Operator Profile & Security** | `/profile` | [`profile.html`](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/profile.html) |
-
----
-
-## 📋 The Complete 8-Output Contract
-Every report and data table is equipped with:
-1. **Copy:** Sanitized tab-separated clipboard format.
-2. **Excel:** Genuine `.xlsx` with numeric typed cells and metadata audit sheet.
-3. **CSV:** UTF-8 RFC 4180 CSV with formula injection mitigation (escaping leading `=`, `+`, `-`, `@`).
-4. **PDF:** Server-rendered landscape PDF with clean margins, headings, and pagination.
-5. **Print:** Authenticated dedicated printable view.
-6. **Email:** Modal dialog allowing direct email dispatch of generated report snapshot.
-7. **WhatsApp:** Formatted plant metrics dispatched directly to WhatsApp.
-8. **ZIP:** Bundled archive package with CSV, TSV, metadata, and original workbooks.
-
----
-
-## 🚀 Running Locally
+## 🛠️ Local Development & Running
 
 ```bash
-cd Website_implimentaion
-./run_local.sh
+# 1. Enter website directory
+cd /home/linux/Documents/Darshan_SCADA_Software_October_2026/Website_implimentaion
+
+# 2. Start local Django development server
+python3 manage.py runserver 0.0.0.0:8001
+
+# 3. Access local instance in browser
+# http://127.0.0.1:8001/login
 ```
 
-- **Local URL:** `http://127.0.0.1:8001` (or port 8000)
-- **Administrator Login:** `admin` / `Sunscrap@2026`
-- **Viewer / Operator Login:** `viewer` / `Viewer@2026`
-- **Captured Mailbox:** `./data/captured_emails/`
+## 📦 Building and Publishing Static GitHub Pages
 
-### Running Automated Test Suite
 ```bash
-cd Website_implimentaion
-python3 manage.py test tests
+# Compile dynamic Django views into static HTML distribution
+python3 build_static_site.py
+
+# Push to GitHub Pages repository
+cd /home/linux/Documents/Darshan_SCADA_Software_October_2026/gh_pages_deploy
+git add .
+git commit -m "feat: Sunscrap SCADA v2.4 production release"
+git push origin main
 ```
-*7/7 comprehensive automated test suites pass with 100% OK in ~4.3 seconds.*

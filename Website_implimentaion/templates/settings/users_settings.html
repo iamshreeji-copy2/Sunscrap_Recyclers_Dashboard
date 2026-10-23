@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+{% block title %}User Management & RBAC{% endblock %}
+
+{% block content %}
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
+    <div>
+        <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">
+            Operator Accounts & Access Control (RBAC)
+        </h1>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+            Manage authorized operators, developers, plant owners, and third-party auditors with granular permissions.
+        </div>
+    </div>
+
+    <!-- Add User Trigger Button -->
+    <button type="button" class="export-btn export-btn-primary" id="btn-open-create-user-modal" style="display: flex; align-items: center; gap: 6px; padding: 9px 18px;">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <span>+ Add New User</span>
+    </button>
+</div>
+
+<!-- Operator Roles Summary Cards -->
+<div class="kpi-grid" style="margin-bottom: 22px;">
+    <div class="kpi-card">
+        <span class="kpi-label">Developers (Root / Debug)</span>
+        <div class="kpi-value font-mono" id="kpi-count-dev" style="color: #6366F1;">1</div>
+        <span class="kpi-sub">Full system & developer audit telemetry</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Administrators (Full Control)</span>
+        <div class="kpi-value font-mono" id="kpi-count-admin" style="color: var(--primary);">2</div>
+        <span class="kpi-sub">Plant topology, threshold & user control</span>
+    </div>
+    <div class="kpi-card kpi-gold">
+        <span class="kpi-label">Plant Owners</span>
+        <div class="kpi-value font-mono" id="kpi-count-owner">2</div>
+        <span class="kpi-sub">Revenue yield, CapEx payback & share links</span>
+    </div>
+    <div class="kpi-card kpi-green">
+        <span class="kpi-label">Third-Party Viewers / Commenters</span>
+        <div class="kpi-value font-mono" id="kpi-count-viewer">2</div>
+        <span class="kpi-sub">Public generation data & plant discussion</span>
+    </div>
+</div>
+
+<!-- Users Table Card -->
+<div class="card" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+    <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <h2 class="card-title" style="margin:0;">Registered SCADA Workstation Accounts</h2>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <button type="button" class="export-btn btn-copy-table" data-target-table="users-table">Copy List</button>
+            <button type="button" class="export-btn btn-client-csv">Export CSV</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="scada-table sortable" id="users-table">
+            <thead>
+                <tr>
+                    <th>Username & Name</th>
+                    <th>Email Address</th>
+                    <th>Assigned Role</th>
+                    <th>Permissions Level</th>
+                    <th>Status</th>
+                    <th>Date Registered</th>
+                    <th class="no-sort" style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="users-tbody">
+                {% for u in users %}
+                <tr data-user-id="{{ u.id }}" data-username="{{ u.username }}" data-role="{{ u.role }}">
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div class="user-avatar" style="width:32px; height:32px; font-size:0.85rem; font-weight:700;">
+                                {{ u.username|make_list|first|upper }}
+                            </div>
+                            <div>
+                                <strong style="color:var(--text-main);">{{ u.username }}</strong>
+                                {% if u.first_name %}<div style="font-size:0.75rem; color:var(--text-muted);">{{ u.first_name }} {{ u.last_name }}</div>{% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="font-mono" style="font-size:0.82rem;">{{ u.email|default:"operator@sunscrap.local" }}</td>
+                    <td>
+                        <span class="status-badge" style="{% if u.role == 'developer' %}background:#EEF2FF; color:#4F46E5; border:1px solid #C7D2FE;
+                        {% elif u.role == 'administrator' %}background:#DBEAFE; color:#1D4ED8; border:1px solid #93C5FD;
+                        {% elif u.role == 'plant_owner' %}background:#FEF3C7; color:#B45309; border:1px solid #FDE68A;
+                        {% else %}background:#F1F5F9; color:#475569; border:1px solid #CBD5E1;{% endif %}">
+                            {{ u.get_role_display|default:u.role }}
+                        </span>
+                    </td>
+                    <td style="font-size:0.8rem; color:var(--text-muted);">
+                        {% if u.role == 'developer' %}Full System, Diagnostics & Telemetry
+                        {% elif u.role == 'administrator' %}Manage Users, Devices & Set Thresholds
+                        {% elif u.role == 'plant_owner' %}Financial Revenue, CapEx Payback & Share
+                        {% else %}Read-Only Dashboard & Discussion Notes{% endif %}
+                    </td>
+                    <td><span class="status-badge online">Active</span></td>
+                    <td class="font-mono" style="font-size:0.8rem;">{{ u.date_joined|date:"Y-m-d H:i" }}</td>
+                    <td style="text-align:right;">
+                        {% if u.username != request.user.username %}
+                        <form method="POST" action="{% url 'users_settings' %}" style="display:inline;" onsubmit="return confirmDeleteUser(event, '{{ u.username }}', '{{ u.id }}')">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="user_id" value="{{ u.id }}">
+                            <button type="submit" class="export-btn" style="color:#DC2626; border-color:rgba(220,38,38,0.3); padding:4px 8px; font-size:0.75rem;">
+                                Delete
+                            </button>
+                        </form>
+                        {% else %}
+                        <span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">Current Session</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">No users found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal: Add New Operator Account -->
+<div id="modal-create-user-backdrop" class="modal-overlay hidden" style="z-index: 1250;">
+    <div class="modal-dialog" style="max-width: 520px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #1D5BF1 0%, #1E40AF 100%);">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFF; display:flex; align-items:center; gap:8px;">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                Create New SCADA Operator Account
+            </h3>
+            <button type="button" id="btn-close-create-user" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
+        </div>
+        <form method="POST" action="{% url 'users_settings' %}" onsubmit="handleCreateUser(event)">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create">
+            <div class="modal-body" style="padding: 22px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display:block; font-size:0.78rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Username *</label>
+                        <input type="text" id="new-user-username" name="username" required placeholder="e.g. operator_john" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.78rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Full Name</label>
+                        <input type="text" id="new-user-name" name="first_name" placeholder="e.g. John Doe" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.78rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Email Address *</label>
+                    <input type="email" id="new-user-email" name="email" required placeholder="john@sunscrap.com" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display:block; font-size:0.78rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Temporary Password *</label>
+                        <input type="password" id="new-user-password" name="password" required placeholder="••••••••" value="Operator@2026" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.78rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Assigned Role *</label>
+                        <select id="new-user-role" name="role" required style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; background:var(--surface);">
+                            <option value="administrator">Administrator (Full Control)</option>
+                            <option value="developer">Developer (System & Telemetry)</option>
+                            <option value="plant_owner">Plant Owner (Financial & CapEx)</option>
+                            <option value="third_party">Third-Party Viewer / Commenter</option>
+                            <option value="viewer">Viewer (Read-Only)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 14px; font-size:0.78rem; color:var(--text-muted);">
+                    🔒 Newly created accounts will immediately be active and synchronized across local database and browser storage.
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 14px 20px; background:var(--surface-alt); border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="export-btn" id="btn-cancel-create-user">Cancel</button>
+                <button type="submit" class="export-btn export-btn-primary">Create User Account</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Client-Side User Management Controller for both Django & Static GitHub Pages
+document.addEventListener('DOMContentLoaded', () => {
+    initUserManagementModal();
+    syncUsersWithLocalStorage();
+});
+
+function initUserManagementModal() {
+    const btnOpen = document.getElementById('btn-open-create-user-modal');
+    const modal = document.getElementById('modal-create-user-backdrop');
+    const btnClose = document.getElementById('btn-close-create-user');
+    const btnCancel = document.getElementById('btn-cancel-create-user');
+
+    if (btnOpen && modal) {
+        btnOpen.addEventListener('click', () => modal.classList.remove('hidden'));
+    }
+    const closeModal = () => { if (modal) modal.classList.add('hidden'); };
+    if (btnClose) btnClose.addEventListener('click', closeModal);
+    if (btnCancel) btnCancel.addEventListener('click', closeModal);
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+    }
+}
+
+// Seed and sync user storage
+function syncUsersWithLocalStorage() {
+    const defaultUsers = [
+        { id: '1', username: 'developer', name: 'Lead Developer', email: 'dev@sunscrap.com', role: 'developer', status: 'Active', dateJoined: '2026-10-20 10:00' },
+        { id: '2', username: 'admin', name: 'System Administrator', email: 'admin@sunscrap.local', role: 'administrator', status: 'Active', dateJoined: '2026-10-20 10:00' },
+        { id: '3', username: 'darshan_owner', name: 'Darshan Patel', email: 'darshan@sunscrap.local', role: 'plant_owner', status: 'Active', dateJoined: '2026-10-20 10:00' },
+        { id: '4', username: 'viewer', name: 'Third Party Auditor', email: 'viewer@sunscrap.local', role: 'third_party', status: 'Active', dateJoined: '2026-10-20 10:00' }
+    ];
+
+    let stored = localStorage.getItem('scada_users_list');
+    if (!stored) {
+        localStorage.setItem('scada_users_list', JSON.stringify(defaultUsers));
+        stored = JSON.stringify(defaultUsers);
+    }
+
+    const users = JSON.parse(stored);
+    updateKpiCounts(users);
+
+    // If on GitHub Pages or static HTML, render table from localStorage
+    const isStatic = window.location.protocol === 'file:' || 
+                     window.location.hostname.includes('github.io') || 
+                     window.location.pathname.endsWith('.html');
+
+    if (isStatic) {
+        renderStaticUsersTable(users);
+    }
+}
+
+function updateKpiCounts(users) {
+    const devCount = users.filter(u => u.role === 'developer').length;
+    const adminCount = users.filter(u => u.role === 'administrator').length;
+    const ownerCount = users.filter(u => u.role === 'plant_owner').length;
+    const viewerCount = users.filter(u => u.role === 'third_party' || u.role === 'viewer').length;
+
+    const elDev = document.getElementById('kpi-count-dev');
+    const elAdmin = document.getElementById('kpi-count-admin');
+    const elOwner = document.getElementById('kpi-count-owner');
+    const elViewer = document.getElementById('kpi-count-viewer');
+
+    if (elDev) elDev.innerText = devCount;
+    if (elAdmin) elAdmin.innerText = adminCount;
+    if (elOwner) elOwner.innerText = ownerCount;
+    if (elViewer) elViewer.innerText = viewerCount;
+}
+
+function renderStaticUsersTable(users) {
+    const tbody = document.getElementById('users-tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = users.map(u => {
+        let roleBadge = '';
+        let permText = '';
+        if (u.role === 'developer') {
+            roleBadge = '<span class="status-badge" style="background:#EEF2FF; color:#4F46E5; border:1px solid #C7D2FE;">Developer</span>';
+            permText = 'Full System, Diagnostics & Telemetry';
+        } else if (u.role === 'administrator') {
+            roleBadge = '<span class="status-badge" style="background:#DBEAFE; color:#1D4ED8; border:1px solid #93C5FD;">Administrator</span>';
+            permText = 'Manage Users, Devices & Set Thresholds';
+        } else if (u.role === 'plant_owner') {
+            roleBadge = '<span class="status-badge" style="background:#FEF3C7; color:#B45309; border:1px solid #FDE68A;">Plant Owner</span>';
+            permText = 'Financial Revenue, CapEx Payback & Share';
+        } else {
+            roleBadge = '<span class="status-badge" style="background:#F1F5F9; color:#475569; border:1px solid #CBD5E1;">Third-Party Viewer</span>';
+            permText = 'Read-Only Dashboard & Discussion Notes';
+        }
+
+        return `
+            <tr>
+                <td>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="user-avatar" style="width:32px; height:32px; font-size:0.85rem; font-weight:700;">
+                            ${u.username.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <strong style="color:var(--text-main);">${u.username}</strong>
+                            ${u.name ? `<div style="font-size:0.75rem; color:var(--text-muted);">${u.name}</div>` : ''}
+                        </div>
+                    </div>
+                </td>
+                <td class="font-mono" style="font-size:0.82rem;">${u.email}</td>
+                <td>${roleBadge}</td>
+                <td style="font-size:0.8rem; color:var(--text-muted);">${permText}</td>
+                <td><span class="status-badge online">Active</span></td>
+                <td class="font-mono" style="font-size:0.8rem;">${u.dateJoined || '2026-10-23 10:00'}</td>
+                <td style="text-align:right;">
+                    <button type="button" class="export-btn" onclick="deleteStaticUser('${u.username}')" style="color:#DC2626; border-color:rgba(220,38,38,0.3); padding:4px 8px; font-size:0.75rem;">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function handleCreateUser(event) {
+    const isStatic = window.location.protocol === 'file:' || 
+                     window.location.hostname.includes('github.io') || 
+                     window.location.pathname.endsWith('.html');
+
+    const username = document.getElementById('new-user-username').value.trim();
+    const name = document.getElementById('new-user-name').value.trim();
+    const email = document.getElementById('new-user-email').value.trim();
+    const role = document.getElementById('new-user-role').value;
+    const pwd = document.getElementById('new-user-password').value.trim();
+
+    // Mirror to localStorage
+    try {
+        let users = JSON.parse(localStorage.getItem('scada_users_list') || '[]');
+        if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
+            alert(`User '${username}' already exists!`);
+            event.preventDefault();
+            return;
+        }
+
+        const newUser = {
+            id: 'USR-' + Date.now().toString().slice(-4),
+            username: username,
+            name: name,
+            email: email,
+            role: role,
+            password: pwd,
+            status: 'Active',
+            dateJoined: new Date().toLocaleDateString('en-CA') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+        };
+        users.push(newUser);
+        localStorage.setItem('scada_users_list', JSON.stringify(users));
+
+        // Add developer audit record
+        const auditLog = {
+            action: 'USER_CREATED',
+            user: localStorage.getItem('scada_session_user') || 'admin',
+            role: 'administrator',
+            details: `Created new user account: ${username} with role ${role}`,
+            timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB') + ' IST',
+            device: navigator.platform,
+            browser: navigator.userAgent.split(' ')[0],
+            approx_location: 'Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)',
+            network_provider: 'Jio Fiber Gateway'
+        };
+        let logs = JSON.parse(localStorage.getItem('scada_developer_audit_logs') || '[]');
+        logs.unshift(auditLog);
+        localStorage.setItem('scada_developer_audit_logs', JSON.stringify(logs));
+
+    } catch (e) {
+        console.warn('Error saving user to localStorage:', e);
+    }
+
+    if (isStatic) {
+        event.preventDefault();
+        document.getElementById('modal-create-user-backdrop').classList.add('hidden');
+        syncUsersWithLocalStorage();
+        showToast(`User '${username}' (${role}) created successfully!`);
+    }
+}
+
+function confirmDeleteUser(event, username, userId) {
+    if (!confirm(`Are you sure you want to permanently delete user account '${username}'?`)) {
+        event.preventDefault();
+        return false;
+    }
+    // Delete from localStorage as well
+    deleteStaticUser(username, false);
+    return true;
+}
+
+function deleteStaticUser(username, reload = true) {
+    if (username === 'admin' || username === 'developer') {
+        alert(`Protected system account '${username}' cannot be deleted.`);
+        return;
+    }
+    if (!reload || confirm(`Delete user account '${username}'?`)) {
+        try {
+            let users = JSON.parse(localStorage.getItem('scada_users_list') || '[]');
+            users = users.filter(u => u.username.toLowerCase() !== username.toLowerCase());
+            localStorage.setItem('scada_users_list', JSON.stringify(users));
+
+            // Log delete event
+            const auditLog = {
+                action: 'USER_DELETED',
+                user: localStorage.getItem('scada_session_user') || 'admin',
+                role: 'administrator',
+                details: `Deleted user account: ${username}`,
+                timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB') + ' IST',
+                device: navigator.platform,
+                browser: navigator.userAgent.split(' ')[0],
+                approx_location: 'Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)',
+                network_provider: 'Jio Fiber Gateway'
+            };
+            let logs = JSON.parse(localStorage.getItem('scada_developer_audit_logs') || '[]');
+            logs.unshift(auditLog);
+            localStorage.setItem('scada_developer_audit_logs', JSON.stringify(logs));
+
+            if (reload) {
+                syncUsersWithLocalStorage();
+                showToast(`User account '${username}' has been deleted.`);
+            }
+        } catch(e) {}
+    }
+}
+</script>
+{% endblock %}

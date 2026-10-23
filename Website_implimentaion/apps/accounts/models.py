@@ -8,7 +8,10 @@ from django.utils import timezone
 from django.conf import settings
 
 class UserRole(models.TextChoices):
+    DEVELOPER = 'developer', 'Developer'
     ADMINISTRATOR = 'administrator', 'Administrator'
+    PLANT_OWNER = 'plant_owner', 'Plant Owner'
+    THIRD_PARTY = 'third_party', 'Third-Party Viewer / Commenter'
     VIEWER = 'viewer', 'Viewer'
 
 class User(AbstractUser):
@@ -16,7 +19,7 @@ class User(AbstractUser):
         max_length=20,
         choices=UserRole.choices,
         default=UserRole.ADMINISTRATOR,
-        help_text="Role-based access: Administrator or Viewer"
+        help_text="Role-based access: Developer, Administrator, Plant Owner, or Third-Party Viewer"
     )
     phone = models.CharField(max_length=20, blank=True, null=True)
     organization = models.CharField(max_length=150, default="Sunscrap Recyclers PVT LTD")
@@ -25,12 +28,20 @@ class User(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
+    def is_developer(self):
+        return self.role == UserRole.DEVELOPER or self.is_superuser
+
+    @property
     def is_admin(self):
-        return self.role == UserRole.ADMINISTRATOR or self.is_superuser
+        return self.role in (UserRole.ADMINISTRATOR, UserRole.DEVELOPER) or self.is_superuser
+
+    @property
+    def is_owner(self):
+        return self.role == UserRole.PLANT_OWNER
 
     @property
     def is_viewer(self):
-        return self.role == UserRole.VIEWER
+        return self.role in (UserRole.VIEWER, UserRole.THIRD_PARTY)
 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"
@@ -102,6 +113,10 @@ class AuditLog(models.Model):
     action = models.CharField(max_length=100)
     details = models.TextField(blank=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
+    device_name = models.CharField(max_length=150, blank=True, null=True)
+    user_agent = models.CharField(max_length=255, blank=True, null=True)
+    approx_location = models.CharField(max_length=150, blank=True, null=True)
+    network_provider = models.CharField(max_length=100, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:

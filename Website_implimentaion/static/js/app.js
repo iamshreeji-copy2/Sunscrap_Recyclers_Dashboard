@@ -1,5 +1,6 @@
 // Sunscrap Solar SCADA Application UI Controller & Financial Engine
 document.addEventListener('DOMContentLoaded', () => {
+    initUserSessionController();
     initAccessibilityDrawer();
     initFinancialRevenueCalculator();
     initCopyActions();
@@ -14,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initExpiringShareSystem();
     initPlantMetadataManager();
     initRoleSwitcher();
+    initPlantCommentsSystem();
+    initInverterOverviewHelper();
 });
 
 // =========================================================================
@@ -487,7 +490,8 @@ function getCookie(name) {
 // 6. Emergency Critical Alarm Siren, Blinking Red Screen & Alert Logs
 // =========================================================================
 let audioCtx = null;
-let sirenOsc = null;
+let sirenOsc1 = null;
+let sirenOsc2 = null;
 let sirenGain = null;
 let sirenTimer = null;
 
@@ -500,21 +504,35 @@ function playSirenSound() {
 
         stopSirenSound();
 
-        sirenOsc = audioCtx.createOscillator();
+        // Dual-tone industrial acoustic alarm generator
+        sirenOsc1 = audioCtx.createOscillator();
+        sirenOsc2 = audioCtx.createOscillator();
         sirenGain = audioCtx.createGain();
-        sirenOsc.type = 'sawtooth';
-        sirenGain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        sirenOsc.connect(sirenGain);
+
+        sirenOsc1.type = 'sawtooth';
+        sirenOsc2.type = 'sine';
+
+        sirenOsc1.frequency.setValueAtTime(880, audioCtx.currentTime);
+        sirenOsc2.frequency.setValueAtTime(440, audioCtx.currentTime);
+
+        sirenGain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+
+        sirenOsc1.connect(sirenGain);
+        sirenOsc2.connect(sirenGain);
         sirenGain.connect(audioCtx.destination);
-        sirenOsc.start();
+
+        sirenOsc1.start();
+        sirenOsc2.start();
 
         let toggle = false;
         sirenTimer = setInterval(() => {
-            if (!sirenOsc || !audioCtx) return;
+            if (!sirenOsc1 || !audioCtx) return;
             toggle = !toggle;
-            const targetFreq = toggle ? 880 : 620;
-            sirenOsc.frequency.setValueAtTime(targetFreq, audioCtx.currentTime);
-        }, 280);
+            const targetFreq1 = toggle ? 960 : 640;
+            const targetFreq2 = toggle ? 480 : 320;
+            sirenOsc1.frequency.setValueAtTime(targetFreq1, audioCtx.currentTime);
+            sirenOsc2.frequency.setValueAtTime(targetFreq2, audioCtx.currentTime);
+        }, 260);
     } catch (err) {
         console.warn('Web Audio Siren unavailable:', err);
     }
@@ -525,50 +543,74 @@ function stopSirenSound() {
         clearInterval(sirenTimer);
         sirenTimer = null;
     }
-    if (sirenOsc) {
-        try {
-            sirenOsc.stop();
-            sirenOsc.disconnect();
-        } catch (e) {}
-        sirenOsc = null;
+    if (sirenOsc1) {
+        try { sirenOsc1.stop(); sirenOsc1.disconnect(); } catch (e) {}
+        sirenOsc1 = null;
+    }
+    if (sirenOsc2) {
+        try { sirenOsc2.stop(); sirenOsc2.disconnect(); } catch (e) {}
+        sirenOsc2 = null;
     }
 }
 
 function initEmergencyAlarmSystem() {
-    // Top-bar Alert Center Trigger
+    // Top-bar Alert History Center Trigger
     const btnOpenAlerts = document.getElementById('btn-open-alerts');
-    const alertConfigModal = document.getElementById('alert-config-modal');
-    const btnCloseAlertConfig = document.getElementById('btn-close-alert-config');
-    const alertConfigBackdrop = document.getElementById('alert-config-backdrop');
-    const btnTestAlert = document.getElementById('btn-test-alert-trigger');
-    const btnSaveAlertRule = document.getElementById('btn-save-alert-rule');
+    const modalHistory = document.getElementById('modal-alert-history-backdrop');
+    const btnCloseHistory = document.getElementById('btn-close-alert-history');
+    const btnDismissHistory = document.getElementById('btn-dismiss-alert-history');
+    const btnTriggerTest = document.getElementById('btn-trigger-emergency-test');
+    const btnAckAll = document.getElementById('btn-ack-all-alarms');
+    const btnShareAlertsWa = document.getElementById('btn-share-alerts-wa');
 
-    if (btnOpenAlerts && alertConfigModal) {
-        btnOpenAlerts.addEventListener('click', () => {
-            alertConfigModal.classList.remove('hidden');
-            if (alertConfigBackdrop) alertConfigBackdrop.classList.remove('hidden');
-        });
-    }
-
-    const closeConfig = () => {
-        if (alertConfigModal) alertConfigModal.classList.add('hidden');
-        if (alertConfigBackdrop) alertConfigBackdrop.classList.add('hidden');
+    const openAlertHistory = () => {
+        if (modalHistory) {
+            modalHistory.classList.remove('hidden');
+            renderModalAlertHistoryTable();
+        }
     };
 
-    if (btnCloseAlertConfig) btnCloseAlertConfig.addEventListener('click', closeConfig);
-    if (alertConfigBackdrop) alertConfigBackdrop.addEventListener('click', closeConfig);
+    const closeAlertHistory = () => {
+        if (modalHistory) modalHistory.classList.add('hidden');
+    };
 
-    if (btnSaveAlertRule) {
-        btnSaveAlertRule.addEventListener('click', () => {
-            closeConfig();
-            showToast('Alert thresholds saved successfully.');
+    if (btnOpenAlerts) btnOpenAlerts.addEventListener('click', openAlertHistory);
+    if (btnCloseHistory) btnCloseHistory.addEventListener('click', closeAlertHistory);
+    if (btnDismissHistory) btnDismissHistory.addEventListener('click', closeAlertHistory);
+    if (modalHistory) {
+        modalHistory.addEventListener('click', (e) => {
+            if (e.target === modalHistory) closeAlertHistory();
         });
     }
 
-    if (btnTestAlert) {
-        btnTestAlert.addEventListener('click', () => {
-            closeConfig();
+    if (btnTriggerTest) {
+        btnTriggerTest.addEventListener('click', () => {
+            closeAlertHistory();
             window.triggerEmergencyAlarm();
+        });
+    }
+
+    if (btnAckAll) {
+        btnAckAll.addEventListener('click', () => {
+            try {
+                let logs = JSON.parse(localStorage.getItem('sunscrap_alarm_logs') || '[]');
+                logs.forEach(l => { l.state = 'Acknowledged'; });
+                localStorage.setItem('sunscrap_alarm_logs', JSON.stringify(logs));
+                renderModalAlertHistoryTable();
+                renderAlarmLogsTable();
+                const badge = document.getElementById('alert-counter-badge');
+                if (badge) badge.style.display = 'none';
+                showToast('All active SCADA alarm incidents acknowledged by operator.');
+            } catch(e) {}
+        });
+    }
+
+    if (btnShareAlertsWa) {
+        btnShareAlertsWa.addEventListener('click', () => {
+            const logs = JSON.parse(localStorage.getItem('sunscrap_alarm_logs') || '[]');
+            const activeAlarms = logs.slice(0, 3).map(l => `• ${l.device}: ${l.code} (${l.description}) [${l.state}]`).join('\n');
+            const text = `🚨 *Sunscrap Solar SCADA — Critical Plant Alarm Incident Report*\n📍 Site: Sanand GIDC Phase II, Gujarat (3,900 kW AC)\n⏰ Event Time: 01:32:05 PM IST\n⚡ Fault:\n${activeAlarms}\n⚠️ Action Required: Inspect Inverter 08 (Inv-08 / 320 kWp)\n🔗 Live Diagnostics: ${window.location.origin}${window.location.pathname}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         });
     }
 
@@ -577,22 +619,30 @@ function initEmergencyAlarmSystem() {
     const btnGo = document.getElementById('btn-emergency-go');
 
     if (btnCancel) {
-        btnCancel.addEventListener('click', () => window.dismissEmergencyAlarm());
+        btnCancel.addEventListener('click', () => {
+            window.dismissEmergencyAlarm();
+            // Automatically open previous alert history as requested
+            openAlertHistory();
+        });
     }
     if (btnGo) {
-        btnGo.addEventListener('click', () => window.goToAlarmLogs());
+        btnGo.addEventListener('click', () => {
+            window.goToTargetDevice();
+        });
     }
 }
 
 window.triggerEmergencyAlarm = function(customData) {
     const alarm = Object.assign({
         device: 'Inverter 08 (Inv-08 / 320 kWp)',
-        code: 'ERR-402',
+        code: 'ERR-402 (Grid Under-voltage)',
         title: 'CRITICAL PLANT ALARM DETECTED',
         message: 'Grid Under-voltage Trip — AC active power dropped to 0.00 kW.',
+        subMessage: 'Inverter output disconnect triggered. Immediate operator acknowledgment required.',
         fault: 'Grid Frequency / Voltage Fault',
         date: '2026-10-23',
-        time: new Date().toLocaleTimeString('en-GB', { hour12: true }) + ' IST'
+        time: '01:32:05 PM IST',
+        state: 'ACTIVE / UNACKNOWLEDGED'
     }, customData || {});
 
     const strobe = document.getElementById('alert-strobe-overlay');
@@ -604,10 +654,18 @@ window.triggerEmergencyAlarm = function(customData) {
     const codeEl = document.getElementById('alarm-modal-code');
     const msgEl = document.getElementById('alarm-modal-desc');
     const timeEl = document.getElementById('alarm-modal-time');
+    const stateEl = document.getElementById('alarm-modal-state');
     if (devEl) devEl.innerText = alarm.device;
     if (codeEl) codeEl.innerText = alarm.code;
     if (msgEl) msgEl.innerText = alarm.message;
     if (timeEl) timeEl.innerText = alarm.time;
+    if (stateEl) stateEl.innerText = alarm.state;
+
+    const badge = document.getElementById('alert-counter-badge');
+    if (badge) {
+        badge.innerText = '1';
+        badge.style.display = 'inline-block';
+    }
 
     playSirenSound();
     recordAlarmToStorage(alarm);
@@ -619,10 +677,10 @@ window.dismissEmergencyAlarm = function() {
     const modalBackdrop = document.getElementById('emergency-modal-backdrop');
     if (strobe) strobe.classList.add('hidden');
     if (modalBackdrop) modalBackdrop.classList.add('hidden');
-    showToast('Critical alarm silenced & dismissed.');
+    showToast('Emergency alarm siren silenced. Opening Alarm History Log...');
 };
 
-window.goToAlarmLogs = function() {
+window.goToTargetDevice = function() {
     stopSirenSound();
     const strobe = document.getElementById('alert-strobe-overlay');
     const modalBackdrop = document.getElementById('emergency-modal-backdrop');
@@ -630,33 +688,100 @@ window.goToAlarmLogs = function() {
     if (modalBackdrop) modalBackdrop.classList.add('hidden');
 
     const isStatic = window.location.pathname.endsWith('.html') || 
+                     window.location.hostname.includes('github.io') || 
                      window.location.pathname.includes('/iamshreeji-copy2/') || 
                      window.location.pathname.includes('/Sunscrap_Recyclers_Dashboard/');
-    const target = isStatic ? 'report_alarm.html#alert-logs' : '/reports/alarm#alert-logs';
-    window.location.href = target;
+    
+    // Route directly to Inverter 08 (Inv-08 / 320 kWp) telemetry & plots
+    if (isStatic) {
+        const prefix = window.location.pathname.includes('Sunscrap_Recyclers_Dashboard') ? 
+                       '/Sunscrap_Recyclers_Dashboard/' : './';
+        window.location.href = prefix + 'inverter_overview.html?inverter=INV-08';
+    } else {
+        window.location.href = '/inverters?device=INV-08';
+    }
 };
 
 function recordAlarmToStorage(alarm) {
     try {
         let logs = JSON.parse(localStorage.getItem('sunscrap_alarm_logs') || '[]');
-        logs.unshift({
-            id: 'ALM-' + Date.now().toString().slice(-6),
-            dateTime: `${alarm.date} ${alarm.time}`,
-            device: alarm.device,
-            code: alarm.code,
-            description: alarm.message,
-            fault: alarm.fault,
-            startTime: alarm.time,
-            endTime: '--',
-            state: 'Active'
-        });
-        localStorage.setItem('sunscrap_alarm_logs', JSON.stringify(logs.slice(0, 50)));
-        if (typeof renderAlarmLogsTable === 'function') {
-            renderAlarmLogsTable();
+        // Don't duplicate if already present as first entry
+        if (logs.length === 0 || logs[0].code !== alarm.code || logs[0].startTime !== alarm.time) {
+            logs.unshift({
+                id: 'ALM-' + Date.now().toString().slice(-6),
+                dateTime: `${alarm.date} ${alarm.time}`,
+                device: alarm.device,
+                code: alarm.code,
+                description: alarm.message,
+                fault: alarm.fault,
+                startTime: alarm.time,
+                endTime: '--',
+                state: alarm.state || 'Active / Unacknowledged'
+            });
+            localStorage.setItem('sunscrap_alarm_logs', JSON.stringify(logs.slice(0, 50)));
         }
+        if (typeof renderAlarmLogsTable === 'function') renderAlarmLogsTable();
+        renderModalAlertHistoryTable();
     } catch(e) {
         console.warn('Could not save alarm to storage:', e);
     }
+}
+
+function renderModalAlertHistoryTable() {
+    const tbody = document.getElementById('modal-alert-history-tbody');
+    if (!tbody) return;
+
+    const defaultAlarms = [
+        {
+            dateTime: '2026-10-23 01:32:05 PM IST',
+            device: 'Inverter 08 (Inv-08 / 320 kWp)',
+            code: 'ERR-402',
+            description: 'Grid Under-voltage Trip — AC active power dropped to 0.00 kW',
+            state: 'Active / Unack'
+        },
+        {
+            dateTime: '2026-10-23 09:14:02 AM IST',
+            device: 'Inverter 08 (Inv-08 / 320 kWp)',
+            code: 'ERR-402',
+            description: 'Grid Under-voltage Trip (Phase voltage dip < 370V)',
+            state: 'Acknowledged'
+        },
+        {
+            dateTime: '2026-10-23 07:45:10 AM IST',
+            device: 'WMS Sensor Node',
+            code: 'COMM-005',
+            description: 'RS485 Communication Timeout on GTI Pyranometer',
+            state: 'Cleared'
+        }
+    ];
+
+    let logs = JSON.parse(localStorage.getItem('sunscrap_alarm_logs') || '[]');
+    if (logs.length === 0) {
+        logs = defaultAlarms;
+    }
+
+    const isStatic = window.location.pathname.endsWith('.html') || 
+                     window.location.hostname.includes('github.io');
+    const invUrl = isStatic ? 'inverter_overview.html?inverter=INV-08' : '/inverters?device=INV-08';
+
+    tbody.innerHTML = logs.map(item => `
+        <tr>
+            <td class="font-mono" style="font-size:0.8rem;">${item.dateTime || item.startTime}</td>
+            <td><strong>${item.device}</strong></td>
+            <td><span class="badge ${item.code.startsWith('ERR') ? 'badge-danger' : 'badge-warning'} font-mono">${item.code}</span></td>
+            <td style="font-size:0.82rem;">${item.description}</td>
+            <td>
+                <span class="status-badge ${(item.state || '').includes('Active') ? 'offline' : ((item.state || '').includes('Ack') ? 'stale' : 'online')}">
+                    ${item.state || 'Active'}
+                </span>
+            </td>
+            <td style="text-align:right;">
+                <a href="${invUrl}" class="export-btn export-btn-primary" style="padding:3px 8px; font-size:0.72rem;">
+                    Inspect Inverter ➔
+                </a>
+            </td>
+        </tr>
+    `).join('');
 }
 
 // =========================================================================
@@ -1279,6 +1404,222 @@ function applyRoleMode(isViewer) {
         if (badge) {
             badge.innerText = 'Admin (Full Access)';
             badge.style.background = '#1D5BF1';
+        }
+    }
+}
+
+// =========================================================================
+// 15. User Session & Workstation Authentication Controller
+// =========================================================================
+function initUserSessionController() {
+    const isStatic = window.location.protocol === 'file:' || 
+                     window.location.hostname.includes('github.io') || 
+                     window.location.pathname.endsWith('.html');
+                     
+    let currentUser = localStorage.getItem('scada_session_user');
+    let currentRole = localStorage.getItem('scada_session_role') || 'administrator';
+
+    // Update avatar and username in top header
+    const avatarEl = document.getElementById('header-user-avatar');
+    const nameEl = document.getElementById('header-username-display');
+    const roleBadge = document.getElementById('role-display-badge');
+
+    if (currentUser) {
+        if (avatarEl) avatarEl.innerText = currentUser.charAt(0).toUpperCase();
+        if (nameEl) nameEl.innerText = currentUser;
+        if (roleBadge) {
+            let roleLabel = 'Administrator';
+            let roleBg = '#1D5BF1';
+            if (currentRole === 'developer') {
+                roleLabel = 'Developer';
+                roleBg = '#6366F1';
+            } else if (currentRole === 'plant_owner') {
+                roleLabel = 'Plant Owner';
+                roleBg = '#D97706';
+            } else if (currentRole === 'third_party' || currentRole === 'viewer') {
+                roleLabel = 'Third-Party Viewer';
+                roleBg = '#10B981';
+                document.body.classList.add('viewer-mode');
+            }
+            roleBadge.innerText = roleLabel;
+            roleBadge.style.background = roleBg;
+        }
+    }
+
+    // Workstation Logout action
+    const btnLogout = document.getElementById('btn-workstation-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', (e) => {
+            // Record developer audit telemetry
+            try {
+                const auditLog = {
+                    action: 'USER_LOGOUT',
+                    user: currentUser || 'operator',
+                    role: currentRole || 'administrator',
+                    details: `Operator workstation session cleanly logged out (${currentRole})`,
+                    timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB') + ' IST',
+                    device: navigator.platform + ' Terminal',
+                    browser: navigator.userAgent.split(' ')[0],
+                    approx_location: 'Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)',
+                    network_provider: 'Jio Fiber High-Speed Gateway',
+                    ip: '192.168.1.100'
+                };
+                let logs = JSON.parse(localStorage.getItem('scada_developer_audit_logs') || '[]');
+                logs.unshift(auditLog);
+                localStorage.setItem('scada_developer_audit_logs', JSON.stringify(logs.slice(0, 100)));
+            } catch(err) {}
+
+            localStorage.removeItem('scada_session_user');
+            localStorage.removeItem('scada_session_role');
+            localStorage.removeItem('scada_session_name');
+
+            if (isStatic) {
+                e.preventDefault();
+                const prefix = window.location.pathname.includes('Sunscrap_Recyclers_Dashboard') ? 
+                               '/Sunscrap_Recyclers_Dashboard/' : './';
+                window.location.replace(prefix + 'login.html');
+            }
+        });
+    }
+}
+
+// =========================================================================
+// 16. Plant Operations Discussion & Collaboration (Role 4: Third Party)
+// =========================================================================
+function initPlantCommentsSystem() {
+    const btnOpen = document.getElementById('btn-open-plant-notes');
+    const modal = document.getElementById('modal-plant-comments-backdrop');
+    const btnClose = document.getElementById('btn-close-plant-notes');
+    const authorBadge = document.getElementById('comment-author-badge');
+
+    const defaultComments = [
+        {
+            author: 'darshan_owner',
+            role: 'Plant Owner',
+            time: '11:20 AM IST',
+            text: 'Generation today is performing 4.8% above the seasonal model. Grid export revenue on track to exceed ₹35,000 for the day.'
+        },
+        {
+            author: 'developer',
+            role: 'Developer',
+            time: '09:30 AM IST',
+            text: 'Deployed low-latency telemetry patch v2.4 with explicit middle-aligned coordinate axes and emergency siren audio synthesis.'
+        },
+        {
+            author: 'viewer',
+            role: 'Third-Party Auditor',
+            time: '08:45 AM IST',
+            text: 'Verified 13 / 13 inverter string insulation resistance (> 500 kΩ). No DC ground faults detected across 325 total PV strings.'
+        }
+    ];
+
+    if (!localStorage.getItem('sunscrap_plant_comments')) {
+        localStorage.setItem('sunscrap_plant_comments', JSON.stringify(defaultComments));
+    }
+
+    if (btnOpen && modal) {
+        btnOpen.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            renderPlantCommentsFeed();
+            if (authorBadge) {
+                const u = localStorage.getItem('scada_session_user') || 'operator';
+                const r = localStorage.getItem('scada_session_role') || 'third_party';
+                authorBadge.innerText = `${u} (${r})`;
+            }
+        });
+    }
+
+    const closeModal = () => { if (modal) modal.classList.add('hidden'); };
+    if (btnClose) btnClose.addEventListener('click', closeModal);
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+    }
+}
+
+function renderPlantCommentsFeed() {
+    const container = document.getElementById('comments-feed-container');
+    if (!container) return;
+
+    const comments = JSON.parse(localStorage.getItem('sunscrap_plant_comments') || '[]');
+    container.innerHTML = comments.map(c => `
+        <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <strong style="font-size:0.85rem; color:var(--text-main);">${c.author}</strong>
+                    <span class="status-badge" style="font-size:0.68rem;">${c.role}</span>
+                </div>
+                <span class="font-mono" style="font-size:0.75rem; color:var(--text-muted);">${c.time}</span>
+            </div>
+            <div style="font-size:0.84rem; color:var(--text-main); line-height:1.4;">${c.text}</div>
+        </div>
+    `).join('');
+}
+
+window.postPlantComment = function(event) {
+    if (event) event.preventDefault();
+    const input = document.getElementById('comment-text-input');
+    if (!input || !input.value.trim()) return;
+
+    const u = localStorage.getItem('scada_session_user') || 'operator';
+    const r = localStorage.getItem('scada_session_role') || 'third_party';
+
+    const newComment = {
+        author: u,
+        role: r,
+        time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true }) + ' IST',
+        text: input.value.trim()
+    };
+
+    let comments = JSON.parse(localStorage.getItem('sunscrap_plant_comments') || '[]');
+    comments.unshift(newComment);
+    localStorage.setItem('sunscrap_plant_comments', JSON.stringify(comments.slice(0, 50)));
+
+    input.value = '';
+    renderPlantCommentsFeed();
+    showToast('Comment posted to plant operations discussion log.');
+};
+
+// =========================================================================
+// 17. Target Device Selector Helper (Inverter 08 Auto-Selection & Alerts)
+// =========================================================================
+function initInverterOverviewHelper() {
+    const params = new URLSearchParams(window.location.search);
+    const inv = params.get('inverter') || params.get('device');
+    if (!inv) return;
+
+    const sel = document.getElementById('inv-select');
+    if (sel) {
+        for (let i = 0; i < sel.options.length; i++) {
+            const optVal = sel.options[i].value.toLowerCase();
+            const optText = sel.options[i].text.toLowerCase();
+            const target = inv.toLowerCase();
+            if (optVal === target || optVal.replace('-', '') === target.replace('-', '') || optText.includes(target)) {
+                sel.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
+    // If Inverter 08 was specifically targeted by alarm, show diagnostic banner
+    if (inv.includes('08') || inv.includes('8')) {
+        const content = document.querySelector('.app-content');
+        if (content && !document.getElementById('inverter-alarm-notice')) {
+            const notice = document.createElement('div');
+            notice.id = 'inverter-alarm-notice';
+            notice.style.cssText = 'background:rgba(220, 38, 38, 0.08); border:1px solid #DC2626; border-radius:var(--radius-sm); padding:12px 18px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;';
+            notice.innerHTML = `
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="background:#DC2626; color:#FFF; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem;">!</div>
+                    <div>
+                        <strong style="color:#DC2626; font-size:0.92rem;">Target Device Alarm Active: Inverter 08 (Inv-08 / 320 kWp)</strong>
+                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">Status: <strong>ERR-402 (Grid Under-voltage Trip)</strong> • AC Power dropped to 0.00 kW • Inspect MPPT string voltages below.</div>
+                    </div>
+                </div>
+                <button type="button" class="export-btn" onclick="this.parentElement.remove()" style="font-size:0.75rem;">Dismiss</button>
+            `;
+            content.prepend(notice);
         }
     }
 }

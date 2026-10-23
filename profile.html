@@ -9,6 +9,29 @@
     <!-- Local Static CSS Tokens -->
     <link rel="stylesheet" href="./static/css/theme.css">
     
+    <!-- Immediate Authentication Guard for Zero-Leak Security -->
+    <script>
+    (function() {
+        var isStatic = window.location.protocol === 'file:' || 
+                       window.location.hostname.includes('github.io') || 
+                       window.location.pathname.endsWith('.html');
+        var path = window.location.pathname;
+        var isAuthPage = path.endsWith('login.html') || 
+                         path.endsWith('login_otp.html') || 
+                         path.endsWith('forgot_password.html') || 
+                         path.endsWith('reset_password.html');
+        if (isStatic && !isAuthPage) {
+            var sessionUser = localStorage.getItem('scada_session_user');
+            if (!sessionUser) {
+                // Prevent DOM content render & immediately redirect to login.html
+                document.documentElement.style.display = 'none';
+                var prefix = path.includes('Sunscrap_Recyclers_Dashboard') ? '/Sunscrap_Recyclers_Dashboard/' : './';
+                window.location.replace(prefix + 'login.html');
+            }
+        }
+    })();
+    </script>
+
     <!-- Local Offline Vendored JavaScript: HTMX & Apache ECharts -->
     <script src="./static/vendor/htmx.min.js"></script>
     <script src="./static/vendor/echarts.min.js"></script>
@@ -99,19 +122,23 @@
             </a>
 
             <div class="nav-section-title">System Settings</div>
-            <a href="/settings/plant" class="nav-item ">
+            <a href="./plant_settings.html" class="nav-item ">
                 <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
                 <span>Plant & Capacity</span>
             </a>
-            <a href="/settings/devices" class="nav-item sensitive-admin-only ">
+            <a href="./users_settings.html" class="nav-item sensitive-admin-only ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <span>User Accounts (Add/Delete)</span>
+            </a>
+            <a href="./devices_settings.html" class="nav-item sensitive-admin-only ">
                 <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/></svg>
                 <span>Device Topology</span>
             </a>
-            <a href="/settings/system-health" class="nav-item sensitive-admin-only ">
+            <a href="./system_health.html" class="nav-item sensitive-admin-only ">
                 <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
                 <span>System Health</span>
             </a>
-            <a href="/settings/audit" class="nav-item sensitive-admin-only ">
+            <a href="./audit.html" class="nav-item sensitive-admin-only ">
                 <svg fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                 <span>Security Audit</span>
             </a>
@@ -141,6 +168,12 @@
             </div>
 
             <div class="header-right">
+                <!-- Plant Discussion / Comments Button (Role 4: Third Party & Operator Collaboration) -->
+                <button type="button" class="accessibility-btn-trigger" id="btn-open-plant-notes" title="Plant Telemetry Discussion & Operator Comments">
+                    <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                    <span>Discussion</span>
+                </button>
+
                 <!-- Plant Details & GPS Settings Trigger -->
                 <button type="button" class="accessibility-btn-trigger" id="btn-open-plant-details" title="Plant Location, Owner Details & GPS Coordinates">
                     <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
@@ -158,11 +191,11 @@
                     <span id="role-display-badge" class="viewer-mode-badge" style="background:var(--primary); font-size:0.75rem;">Admin</span>
                 </button>
 
-                <!-- Alert Center / Set Alert Trigger -->
-                <button type="button" class="accessibility-btn-trigger" id="btn-open-alerts" title="Alarm & Alert Center: Configure Thresholds & Test Emergency Siren" style="border-color: rgba(220, 38, 38, 0.4); color: var(--text-main);">
+                <!-- Alert Center / Open Previous Alert History Trigger -->
+                <button type="button" class="accessibility-btn-trigger" id="btn-open-alerts" title="Alarm & Alert History Center: View previous logs and trigger emergency siren" style="border-color: rgba(220, 38, 38, 0.4); color: var(--text-main);">
                     <svg width="16" height="16" fill="#DC2626" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
                     <span>Alerts</span>
-                    <span style="background-color:#DC2626; color:#FFF; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:10px; margin-left:4px;">1</span>
+                    <span id="alert-counter-badge" style="background-color:#DC2626; color:#FFF; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:10px; margin-left:4px;">1</span>
                 </button>
 
                 <!-- Dedicated Universal Accessibility Button -->
@@ -171,16 +204,16 @@
                     <span>Accessibility</span>
                 </button>
 
-                <!-- User profile badge -->
-                <a href="./profile.html" class="user-profile-badge">
-                    <div class="user-avatar">A</div>
-                    <span>admin</span>
+                <!-- Authenticated User Profile Badge -->
+                <a href="./profile.html" class="user-profile-badge" title="Active workstation profile">
+                    <div class="user-avatar" id="header-user-avatar">A</div>
+                    <span id="header-username-display">admin</span>
                 </a>
 
-                <!-- Quick Login / Lock Button -->
-                <a href="./login.html" class="export-btn" title="Sign out or switch operator workstation account" style="padding: 6px 10px; font-size: 0.8rem; display:flex; align-items:center; gap:4px;">
-                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
-                    <span>Login</span>
+                <!-- Dedicated Sign Out Button (Clears session, logs audit record, immediately redirects to login) -->
+                <a href="./login.html" id="btn-workstation-logout" class="export-btn" title="Sign out of workstation session" style="padding: 6px 12px; font-size: 0.8rem; display:flex; align-items:center; gap:5px; color:#DC2626; border-color:rgba(220,38,38,0.35); background:rgba(220,38,38,0.06); font-weight:700;">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                    <span>Sign Out</span>
                 </a>
             </div>
         </header>
@@ -206,7 +239,7 @@
             <a href="/profile/email" class="export-btn">Change Email (Verified)</a>
         </div>
         <form method="POST">
-            <input type="hidden" name="csrfmiddlewaretoken" value="gNYczsSHkyRbhlQzNMh08EhTez0lTtr1qvF7U1rsjHDC21QIjaopHklv1kJNbmkM">
+            <input type="hidden" name="csrfmiddlewaretoken" value="IWMAtnNRw3YGtVoEIPyBI38xQYBZIPgNWSQj6wmRHjaGqWpUOpnKa3WHdwGuDLWG">
             <input type="hidden" name="action" value="update_details">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                 <div>
@@ -219,7 +252,7 @@
                 </div>
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">First Name</label>
-                    <input type="text" name="first_name" value="Plant" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                    <input type="text" name="first_name" value="System Administrator" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
                 </div>
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Last Name</label>
@@ -244,7 +277,7 @@
             <h2 class="card-title">Change Password</h2>
         </div>
         <form method="POST">
-            <input type="hidden" name="csrfmiddlewaretoken" value="gNYczsSHkyRbhlQzNMh08EhTez0lTtr1qvF7U1rsjHDC21QIjaopHklv1kJNbmkM">
+            <input type="hidden" name="csrfmiddlewaretoken" value="IWMAtnNRw3YGtVoEIPyBI38xQYBZIPgNWSQj6wmRHjaGqWpUOpnKa3WHdwGuDLWG">
             <input type="hidden" name="action" value="change_password">
             <div style="margin-bottom: 14px;">
                 <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Current Password</label>
@@ -391,7 +424,7 @@
 <!-- Red Blinking Screen Strobe Overlay -->
 <div id="alert-strobe-overlay" class="alert-strobe-overlay hidden"></div>
 
-<!-- Emergency Critical Alarm Modal Backdrop & Pop-up -->
+<!-- Emergency Critical Alarm Modal Backdrop & Pop-up (Exact User Specs) -->
 <div id="emergency-modal-backdrop" class="emergency-modal-backdrop hidden">
     <div class="emergency-modal" id="emergency-alert-modal">
         <div class="emergency-modal-header">
@@ -421,69 +454,123 @@
                 </div>
                 <div class="emergency-kv">
                     <div class="label">Alarm State</div>
-                    <div class="val" style="color:#DC2626;">ACTIVE / UNACKNOWLEDGED</div>
+                    <div class="val" style="color:#DC2626;" id="alarm-modal-state">ACTIVE / UNACKNOWLEDGED</div>
                 </div>
             </div>
         </div>
         <div class="emergency-modal-footer">
-            <button type="button" class="btn-alert-cancel" id="btn-emergency-cancel">
+            <button type="button" class="btn-alert-cancel" id="btn-emergency-cancel" title="Silence the siren and review past alert history">
                 ✕ Cancel & Silence Siren
             </button>
-            <button type="button" class="btn-alert-go" id="btn-emergency-go">
-                Go to Alert Logs ➔
+            <button type="button" class="btn-alert-go" id="btn-emergency-go" title="Directly inspect Inverter 08 active power, voltage and string plots">
+                Go to Target Device (Inverter 08) ➔
             </button>
         </div>
     </div>
 </div>
 
-<!-- Alert Configuration & Threshold Setting Modal -->
-<div id="alert-config-backdrop" class="modal-overlay hidden" style="z-index: 1200;">
-    <div class="modal-dialog" id="alert-config-modal" style="max-width: 540px;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);">
+<!-- Modal: Alert History & Alarm Trail (Opens on Bell click or when dismissing alert) -->
+<div id="modal-alert-history-backdrop" class="modal-overlay hidden" style="z-index: 1220;">
+    <div class="modal-dialog" style="max-width: 800px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);">
             <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFF; display:flex; align-items:center; gap:8px;">
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                SCADA Alert Center & Threshold Settings
+                Alarm History Trail & Critical Alerts Log
             </h3>
-            <button type="button" id="btn-close-alert-config" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
+            <button type="button" id="btn-close-alert-history" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
         </div>
         <div class="modal-body" style="padding: 20px;">
-            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
-                Configure real-time monitoring alarm trip thresholds for inverters, MFM meters, and WMS environmental sensors.
-            </p>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px; flex-wrap:wrap; gap:8px;">
                 <div>
-                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px; text-transform:uppercase; color:var(--text-muted);">Inverter Power Drop Limit</label>
-                    <input type="text" value="< 100 kW (Daytime)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;">
+                    <span style="font-size:0.85rem; font-weight:700; color:var(--text-main);">Historical Alert Incidents:</span>
+                    <span style="font-size:0.8rem; color:var(--text-muted); margin-left:4px;">Saved SCADA event logs for operator and engineer query analysis</span>
                 </div>
-                <div>
-                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px; text-transform:uppercase; color:var(--text-muted);">High Module Temp Limit</label>
-                    <input type="text" value="> 65.0 °C" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;">
-                </div>
-                <div>
-                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px; text-transform:uppercase; color:var(--text-muted);">Grid Voltage Lower Limit</label>
-                    <input type="text" value="< 380 V (3-Phase)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;">
-                </div>
-                <div>
-                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px; text-transform:uppercase; color:var(--text-muted);">Communication Timeout</label>
-                    <input type="text" value="> 120 seconds" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;">
-                </div>
-            </div>
-
-            <div style="background-color: var(--surface-alt); border: 1px dashed #DC2626; border-radius: var(--radius-sm); padding: 14px; margin-top: 10px;">
-                <div style="display:flex; align-items:center; justify-content:space-between;">
-                    <div>
-                        <strong style="color:#DC2626; font-size:0.9rem;">Test Emergency Alert Simulation</strong>
-                        <div style="font-size:0.78rem; color:var(--text-muted);">Triggers the dual-tone audio siren and blinking red screen popup.</div>
-                    </div>
-                    <button type="button" id="btn-test-alert-trigger" class="btn" style="background:#DC2626; color:#FFF; font-weight:700; padding:8px 14px; border-radius:var(--radius-sm); border:none; cursor:pointer;">
-                        ⚡ Test Live Alert
+                <div style="display:flex; gap:6px;">
+                    <button type="button" class="export-btn" id="btn-trigger-emergency-test" style="background:#DC2626; color:#FFF; font-weight:700; font-size:0.75rem; border:none;">
+                        ⚡ Re-trigger Siren & Strobe
+                    </button>
+                    <button type="button" class="export-btn" id="btn-ack-all-alarms" style="font-size:0.75rem;">
+                        ✓ Acknowledge All
                     </button>
                 </div>
             </div>
+
+            <div class="table-container" style="max-height: 320px; overflow-y: auto;">
+                <table class="scada-table" id="modal-alert-history-table">
+                    <thead>
+                        <tr>
+                            <th>Event Timestamp</th>
+                            <th>Target Device</th>
+                            <th>Status Code</th>
+                            <th>Fault Description</th>
+                            <th>State</th>
+                            <th style="text-align:right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-alert-history-tbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="background:var(--surface-alt); border-radius:var(--radius-sm); padding:10px 14px; margin-top:14px; display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
+                <div>
+                    <strong>Target Device Telemetry:</strong>
+                    <span style="color:var(--text-muted);">Inverter 08 (Inv-08 / 320 kWp) — Sungrow SG300HX (ERR-402)</span>
+                </div>
+                <a href="/inverters/overview?inverter=INV-08" id="link-target-inv08-modal" class="export-btn export-btn-primary" style="padding:4px 10px; font-size:0.75rem;">
+                    Go to Inverter 08 Telemetry ➔
+                </a>
+            </div>
         </div>
-        <div class="modal-footer" style="padding: 14px 20px; background:var(--surface-alt); border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px;">
-            <button type="button" class="export-btn" onclick="document.getElementById('alert-config-backdrop').classList.add('hidden');">Cancel</button>
-            <button type="button" class="export-btn export-btn-primary" id="btn-save-alert-rule">Save Threshold Rules</button>
+        <div class="modal-footer" style="padding: 12px 20px; background:var(--surface-alt); border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <button type="button" class="export-btn btn-whatsapp" id="btn-share-alerts-wa" style="padding: 5px 12px; font-size:0.78rem;">
+                Share Alerts via WhatsApp
+            </button>
+            <button type="button" class="export-btn" id="btn-dismiss-alert-history">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Plant Discussion & Operator Collaboration (Role 4: Third-Party Comments) -->
+<div id="modal-plant-comments-backdrop" class="modal-overlay hidden" style="z-index: 1220;">
+    <div class="modal-dialog" style="max-width: 620px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFF; display:flex; align-items:center; gap:8px;">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                Plant Operations Discussion & Comments
+            </h3>
+            <button type="button" id="btn-close-plant-notes" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 20px;">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+                Leave technical observations, inverter maintenance notes, or audit findings. Visible to plant owners, developers, administrators, and third-party viewers.
+            </p>
+
+            <!-- Existing Comments Feed -->
+            <div id="comments-feed-container" style="max-height: 240px; overflow-y: auto; display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+                <!-- Filled dynamically by JS -->
+            </div>
+
+            <!-- New Comment Box -->
+            <form id="form-plant-comment" onsubmit="postPlantComment(event)">
+                <div style="margin-bottom: 10px;">
+                    <textarea id="comment-text-input" rows="3" required placeholder="Write an engineering comment or inspection remark..." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; resize:vertical; background:var(--surface); color:var(--text-main);"></textarea>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size:0.75rem; color:var(--text-muted);">
+                        Posting as: <strong id="comment-author-badge">Operator</strong>
+                    </div>
+                    <button type="submit" class="export-btn export-btn-primary" style="padding: 6px 14px; font-size:0.82rem;">
+                        Post Comment
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer" style="padding: 12px 20px; background:var(--surface-alt); border-top:1px solid var(--border); display:flex; justify-content:flex-end;">
+            <button type="button" class="export-btn" onclick="document.getElementById('modal-plant-comments-backdrop').classList.add('hidden');">Done</button>
         </div>
     </div>
 </div>

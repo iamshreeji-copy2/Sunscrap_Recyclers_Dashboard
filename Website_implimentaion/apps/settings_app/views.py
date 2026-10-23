@@ -81,3 +81,81 @@ def system_health_view(request):
 def audit_view(request):
     logs = AuditLog.objects.all().order_by('-timestamp')[:100]
     return render(request, 'settings/audit.html', {'logs': logs})
+
+
+@login_required
+def users_settings_view(request):
+    from django.contrib.auth import get_user_model
+    from apps.accounts.models import UserRole
+    User = get_user_model()
+
+    if request.method == 'POST':
+        if not request.user.is_admin:
+            messages.error(request, "Permission denied: Only Administrators can modify user accounts.")
+            return redirect('users_settings')
+
+        action = request.POST.get('action')
+        
+        if action == 'create':
+            username = request.POST.get('username', '').strip()
+            email = request.POST.get('email', '').strip()
+            pwd = request.POST.get('password', '').strip()
+            role = request.POST.get('role', UserRole.VIEWER)
+            first_name = request.POST.get('first_name', '').strip()
+
+            if not username or not pwd:
+                messages.error(request, "Username and password are required.")
+            elif User.objects.filter(username=username).exists():
+                messages.error(request, f"User '{username}' already exists.")
+            else:
+                new_user = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=pwd,
+                    role=role,
+                    first_name=first_name
+                )
+                AuditLog.objects.create(
+                    user=request.user,
+                    action="USER_CREATED",
+                    details=f"Created user {username} with role {role}"
+                )
+                messages.success(request, f"User '{username}' ({role}) created successfully.")
+                return redirect('users_settings')
+
+        elif action == 'delete':
+            target_id = request.POST.get('user_id')
+            target_user = get_object_or_404(User, id=target_id)
+            if target_user == request.user:
+                messages.error(request, "You cannot delete your own account while logged in.")
+            else:
+                uname = target_user.username
+                target_user.delete()
+                AuditLog.objects.create(
+                    user=request.user,
+                    action="USER_DELETED",
+                    details=f"Deleted user account: {uname}"
+                )
+                messages.success(request, f"User account '{uname}' has been deleted.")
+                return redirect('users_settings')
+
+        elif action == 'update_role':
+            target_id = request.POST.get('user_id')
+            new_role = request.POST.get('role')
+            target_user = get_object_or_404(User, id=target_id)
+            old_role = target_user.role
+            target_user.role = new_role
+            target_user.save()
+            AuditLog.objects.create(
+                user=request.user,
+                action="USER_ROLE_CHANGED",
+                details=f"Changed {target_user.username} role from {old_role} to {new_role}"
+            )
+            messages.success(request, f"Role for '{target_user.username}' updated to {new_role}.")
+            return redirect('users_settings')
+
+    users = User.objects.all().order_by('-date_joined')
+    return render(request, 'settings/users_settings.html', {
+        'users': users,
+        'roles': UserRole.choices
+    })
