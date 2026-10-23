@@ -1431,10 +1431,25 @@ window.savePlantMetadata = function(event) {
     localStorage.setItem('sunscrap_plant_metadata', JSON.stringify(metadata));
     applySavedPlantMetadataToDOM();
 
+    // Close the modal cleanly and immediately so background unblurs
     const modalBackdrop = document.getElementById('modal-plant-metadata-backdrop');
-    if (modalBackdrop) modalBackdrop.classList.add('hidden');
+    if (modalBackdrop) {
+        modalBackdrop.classList.add('hidden');
+        modalBackdrop.classList.remove('active');
+        modalBackdrop.style.display = 'none';
+    }
 
     showToast('Plant details and GPS location updated & persisted!');
+};
+
+window.toggleDashboardSubmenu = function(btn) {
+    const submenu = document.getElementById('dashboard-submenu');
+    if (!submenu) return;
+    const isCollapsed = submenu.classList.toggle('collapsed');
+    const arrow = btn ? btn.querySelector('.accordion-arrow') : document.querySelector('.accordion-arrow');
+    if (arrow) {
+        arrow.style.transform = isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+    }
 };
 
 window.detectGPSLocation = function() {
@@ -1778,19 +1793,32 @@ window.goBackUniversal = function() {
 
 function initDashboardNavFilter() {
     const p = window.location.pathname.toLowerCase();
-    const isDashboard = p.endsWith('index.html') || 
-                        p.endsWith('dashboard_analytical.html') || 
-                        p.endsWith('/dashboard') || 
-                        p.endsWith('/dashboard/') || 
-                        p.endsWith('/dashboard/analytical') || 
-                        p.endsWith('/dashboard/analytical/') || 
-                        p === '/' || 
-                        p.endsWith('/sunscrap_recyclers_dashboard/') || 
-                        p.endsWith('/sunscrap_recyclers_dashboard/index.html') || 
-                        p.endsWith('/sunscrap_recyclers_dashboard/dashboard_analytical.html');
+    const isAnalytical = p.endsWith('dashboard_analytical.html') || p.endsWith('/dashboard/analytical') || p.endsWith('/dashboard/analytical/');
+    const isTechnical = p.endsWith('index.html') || p.endsWith('/dashboard') || p.endsWith('/dashboard/') || p === '/' || p.endsWith('/sunscrap_recyclers_dashboard/') || p.endsWith('/sunscrap_recyclers_dashboard/index.html');
+    const isDashboard = isAnalytical || isTechnical;
+
     if (isDashboard) {
         const nav = document.getElementById('universal-page-nav-bar');
         if (nav) nav.remove();
+    }
+
+    const submenu = document.getElementById('dashboard-submenu');
+    const arrow = document.querySelector('.accordion-arrow');
+    const anLink = document.getElementById('menu-analytical-forecasting');
+    const tcLink = document.getElementById('menu-technical-scada');
+
+    if (submenu) {
+        if (isDashboard) {
+            submenu.classList.remove('collapsed');
+            if (arrow) arrow.style.transform = 'rotate(0deg)';
+            if (isAnalytical) {
+                if (anLink) anLink.classList.add('active');
+                if (tcLink) tcLink.classList.remove('active');
+            } else if (isTechnical) {
+                if (tcLink) tcLink.classList.add('active');
+                if (anLink) anLink.classList.remove('active');
+            }
+        }
     }
 }
 
