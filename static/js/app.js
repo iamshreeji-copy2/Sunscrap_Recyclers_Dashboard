@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initPlantCommentsSystem();
     initInverterOverviewHelper();
     initPlantPhotoManager();
+    initDashboardNavFilter();
 });
 
 // =========================================================================
@@ -1733,6 +1734,24 @@ window.goBackUniversal = function() {
         }
     }
 };
+
+function initDashboardNavFilter() {
+    const p = window.location.pathname.toLowerCase();
+    const isDashboard = p.endsWith('index.html') || 
+                        p.endsWith('dashboard_analytical.html') || 
+                        p.endsWith('/dashboard') || 
+                        p.endsWith('/dashboard/') || 
+                        p.endsWith('/dashboard/analytical') || 
+                        p.endsWith('/dashboard/analytical/') || 
+                        p === '/' || 
+                        p.endsWith('/sunscrap_recyclers_dashboard/') || 
+                        p.endsWith('/sunscrap_recyclers_dashboard/index.html') || 
+                        p.endsWith('/sunscrap_recyclers_dashboard/dashboard_analytical.html');
+    if (isDashboard) {
+        const nav = document.getElementById('universal-page-nav-bar');
+        if (nav) nav.remove();
+    }
+}
 
 // =========================================================================
 // 19. Plant Facility Photo Management (Upload, Presets, LocalStorage & Viewer)

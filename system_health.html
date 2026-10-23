@@ -255,7 +255,8 @@
 
         <!-- Dynamic Content Body -->
         <div class="app-content">
-            <!-- Universal Breadcrumb & Go Back Bar (Convenient one-click return to previous page) -->
+            <!-- Universal Breadcrumb & Go Back Bar (Hidden on Main Dashboards via block override) -->
+            
             <div id="universal-page-nav-bar" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
                 <button type="button" id="btn-universal-back" onclick="window.history.length > 1 ? window.history.back() : (window.location.href='index.html')" class="export-btn" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; font-weight: 700; font-size: 0.82rem; background: var(--surface);">
                     <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
@@ -267,6 +268,7 @@
                     <a href="./alert_logs.html" class="export-btn" style="font-size: 0.75rem; padding: 5px 10px; color: #DC2626; border-color: rgba(220,38,38,0.3); font-weight: 700;">🚨 Alert Logs</a>
                 </div>
             </div>
+            
 
             
 
@@ -287,7 +289,7 @@
         </div>
         <div class="kpi-card">
             <span class="kpi-label">Free Storage Space</span>
-            <div class="kpi-value">15.52 <span class="kpi-unit">GB</span></div>
+            <div class="kpi-value">15.5 <span class="kpi-unit">GB</span></div>
             <span class="kpi-sub">90.4% of 342.02 GB utilized</span>
         </div>
         <div class="kpi-card">

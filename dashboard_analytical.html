@@ -255,18 +255,8 @@
 
         <!-- Dynamic Content Body -->
         <div class="app-content">
-            <!-- Universal Breadcrumb & Go Back Bar (Convenient one-click return to previous page) -->
-            <div id="universal-page-nav-bar" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
-                <button type="button" id="btn-universal-back" onclick="window.history.length > 1 ? window.history.back() : (window.location.href='index.html')" class="export-btn" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; font-weight: 700; font-size: 0.82rem; background: var(--surface);">
-                    <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                    <span>← Go Back to Previous Page</span>
-                </button>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <a href="./index.html" class="export-btn" style="font-size: 0.75rem; padding: 5px 10px;">⚡ Technical SCADA</a>
-                    <a href="./dashboard_analytical.html" class="export-btn" style="font-size: 0.75rem; padding: 5px 10px;">📊 Analytical AI/ML</a>
-                    <a href="./alert_logs.html" class="export-btn" style="font-size: 0.75rem; padding: 5px 10px; color: #DC2626; border-color: rgba(220,38,38,0.3); font-weight: 700;">🚨 Alert Logs</a>
-                </div>
-            </div>
+            <!-- Universal Breadcrumb & Go Back Bar (Hidden on Main Dashboards via block override) -->
+            
 
             
 
@@ -295,46 +285,9 @@
     </div>
 </div>
 
-<!-- 4 Interactive Speedometer Gauges (0 to 4000kW, PR %, CUF %, Fleet Health) -->
-<div class="card" style="padding: 20px; margin-bottom: 24px;">
-    <div class="card-header" style="margin-bottom: 10px;">
-        <div>
-            <h2 class="card-title">Real-Time Operational Speedometers & Key Indexes</h2>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">
-                Instantaneous plant operational velocity, capacity utilization, performance ratio, and fleet availability index.
-            </span>
-        </div>
-    </div>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
-        <div style="background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 10px; text-align: center;">
-            <div id="gauge-plant-power" style="width: 100%; height: 210px;"></div>
-            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: -15px;">Active Generation Output</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Current: <strong>3,496.2 kW</strong> / 3,900 kW AC</div>
-        </div>
-
-        <div style="background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 10px; text-align: center;">
-            <div id="gauge-pr" style="width: 100%; height: 210px;"></div>
-            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: -15px;">Performance Ratio (PR)</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Measured: <strong>75.81%</strong> (Target: &gt;75%)</div>
-        </div>
-
-        <div style="background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 10px; text-align: center;">
-            <div id="gauge-cuf" style="width: 100%; height: 210px;"></div>
-            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: -15px;">Plant CUF (24-Hour)</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Cumulative 24h: <strong>12.74%</strong></div>
-        </div>
-
-        <div style="background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 10px; text-align: center;">
-            <div id="gauge-fleet-health" style="width: 100%; height: 210px;"></div>
-            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: -15px;">Inverter Fleet Uptime</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Fleet Status: <strong>13 / 13 Online (100%)</strong></div>
-        </div>
-    </div>
-</div>
-
-<!-- Financial CapEx & ROI Payback Tracker -->
-<div class="card" style="border: 2px solid #3B82F6; background: linear-gradient(135deg, var(--surface) 0%, var(--surface-alt) 100%); margin-bottom: 24px;">
-    <div class="card-header">
+<!-- Commercial CapEx Investment & ROI Payback Tracker (Prominently Placed on Upper Side of Page) -->
+<div class="card" style="border: 2px solid #3B82F6; background: linear-gradient(135deg, var(--surface) 0%, var(--surface-alt) 100%); margin-bottom: 24px; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.1);">
+    <div class="card-header" style="flex-wrap: wrap; gap: 10px;">
         <div>
             <h2 class="card-title" style="color: #2563EB;">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -345,7 +298,7 @@
             </span>
         </div>
         <div>
-            <span class="status-badge online" style="font-size: 0.82rem; padding: 4px 10px;">Payback Rate: 4.8 Years Projected</span>
+            <span class="status-badge online" style="font-size: 0.82rem; padding: 4px 12px; font-weight: 700;">Payback Rate: 4.8 Years Projected</span>
         </div>
     </div>
 
@@ -383,6 +336,43 @@
         </div>
         <div style="width: 100%; height: 10px; background: var(--surface-alt); border-radius: 5px; overflow: hidden; border: 1px solid var(--border);">
             <div style="width: 2.93%; height: 100%; background: linear-gradient(90deg, #10B981, #059669); border-radius: 5px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 4 Interactive Speedometer Gauges (0 to 4000kW, PR %, CUF %, Fleet Health) -->
+<div class="card" style="padding: 20px; margin-bottom: 24px;">
+    <div class="card-header" style="margin-bottom: 10px;">
+        <div>
+            <h2 class="card-title">Real-Time Operational Speedometers & Key Indexes</h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+                Instantaneous plant operational velocity, capacity utilization, performance ratio, and fleet availability index.
+            </span>
+        </div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+        <div style="background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 10px; text-align: center;">
+            <div id="gauge-plant-power" style="width: 100%; height: 210px;"></div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: -15px;">Active Generation Output</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Current: <strong>3,496.2 kW</strong> / 3,900 kW AC</div>
+        </div>
+
+        <div style="background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 10px; text-align: center;">
+            <div id="gauge-pr" style="width: 100%; height: 210px;"></div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: -15px;">Performance Ratio (PR)</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Measured: <strong>75.81%</strong> (Target: &gt;75%)</div>
+        </div>
+
+        <div style="background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 10px; text-align: center;">
+            <div id="gauge-cuf" style="width: 100%; height: 210px;"></div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: -15px;">Plant CUF (24-Hour)</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Cumulative 24h: <strong>12.74%</strong></div>
+        </div>
+
+        <div style="background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 10px; text-align: center;">
+            <div id="gauge-fleet-health" style="width: 100%; height: 210px;"></div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: -15px;">Inverter Fleet Uptime</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Fleet Status: <strong>13 / 13 Online (100%)</strong></div>
         </div>
     </div>
 </div>

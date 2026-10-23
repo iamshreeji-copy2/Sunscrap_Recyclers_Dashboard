@@ -255,7 +255,8 @@
 
         <!-- Dynamic Content Body -->
         <div class="app-content">
-            <!-- Universal Breadcrumb & Go Back Bar (Convenient one-click return to previous page) -->
+            <!-- Universal Breadcrumb & Go Back Bar (Hidden on Main Dashboards via block override) -->
+            
             <div id="universal-page-nav-bar" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
                 <button type="button" id="btn-universal-back" onclick="window.history.length > 1 ? window.history.back() : (window.location.href='index.html')" class="export-btn" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; font-weight: 700; font-size: 0.82rem; background: var(--surface);">
                     <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
@@ -267,6 +268,7 @@
                     <a href="./alert_logs.html" class="export-btn" style="font-size: 0.75rem; padding: 5px 10px; color: #DC2626; border-color: rgba(220,38,38,0.3); font-weight: 700;">🚨 Alert Logs</a>
                 </div>
             </div>
+            
 
             
 
@@ -366,7 +368,7 @@
                     <td style="text-align:right;">
                         
                         <form method="POST" action="/settings/users" style="display:inline;" onsubmit="return confirmDeleteUser(event, 'third_party', '7')">
-                            <input type="hidden" name="csrfmiddlewaretoken" value="aREU7VwfJSgaOoa9rBBgBJpDnNLneHq6f8QEs8YtF1TAPCCzvGJbmsusi1FVDvFL">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="vVUwzBNECYSNjixarE4sclZbFGRNXolXIRqDMBqvGhy1snCdamXrZEekSRZWyYN1">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="user_id" value="7">
                             <button type="submit" class="export-btn" style="color:#DC2626; border-color:rgba(220,38,38,0.3); padding:4px 8px; font-size:0.75rem;">
@@ -405,7 +407,7 @@
                     <td style="text-align:right;">
                         
                         <form method="POST" action="/settings/users" style="display:inline;" onsubmit="return confirmDeleteUser(event, 'owner', '6')">
-                            <input type="hidden" name="csrfmiddlewaretoken" value="aREU7VwfJSgaOoa9rBBgBJpDnNLneHq6f8QEs8YtF1TAPCCzvGJbmsusi1FVDvFL">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="vVUwzBNECYSNjixarE4sclZbFGRNXolXIRqDMBqvGhy1snCdamXrZEekSRZWyYN1">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="user_id" value="6">
                             <button type="submit" class="export-btn" style="color:#DC2626; border-color:rgba(220,38,38,0.3); padding:4px 8px; font-size:0.75rem;">
@@ -444,7 +446,7 @@
                     <td style="text-align:right;">
                         
                         <form method="POST" action="/settings/users" style="display:inline;" onsubmit="return confirmDeleteUser(event, 'developer', '5')">
-                            <input type="hidden" name="csrfmiddlewaretoken" value="aREU7VwfJSgaOoa9rBBgBJpDnNLneHq6f8QEs8YtF1TAPCCzvGJbmsusi1FVDvFL">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="vVUwzBNECYSNjixarE4sclZbFGRNXolXIRqDMBqvGhy1snCdamXrZEekSRZWyYN1">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="user_id" value="5">
                             <button type="submit" class="export-btn" style="color:#DC2626; border-color:rgba(220,38,38,0.3); padding:4px 8px; font-size:0.75rem;">
@@ -483,7 +485,7 @@
                     <td style="text-align:right;">
                         
                         <form method="POST" action="/settings/users" style="display:inline;" onsubmit="return confirmDeleteUser(event, 'darshan_owner', '4')">
-                            <input type="hidden" name="csrfmiddlewaretoken" value="aREU7VwfJSgaOoa9rBBgBJpDnNLneHq6f8QEs8YtF1TAPCCzvGJbmsusi1FVDvFL">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="vVUwzBNECYSNjixarE4sclZbFGRNXolXIRqDMBqvGhy1snCdamXrZEekSRZWyYN1">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="user_id" value="4">
                             <button type="submit" class="export-btn" style="color:#DC2626; border-color:rgba(220,38,38,0.3); padding:4px 8px; font-size:0.75rem;">
@@ -522,7 +524,7 @@
                     <td style="text-align:right;">
                         
                         <form method="POST" action="/settings/users" style="display:inline;" onsubmit="return confirmDeleteUser(event, 'dev_admin', '3')">
-                            <input type="hidden" name="csrfmiddlewaretoken" value="aREU7VwfJSgaOoa9rBBgBJpDnNLneHq6f8QEs8YtF1TAPCCzvGJbmsusi1FVDvFL">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="vVUwzBNECYSNjixarE4sclZbFGRNXolXIRqDMBqvGhy1snCdamXrZEekSRZWyYN1">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="user_id" value="3">
                             <button type="submit" class="export-btn" style="color:#DC2626; border-color:rgba(220,38,38,0.3); padding:4px 8px; font-size:0.75rem;">
@@ -559,7 +561,7 @@
                     <td style="text-align:right;">
                         
                         <form method="POST" action="/settings/users" style="display:inline;" onsubmit="return confirmDeleteUser(event, 'viewer', '2')">
-                            <input type="hidden" name="csrfmiddlewaretoken" value="aREU7VwfJSgaOoa9rBBgBJpDnNLneHq6f8QEs8YtF1TAPCCzvGJbmsusi1FVDvFL">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="vVUwzBNECYSNjixarE4sclZbFGRNXolXIRqDMBqvGhy1snCdamXrZEekSRZWyYN1">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="user_id" value="2">
                             <button type="submit" class="export-btn" style="color:#DC2626; border-color:rgba(220,38,38,0.3); padding:4px 8px; font-size:0.75rem;">
@@ -618,7 +620,7 @@
             <button type="button" id="btn-close-create-user" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
         </div>
         <form method="POST" action="/settings/users" onsubmit="handleCreateUser(event)">
-            <input type="hidden" name="csrfmiddlewaretoken" value="aREU7VwfJSgaOoa9rBBgBJpDnNLneHq6f8QEs8YtF1TAPCCzvGJbmsusi1FVDvFL">
+            <input type="hidden" name="csrfmiddlewaretoken" value="vVUwzBNECYSNjixarE4sclZbFGRNXolXIRqDMBqvGhy1snCdamXrZEekSRZWyYN1">
             <input type="hidden" name="action" value="create">
             <div class="modal-body" style="padding: 22px;">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
