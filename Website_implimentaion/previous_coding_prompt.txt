@@ -660,3 +660,22 @@ CHANGES MADE:
 - dashboard.html, inverter_overview.html: Cleaned canvas-incompatible var(--text-muted) from chart axes.
 - report_custom.html: Fixed modal markup with class "modal-overlay hidden" and display: none; converted Open, Close, and Cancel buttons to use window.openModal / window.closeModal with inline fallbacks; added backdrop click and Escape key listeners.
 - schedules.html, report_trends.html: Applied identical modal fix and backdrop/Esc handlers to guarantee 100% modal reliability.
+
+---
+PROMPT #29 — Mobile Table Scrolling, Dashboard Ordering, Trend Panel 4 Fix, Login Carousel
+DATE: 2026-10-23
+
+REQUESTS:
+1. Tables are not able to scroll horizontally in mobile view — recheck and ensure horizontal touch scrolling works
+2. Rename "Technical SCADA" to "Technical" and other dashboard to "Analytical"; make "Analytical" first in menu and "Technical" second; by default Technical dashboard must open (not Analytical)
+3. Fix Configure Trend Panel 4 popup: Cancel and Save Configuration buttons not working; remove blue overlay background, make background neutral/theme color
+4. Login page background: add fullscreen carousel of images from /home/linux/Documents/Darshan_SCADA_Software_October_2026/corosal behind login page; make images dark so login card pops; change every 3 seconds with glowing vertical white line sweep wipe effect
+
+CHANGES MADE:
+- theme.css: Added max-width: 100%, min-width: 0, touch-action: pan-x pan-y to .table-container; enforced min-width: 580-620px and white-space: nowrap on .scada-table; styled custom horizontal scrollbar for mobile/touch devices; ensured .card and .app-content flex constraints prevent horizontal blowouts.
+- base.html: Reordered Dashboard submenu: "Analytical" is first, "Technical" is second; updated mobile bottom nav similarly; default route / and home redirect continues to open Technical dashboard.
+- theme.css: Changed .modal-overlay background from deep blue rgba(13, 26, 54, 0.6) to neutral dark backdrop rgba(0, 0, 0, 0.55); changed .modal-header to var(--surface-alt) with var(--text-main).
+- report_trends.html: Moved all four configuration modals outside the CSS grid to prevent grid-containment bugs; added handleSaveTrendConfig(event, panelIndex) with live DOM update and localStorage persistence; fixed Cancel button via closeTrendModal(); restored saved configs on page load.
+- static/assets/carousel/: Copied and organized all 8 images from corosal directory (slide1.png through slide8.png); generated updated sharp solar-banner.png (800x200).
+- login.html: Added full-screen background carousel with #slide-base, #slide-incoming, #wipe-line, and .carousel-dark-overlay; implemented 3-second cycle with 1.05s glowing vertical white wipe line sweep transition; added dark radial + linear vignette overlay so login popup is clear, focused, and crisp.
+- build_static_site.py: Added regex rewrite rules for data-src and CSS url() static paths.

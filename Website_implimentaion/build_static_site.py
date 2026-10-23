@@ -68,6 +68,9 @@ URL_REPLACEMENTS = [
     (r'href="/forgot/password"', 'href="./forgot_password.html"'),
     (r'href="/static/', 'href="./static/'),
     (r'src="/static/', 'src="./static/'),
+    (r'data-src="/static/', 'data-src="./static/'),
+    (r"url\('/static/", "url('./static/"),
+    (r'url\("/static/', 'url("./static/'),
     (r'action="/login"', 'action="./index.html"'),
 ]
 

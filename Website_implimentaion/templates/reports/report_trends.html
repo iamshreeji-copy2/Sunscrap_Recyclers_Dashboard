@@ -15,63 +15,152 @@
         <div class="card" style="margin-bottom: 0;">
             <div class="card-header">
                 <div>
-                    <h2 class="card-title">{{ p.title }}</h2>
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>{{ p.device_id }}</b> • Metric: <b>{{ p.metric_id }}</b></span>
+                    <h2 class="card-title" id="panel-title-{{ p.panel_index }}">{{ p.title }}</h2>
+                    <span id="panel-meta-{{ p.panel_index }}" style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>{{ p.device_id }}</b> • Metric: <b>{{ p.metric_id }}</b></span>
                 </div>
-                <button type="button" class="export-btn" onclick="if(window.openModal){ window.openModal('config-modal-{{ p.panel_index }}'); } else { const m = document.getElementById('config-modal-{{ p.panel_index }}'); m.classList.remove('hidden'); m.classList.add('active'); m.style.display='flex'; }">
+                <button type="button" class="export-btn" onclick="openTrendModal({{ p.panel_index }})">
                     Configure
                 </button>
             </div>
             <div id="trend-chart-panel-{{ p.panel_index }}" style="width: 100%; height: 260px;"></div>
         </div>
-
-        <!-- Configuration Modal for each panel -->
-        <div class="modal-overlay hidden" id="config-modal-{{ p.panel_index }}" style="display: none;">
-            <div class="modal-dialog">
-                <div class="modal-header">
-                    <h3 style="font-size: 1rem; font-weight: 700; color: #FFF;">Configure Trend Panel {{ p.panel_index }}</h3>
-                    <button type="button" class="btn-close-modal" onclick="if(window.closeModal){ window.closeModal('config-modal-{{ p.panel_index }}'); } else { const m = document.getElementById('config-modal-{{ p.panel_index }}'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }" style="background:none; border:none; color:#FFF; font-size:1.4rem; cursor:pointer;" aria-label="Close modal">&times;</button>
-                </div>
-                <form method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="panel_index" value="{{ p.panel_index }}">
-                    <div class="modal-body">
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
-                            <input type="text" name="title" value="{{ p.title }}" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                        </div>
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
-                            <select name="device_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                                {% for d in devices %}
-                                    <option value="{{ d.device_id }}" {% if d.device_id == p.device_id %}selected{% endif %}>{{ d.device_id }}: {{ d.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
-                            <select name="metric_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                                <option value="active_power" {% if p.metric_id == 'active_power' %}selected{% endif %}>Active Power (kW)</option>
-                                <option value="temperature" {% if p.metric_id == 'temperature' %}selected{% endif %}>Temperature (°C)</option>
-                                <option value="daily_yield" {% if p.metric_id == 'daily_yield' %}selected{% endif %}>Daily Yield (kWh)</option>
-                                <option value="gti" {% if p.metric_id == 'gti' %}selected{% endif %}>GTI Irradiance (W/m²)</option>
-                                <option value="ghi" {% if p.metric_id == 'ghi' %}selected{% endif %}>GHI Irradiance (W/m²)</option>
-                                <option value="power_factor" {% if p.metric_id == 'power_factor' %}selected{% endif %}>Power Factor</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
-                        <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('config-modal-{{ p.panel_index }}'); } else { const m = document.getElementById('config-modal-{{ p.panel_index }}'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }">Cancel</button>
-                        <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     {% endfor %}
 </div>
 
+<!-- Configuration Modals for each panel (Rendered outside grid for clean viewport centering) -->
+{% for p in panels %}
+<div class="modal-overlay hidden" id="config-modal-{{ p.panel_index }}" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin: 0;">Configure Trend Panel {{ p.panel_index }}</h3>
+            <button type="button" class="btn-close-modal" onclick="closeTrendModal({{ p.panel_index }})" style="background:none; border:none; color:var(--text-muted); font-size:1.4rem; cursor:pointer; line-height:1;" aria-label="Close modal">&times;</button>
+        </div>
+        <form method="POST" onsubmit="handleSaveTrendConfig(event, {{ p.panel_index }})">
+            {% csrf_token %}
+            <input type="hidden" name="panel_index" value="{{ p.panel_index }}">
+            <div class="modal-body">
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
+                    <input type="text" name="title" id="input-title-{{ p.panel_index }}" value="{{ p.title }}" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
+                    <select name="device_id" id="input-device-{{ p.panel_index }}" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                        {% for d in devices %}
+                            <option value="{{ d.device_id }}" {% if d.device_id == p.device_id %}selected{% endif %}>{{ d.device_id }}: {{ d.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
+                    <select name="metric_id" id="input-metric-{{ p.panel_index }}" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                        <option value="active_power" {% if p.metric_id == 'active_power' %}selected{% endif %}>Active Power (kW)</option>
+                        <option value="temperature" {% if p.metric_id == 'temperature' %}selected{% endif %}>Temperature (°C)</option>
+                        <option value="daily_yield" {% if p.metric_id == 'daily_yield' %}selected{% endif %}>Daily Yield (kWh)</option>
+                        <option value="gti" {% if p.metric_id == 'gti' %}selected{% endif %}>GTI Irradiance (W/m²)</option>
+                        <option value="ghi" {% if p.metric_id == 'ghi' %}selected{% endif %}>GHI Irradiance (W/m²)</option>
+                        <option value="power_factor" {% if p.metric_id == 'power_factor' %}selected{% endif %}>Power Factor</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="export-btn" onclick="closeTrendModal({{ p.panel_index }})">Cancel</button>
+                <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+
 <script>
+// Modal Open / Close Controllers
+window.openTrendModal = function(panelIndex) {
+    const id = `config-modal-${panelIndex}`;
+    if (window.openModal) {
+        window.openModal(id);
+    } else {
+        const m = document.getElementById(id);
+        if (m) {
+            m.classList.remove('hidden');
+            m.classList.add('active');
+            m.style.display = 'flex';
+        }
+    }
+};
+
+window.closeTrendModal = function(panelIndex) {
+    const id = `config-modal-${panelIndex}`;
+    if (window.closeModal) {
+        window.closeModal(id);
+    } else {
+        const m = document.getElementById(id);
+        if (m) {
+            m.classList.add('hidden');
+            m.classList.remove('active');
+            m.style.display = 'none';
+        }
+    }
+};
+
+// Form Save Controller (Works in static GitHub Pages + dynamic server)
+window.handleSaveTrendConfig = function(e, panelIndex) {
+    e.preventDefault();
+    const form = e.target;
+    const title = form.querySelector(`input[name="title"]`).value;
+    const devId = form.querySelector(`select[name="device_id"]`).value;
+    const metric = form.querySelector(`select[name="metric_id"]`).value;
+
+    // Update Card UI Live
+    const titleEl = document.getElementById(`panel-title-${panelIndex}`);
+    const metaEl = document.getElementById(`panel-meta-${panelIndex}`);
+    if (titleEl) titleEl.innerText = title;
+    if (metaEl) metaEl.innerHTML = `Device: <b>${devId}</b> • Metric: <b>${metric}</b>`;
+
+    // Persist to local storage for static session continuity
+    try {
+        localStorage.setItem(`trend_cfg_${panelIndex}`, JSON.stringify({ title, devId, metric }));
+    } catch (err) {}
+
+    // Close Modal immediately
+    closeTrendModal(panelIndex);
+
+    // Toast feedback
+    if (typeof showToast === 'function') {
+        showToast(`✓ Trend Panel ${panelIndex} updated: ${title}`);
+    }
+
+    // Background server sync if live Django backend
+    if (window.location.protocol !== 'file:' && !window.location.hostname.includes('github.io') && !window.location.pathname.endsWith('.html')) {
+        const formData = new FormData(form);
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).catch(() => {});
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Restore any previously saved custom titles from localStorage
+    for (let i = 1; i <= 4; i++) {
+        try {
+            const raw = localStorage.getItem(`trend_cfg_${i}`);
+            if (raw) {
+                const data = JSON.parse(raw);
+                const titleEl = document.getElementById(`panel-title-${i}`);
+                const metaEl = document.getElementById(`panel-meta-${i}`);
+                const inputTitle = document.getElementById(`input-title-${i}`);
+                const inputDevice = document.getElementById(`input-device-${i}`);
+                const inputMetric = document.getElementById(`input-metric-${i}`);
+                if (titleEl && data.title) titleEl.innerText = data.title;
+                if (metaEl && data.devId && data.metric) metaEl.innerHTML = `Device: <b>${data.devId}</b> • Metric: <b>${data.metric}</b>`;
+                if (inputTitle && data.title) inputTitle.value = data.title;
+                if (inputDevice && data.devId) inputDevice.value = data.devId;
+                if (inputMetric && data.metric) inputMetric.value = data.metric;
+            }
+        } catch(e) {}
+    }
+
     // Initialize 4 dynamic trend charts
     const timeSlots = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
     const p1 = [0, 25, 95, 180, 245, 275, 288, 280, 240, 175, 90, 20, 0];

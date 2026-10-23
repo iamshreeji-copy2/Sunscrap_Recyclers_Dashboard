@@ -66,13 +66,13 @@
                     <svg class="accordion-arrow" width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="transition: transform 0.2s; transform: rotate(-90deg);"><path d="M7 10l5 5 5-5z"/></svg>
                 </button>
                 <div id="dashboard-submenu" class="nav-submenu collapsed">
-                    <a href="./index.html" class="nav-subitem " id="menu-technical-scada">
-                        <span class="subitem-icon">⚡</span>
-                        <span>Technical SCADA</span>
-                    </a>
                     <a href="./dashboard_analytical.html" class="nav-subitem " id="menu-analytical-forecasting">
                         <span class="subitem-icon">📊</span>
-                        <span>Analytical & Forecasting</span>
+                        <span>Analytical</span>
+                    </a>
+                    <a href="./index.html" class="nav-subitem " id="menu-technical-scada">
+                        <span class="subitem-icon">⚡</span>
+                        <span>Technical</span>
                     </a>
                 </div>
             </div>
@@ -303,351 +303,437 @@
         <div class="card" style="margin-bottom: 0;">
             <div class="card-header">
                 <div>
-                    <h2 class="card-title">Active Power Trend</h2>
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>INV-01</b> • Metric: <b>active_power</b></span>
+                    <h2 class="card-title" id="panel-title-1">Active Power Trend</h2>
+                    <span id="panel-meta-1" style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>INV-01</b> • Metric: <b>active_power</b></span>
                 </div>
-                <button type="button" class="export-btn" onclick="if(window.openModal){ window.openModal('config-modal-1'); } else { const m = document.getElementById('config-modal-1'); m.classList.remove('hidden'); m.classList.add('active'); m.style.display='flex'; }">
+                <button type="button" class="export-btn" onclick="openTrendModal(1)">
                     Configure
                 </button>
             </div>
             <div id="trend-chart-panel-1" style="width: 100%; height: 260px;"></div>
         </div>
-
-        <!-- Configuration Modal for each panel -->
-        <div class="modal-overlay hidden" id="config-modal-1" style="display: none;">
-            <div class="modal-dialog">
-                <div class="modal-header">
-                    <h3 style="font-size: 1rem; font-weight: 700; color: #FFF;">Configure Trend Panel 1</h3>
-                    <button type="button" class="btn-close-modal" onclick="if(window.closeModal){ window.closeModal('config-modal-1'); } else { const m = document.getElementById('config-modal-1'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }" style="background:none; border:none; color:#FFF; font-size:1.4rem; cursor:pointer;" aria-label="Close modal">&times;</button>
-                </div>
-                <form method="POST">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="xEJZuO7psTWKi1liL7pBhG9HGH831d2ab8b6zfIgwfgCcyoAHpxEH6EfxccN8xjf">
-                    <input type="hidden" name="panel_index" value="1">
-                    <div class="modal-body">
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
-                            <input type="text" name="title" value="Active Power Trend" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                        </div>
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
-                            <select name="device_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                                
-                                    <option value="INV-01" selected>INV-01: Inverter 01</option>
-                                
-                                    <option value="INV-02" >INV-02: Inverter 02</option>
-                                
-                                    <option value="INV-03" >INV-03: Inverter 03</option>
-                                
-                                    <option value="INV-04" >INV-04: Inverter 04</option>
-                                
-                                    <option value="INV-05" >INV-05: Inverter 05</option>
-                                
-                                    <option value="INV-06" >INV-06: Inverter 06</option>
-                                
-                                    <option value="INV-07" >INV-07: Inverter 07</option>
-                                
-                                    <option value="INV-08" >INV-08: Inverter 08</option>
-                                
-                                    <option value="INV-09" >INV-09: Inverter 09</option>
-                                
-                                    <option value="INV-10" >INV-10: Inverter 10</option>
-                                
-                                    <option value="INV-11" >INV-11: Inverter 11</option>
-                                
-                                    <option value="INV-12" >INV-12: Inverter 12</option>
-                                
-                                    <option value="INV-13" >INV-13: Inverter 13</option>
-                                
-                                    <option value="MFM-LT" >MFM-LT: LT Meter</option>
-                                
-                                    <option value="MFM-OUT" >MFM-OUT: Outgoing MFM (Main Export/Import)</option>
-                                
-                                    <option value="WMS-01" >WMS-01: Weather Monitoring Station</option>
-                                
-                            </select>
-                        </div>
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
-                            <select name="metric_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                                <option value="active_power" selected>Active Power (kW)</option>
-                                <option value="temperature" >Temperature (°C)</option>
-                                <option value="daily_yield" >Daily Yield (kWh)</option>
-                                <option value="gti" >GTI Irradiance (W/m²)</option>
-                                <option value="ghi" >GHI Irradiance (W/m²)</option>
-                                <option value="power_factor" >Power Factor</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
-                        <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('config-modal-1'); } else { const m = document.getElementById('config-modal-1'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }">Cancel</button>
-                        <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     
         <div class="card" style="margin-bottom: 0;">
             <div class="card-header">
                 <div>
-                    <h2 class="card-title">Irradiance GHI / GTI</h2>
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>WMS-01</b> • Metric: <b>gti</b></span>
+                    <h2 class="card-title" id="panel-title-2">Irradiance GHI / GTI</h2>
+                    <span id="panel-meta-2" style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>WMS-01</b> • Metric: <b>gti</b></span>
                 </div>
-                <button type="button" class="export-btn" onclick="if(window.openModal){ window.openModal('config-modal-2'); } else { const m = document.getElementById('config-modal-2'); m.classList.remove('hidden'); m.classList.add('active'); m.style.display='flex'; }">
+                <button type="button" class="export-btn" onclick="openTrendModal(2)">
                     Configure
                 </button>
             </div>
             <div id="trend-chart-panel-2" style="width: 100%; height: 260px;"></div>
         </div>
-
-        <!-- Configuration Modal for each panel -->
-        <div class="modal-overlay hidden" id="config-modal-2" style="display: none;">
-            <div class="modal-dialog">
-                <div class="modal-header">
-                    <h3 style="font-size: 1rem; font-weight: 700; color: #FFF;">Configure Trend Panel 2</h3>
-                    <button type="button" class="btn-close-modal" onclick="if(window.closeModal){ window.closeModal('config-modal-2'); } else { const m = document.getElementById('config-modal-2'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }" style="background:none; border:none; color:#FFF; font-size:1.4rem; cursor:pointer;" aria-label="Close modal">&times;</button>
-                </div>
-                <form method="POST">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="xEJZuO7psTWKi1liL7pBhG9HGH831d2ab8b6zfIgwfgCcyoAHpxEH6EfxccN8xjf">
-                    <input type="hidden" name="panel_index" value="2">
-                    <div class="modal-body">
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
-                            <input type="text" name="title" value="Irradiance GHI / GTI" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                        </div>
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
-                            <select name="device_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                                
-                                    <option value="INV-01" >INV-01: Inverter 01</option>
-                                
-                                    <option value="INV-02" >INV-02: Inverter 02</option>
-                                
-                                    <option value="INV-03" >INV-03: Inverter 03</option>
-                                
-                                    <option value="INV-04" >INV-04: Inverter 04</option>
-                                
-                                    <option value="INV-05" >INV-05: Inverter 05</option>
-                                
-                                    <option value="INV-06" >INV-06: Inverter 06</option>
-                                
-                                    <option value="INV-07" >INV-07: Inverter 07</option>
-                                
-                                    <option value="INV-08" >INV-08: Inverter 08</option>
-                                
-                                    <option value="INV-09" >INV-09: Inverter 09</option>
-                                
-                                    <option value="INV-10" >INV-10: Inverter 10</option>
-                                
-                                    <option value="INV-11" >INV-11: Inverter 11</option>
-                                
-                                    <option value="INV-12" >INV-12: Inverter 12</option>
-                                
-                                    <option value="INV-13" >INV-13: Inverter 13</option>
-                                
-                                    <option value="MFM-LT" >MFM-LT: LT Meter</option>
-                                
-                                    <option value="MFM-OUT" >MFM-OUT: Outgoing MFM (Main Export/Import)</option>
-                                
-                                    <option value="WMS-01" selected>WMS-01: Weather Monitoring Station</option>
-                                
-                            </select>
-                        </div>
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
-                            <select name="metric_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                                <option value="active_power" >Active Power (kW)</option>
-                                <option value="temperature" >Temperature (°C)</option>
-                                <option value="daily_yield" >Daily Yield (kWh)</option>
-                                <option value="gti" selected>GTI Irradiance (W/m²)</option>
-                                <option value="ghi" >GHI Irradiance (W/m²)</option>
-                                <option value="power_factor" >Power Factor</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
-                        <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('config-modal-2'); } else { const m = document.getElementById('config-modal-2'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }">Cancel</button>
-                        <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     
         <div class="card" style="margin-bottom: 0;">
             <div class="card-header">
                 <div>
-                    <h2 class="card-title">Inverter Temperature</h2>
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>INV-01</b> • Metric: <b>temperature</b></span>
+                    <h2 class="card-title" id="panel-title-3">Inverter Temperature</h2>
+                    <span id="panel-meta-3" style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>INV-01</b> • Metric: <b>temperature</b></span>
                 </div>
-                <button type="button" class="export-btn" onclick="if(window.openModal){ window.openModal('config-modal-3'); } else { const m = document.getElementById('config-modal-3'); m.classList.remove('hidden'); m.classList.add('active'); m.style.display='flex'; }">
+                <button type="button" class="export-btn" onclick="openTrendModal(3)">
                     Configure
                 </button>
             </div>
             <div id="trend-chart-panel-3" style="width: 100%; height: 260px;"></div>
         </div>
-
-        <!-- Configuration Modal for each panel -->
-        <div class="modal-overlay hidden" id="config-modal-3" style="display: none;">
-            <div class="modal-dialog">
-                <div class="modal-header">
-                    <h3 style="font-size: 1rem; font-weight: 700; color: #FFF;">Configure Trend Panel 3</h3>
-                    <button type="button" class="btn-close-modal" onclick="if(window.closeModal){ window.closeModal('config-modal-3'); } else { const m = document.getElementById('config-modal-3'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }" style="background:none; border:none; color:#FFF; font-size:1.4rem; cursor:pointer;" aria-label="Close modal">&times;</button>
-                </div>
-                <form method="POST">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="xEJZuO7psTWKi1liL7pBhG9HGH831d2ab8b6zfIgwfgCcyoAHpxEH6EfxccN8xjf">
-                    <input type="hidden" name="panel_index" value="3">
-                    <div class="modal-body">
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
-                            <input type="text" name="title" value="Inverter Temperature" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                        </div>
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
-                            <select name="device_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                                
-                                    <option value="INV-01" selected>INV-01: Inverter 01</option>
-                                
-                                    <option value="INV-02" >INV-02: Inverter 02</option>
-                                
-                                    <option value="INV-03" >INV-03: Inverter 03</option>
-                                
-                                    <option value="INV-04" >INV-04: Inverter 04</option>
-                                
-                                    <option value="INV-05" >INV-05: Inverter 05</option>
-                                
-                                    <option value="INV-06" >INV-06: Inverter 06</option>
-                                
-                                    <option value="INV-07" >INV-07: Inverter 07</option>
-                                
-                                    <option value="INV-08" >INV-08: Inverter 08</option>
-                                
-                                    <option value="INV-09" >INV-09: Inverter 09</option>
-                                
-                                    <option value="INV-10" >INV-10: Inverter 10</option>
-                                
-                                    <option value="INV-11" >INV-11: Inverter 11</option>
-                                
-                                    <option value="INV-12" >INV-12: Inverter 12</option>
-                                
-                                    <option value="INV-13" >INV-13: Inverter 13</option>
-                                
-                                    <option value="MFM-LT" >MFM-LT: LT Meter</option>
-                                
-                                    <option value="MFM-OUT" >MFM-OUT: Outgoing MFM (Main Export/Import)</option>
-                                
-                                    <option value="WMS-01" >WMS-01: Weather Monitoring Station</option>
-                                
-                            </select>
-                        </div>
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
-                            <select name="metric_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                                <option value="active_power" >Active Power (kW)</option>
-                                <option value="temperature" selected>Temperature (°C)</option>
-                                <option value="daily_yield" >Daily Yield (kWh)</option>
-                                <option value="gti" >GTI Irradiance (W/m²)</option>
-                                <option value="ghi" >GHI Irradiance (W/m²)</option>
-                                <option value="power_factor" >Power Factor</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
-                        <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('config-modal-3'); } else { const m = document.getElementById('config-modal-3'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }">Cancel</button>
-                        <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     
         <div class="card" style="margin-bottom: 0;">
             <div class="card-header">
                 <div>
-                    <h2 class="card-title">Grid Export Power</h2>
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>INV-05</b> • Metric: <b>gti</b></span>
+                    <h2 class="card-title" id="panel-title-4">Grid Export Power</h2>
+                    <span id="panel-meta-4" style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>INV-05</b> • Metric: <b>gti</b></span>
                 </div>
-                <button type="button" class="export-btn" onclick="if(window.openModal){ window.openModal('config-modal-4'); } else { const m = document.getElementById('config-modal-4'); m.classList.remove('hidden'); m.classList.add('active'); m.style.display='flex'; }">
+                <button type="button" class="export-btn" onclick="openTrendModal(4)">
                     Configure
                 </button>
             </div>
             <div id="trend-chart-panel-4" style="width: 100%; height: 260px;"></div>
         </div>
-
-        <!-- Configuration Modal for each panel -->
-        <div class="modal-overlay hidden" id="config-modal-4" style="display: none;">
-            <div class="modal-dialog">
-                <div class="modal-header">
-                    <h3 style="font-size: 1rem; font-weight: 700; color: #FFF;">Configure Trend Panel 4</h3>
-                    <button type="button" class="btn-close-modal" onclick="if(window.closeModal){ window.closeModal('config-modal-4'); } else { const m = document.getElementById('config-modal-4'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }" style="background:none; border:none; color:#FFF; font-size:1.4rem; cursor:pointer;" aria-label="Close modal">&times;</button>
-                </div>
-                <form method="POST">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="xEJZuO7psTWKi1liL7pBhG9HGH831d2ab8b6zfIgwfgCcyoAHpxEH6EfxccN8xjf">
-                    <input type="hidden" name="panel_index" value="4">
-                    <div class="modal-body">
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
-                            <input type="text" name="title" value="Grid Export Power" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                        </div>
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
-                            <select name="device_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                                
-                                    <option value="INV-01" >INV-01: Inverter 01</option>
-                                
-                                    <option value="INV-02" >INV-02: Inverter 02</option>
-                                
-                                    <option value="INV-03" >INV-03: Inverter 03</option>
-                                
-                                    <option value="INV-04" >INV-04: Inverter 04</option>
-                                
-                                    <option value="INV-05" selected>INV-05: Inverter 05</option>
-                                
-                                    <option value="INV-06" >INV-06: Inverter 06</option>
-                                
-                                    <option value="INV-07" >INV-07: Inverter 07</option>
-                                
-                                    <option value="INV-08" >INV-08: Inverter 08</option>
-                                
-                                    <option value="INV-09" >INV-09: Inverter 09</option>
-                                
-                                    <option value="INV-10" >INV-10: Inverter 10</option>
-                                
-                                    <option value="INV-11" >INV-11: Inverter 11</option>
-                                
-                                    <option value="INV-12" >INV-12: Inverter 12</option>
-                                
-                                    <option value="INV-13" >INV-13: Inverter 13</option>
-                                
-                                    <option value="MFM-LT" >MFM-LT: LT Meter</option>
-                                
-                                    <option value="MFM-OUT" >MFM-OUT: Outgoing MFM (Main Export/Import)</option>
-                                
-                                    <option value="WMS-01" >WMS-01: Weather Monitoring Station</option>
-                                
-                            </select>
-                        </div>
-                        <div style="margin-bottom: 14px;">
-                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
-                            <select name="metric_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                                <option value="active_power" >Active Power (kW)</option>
-                                <option value="temperature" >Temperature (°C)</option>
-                                <option value="daily_yield" >Daily Yield (kWh)</option>
-                                <option value="gti" selected>GTI Irradiance (W/m²)</option>
-                                <option value="ghi" >GHI Irradiance (W/m²)</option>
-                                <option value="power_factor" >Power Factor</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
-                        <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('config-modal-4'); } else { const m = document.getElementById('config-modal-4'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }">Cancel</button>
-                        <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     
 </div>
 
+<!-- Configuration Modals for each panel (Rendered outside grid for clean viewport centering) -->
+
+<div class="modal-overlay hidden" id="config-modal-1" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin: 0;">Configure Trend Panel 1</h3>
+            <button type="button" class="btn-close-modal" onclick="closeTrendModal(1)" style="background:none; border:none; color:var(--text-muted); font-size:1.4rem; cursor:pointer; line-height:1;" aria-label="Close modal">&times;</button>
+        </div>
+        <form method="POST" onsubmit="handleSaveTrendConfig(event, 1)">
+            <input type="hidden" name="csrfmiddlewaretoken" value="KTZGrJFBmN8w9gNR7mHmaXWDLiedXSqolux23T7UP3AXvCPlBxWJcMhEMGuzLLfv">
+            <input type="hidden" name="panel_index" value="1">
+            <div class="modal-body">
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
+                    <input type="text" name="title" id="input-title-1" value="Active Power Trend" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
+                    <select name="device_id" id="input-device-1" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                        
+                            <option value="INV-01" selected>INV-01: Inverter 01</option>
+                        
+                            <option value="INV-02" >INV-02: Inverter 02</option>
+                        
+                            <option value="INV-03" >INV-03: Inverter 03</option>
+                        
+                            <option value="INV-04" >INV-04: Inverter 04</option>
+                        
+                            <option value="INV-05" >INV-05: Inverter 05</option>
+                        
+                            <option value="INV-06" >INV-06: Inverter 06</option>
+                        
+                            <option value="INV-07" >INV-07: Inverter 07</option>
+                        
+                            <option value="INV-08" >INV-08: Inverter 08</option>
+                        
+                            <option value="INV-09" >INV-09: Inverter 09</option>
+                        
+                            <option value="INV-10" >INV-10: Inverter 10</option>
+                        
+                            <option value="INV-11" >INV-11: Inverter 11</option>
+                        
+                            <option value="INV-12" >INV-12: Inverter 12</option>
+                        
+                            <option value="INV-13" >INV-13: Inverter 13</option>
+                        
+                            <option value="MFM-LT" >MFM-LT: LT Meter</option>
+                        
+                            <option value="MFM-OUT" >MFM-OUT: Outgoing MFM (Main Export/Import)</option>
+                        
+                            <option value="WMS-01" >WMS-01: Weather Monitoring Station</option>
+                        
+                    </select>
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
+                    <select name="metric_id" id="input-metric-1" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                        <option value="active_power" selected>Active Power (kW)</option>
+                        <option value="temperature" >Temperature (°C)</option>
+                        <option value="daily_yield" >Daily Yield (kWh)</option>
+                        <option value="gti" >GTI Irradiance (W/m²)</option>
+                        <option value="ghi" >GHI Irradiance (W/m²)</option>
+                        <option value="power_factor" >Power Factor</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="export-btn" onclick="closeTrendModal(1)">Cancel</button>
+                <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay hidden" id="config-modal-2" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin: 0;">Configure Trend Panel 2</h3>
+            <button type="button" class="btn-close-modal" onclick="closeTrendModal(2)" style="background:none; border:none; color:var(--text-muted); font-size:1.4rem; cursor:pointer; line-height:1;" aria-label="Close modal">&times;</button>
+        </div>
+        <form method="POST" onsubmit="handleSaveTrendConfig(event, 2)">
+            <input type="hidden" name="csrfmiddlewaretoken" value="KTZGrJFBmN8w9gNR7mHmaXWDLiedXSqolux23T7UP3AXvCPlBxWJcMhEMGuzLLfv">
+            <input type="hidden" name="panel_index" value="2">
+            <div class="modal-body">
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
+                    <input type="text" name="title" id="input-title-2" value="Irradiance GHI / GTI" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
+                    <select name="device_id" id="input-device-2" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                        
+                            <option value="INV-01" >INV-01: Inverter 01</option>
+                        
+                            <option value="INV-02" >INV-02: Inverter 02</option>
+                        
+                            <option value="INV-03" >INV-03: Inverter 03</option>
+                        
+                            <option value="INV-04" >INV-04: Inverter 04</option>
+                        
+                            <option value="INV-05" >INV-05: Inverter 05</option>
+                        
+                            <option value="INV-06" >INV-06: Inverter 06</option>
+                        
+                            <option value="INV-07" >INV-07: Inverter 07</option>
+                        
+                            <option value="INV-08" >INV-08: Inverter 08</option>
+                        
+                            <option value="INV-09" >INV-09: Inverter 09</option>
+                        
+                            <option value="INV-10" >INV-10: Inverter 10</option>
+                        
+                            <option value="INV-11" >INV-11: Inverter 11</option>
+                        
+                            <option value="INV-12" >INV-12: Inverter 12</option>
+                        
+                            <option value="INV-13" >INV-13: Inverter 13</option>
+                        
+                            <option value="MFM-LT" >MFM-LT: LT Meter</option>
+                        
+                            <option value="MFM-OUT" >MFM-OUT: Outgoing MFM (Main Export/Import)</option>
+                        
+                            <option value="WMS-01" selected>WMS-01: Weather Monitoring Station</option>
+                        
+                    </select>
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
+                    <select name="metric_id" id="input-metric-2" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                        <option value="active_power" >Active Power (kW)</option>
+                        <option value="temperature" >Temperature (°C)</option>
+                        <option value="daily_yield" >Daily Yield (kWh)</option>
+                        <option value="gti" selected>GTI Irradiance (W/m²)</option>
+                        <option value="ghi" >GHI Irradiance (W/m²)</option>
+                        <option value="power_factor" >Power Factor</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="export-btn" onclick="closeTrendModal(2)">Cancel</button>
+                <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay hidden" id="config-modal-3" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin: 0;">Configure Trend Panel 3</h3>
+            <button type="button" class="btn-close-modal" onclick="closeTrendModal(3)" style="background:none; border:none; color:var(--text-muted); font-size:1.4rem; cursor:pointer; line-height:1;" aria-label="Close modal">&times;</button>
+        </div>
+        <form method="POST" onsubmit="handleSaveTrendConfig(event, 3)">
+            <input type="hidden" name="csrfmiddlewaretoken" value="KTZGrJFBmN8w9gNR7mHmaXWDLiedXSqolux23T7UP3AXvCPlBxWJcMhEMGuzLLfv">
+            <input type="hidden" name="panel_index" value="3">
+            <div class="modal-body">
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
+                    <input type="text" name="title" id="input-title-3" value="Inverter Temperature" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
+                    <select name="device_id" id="input-device-3" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                        
+                            <option value="INV-01" selected>INV-01: Inverter 01</option>
+                        
+                            <option value="INV-02" >INV-02: Inverter 02</option>
+                        
+                            <option value="INV-03" >INV-03: Inverter 03</option>
+                        
+                            <option value="INV-04" >INV-04: Inverter 04</option>
+                        
+                            <option value="INV-05" >INV-05: Inverter 05</option>
+                        
+                            <option value="INV-06" >INV-06: Inverter 06</option>
+                        
+                            <option value="INV-07" >INV-07: Inverter 07</option>
+                        
+                            <option value="INV-08" >INV-08: Inverter 08</option>
+                        
+                            <option value="INV-09" >INV-09: Inverter 09</option>
+                        
+                            <option value="INV-10" >INV-10: Inverter 10</option>
+                        
+                            <option value="INV-11" >INV-11: Inverter 11</option>
+                        
+                            <option value="INV-12" >INV-12: Inverter 12</option>
+                        
+                            <option value="INV-13" >INV-13: Inverter 13</option>
+                        
+                            <option value="MFM-LT" >MFM-LT: LT Meter</option>
+                        
+                            <option value="MFM-OUT" >MFM-OUT: Outgoing MFM (Main Export/Import)</option>
+                        
+                            <option value="WMS-01" >WMS-01: Weather Monitoring Station</option>
+                        
+                    </select>
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
+                    <select name="metric_id" id="input-metric-3" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                        <option value="active_power" >Active Power (kW)</option>
+                        <option value="temperature" selected>Temperature (°C)</option>
+                        <option value="daily_yield" >Daily Yield (kWh)</option>
+                        <option value="gti" >GTI Irradiance (W/m²)</option>
+                        <option value="ghi" >GHI Irradiance (W/m²)</option>
+                        <option value="power_factor" >Power Factor</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="export-btn" onclick="closeTrendModal(3)">Cancel</button>
+                <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay hidden" id="config-modal-4" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin: 0;">Configure Trend Panel 4</h3>
+            <button type="button" class="btn-close-modal" onclick="closeTrendModal(4)" style="background:none; border:none; color:var(--text-muted); font-size:1.4rem; cursor:pointer; line-height:1;" aria-label="Close modal">&times;</button>
+        </div>
+        <form method="POST" onsubmit="handleSaveTrendConfig(event, 4)">
+            <input type="hidden" name="csrfmiddlewaretoken" value="KTZGrJFBmN8w9gNR7mHmaXWDLiedXSqolux23T7UP3AXvCPlBxWJcMhEMGuzLLfv">
+            <input type="hidden" name="panel_index" value="4">
+            <div class="modal-body">
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
+                    <input type="text" name="title" id="input-title-4" value="Grid Export Power" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
+                    <select name="device_id" id="input-device-4" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                        
+                            <option value="INV-01" >INV-01: Inverter 01</option>
+                        
+                            <option value="INV-02" >INV-02: Inverter 02</option>
+                        
+                            <option value="INV-03" >INV-03: Inverter 03</option>
+                        
+                            <option value="INV-04" >INV-04: Inverter 04</option>
+                        
+                            <option value="INV-05" selected>INV-05: Inverter 05</option>
+                        
+                            <option value="INV-06" >INV-06: Inverter 06</option>
+                        
+                            <option value="INV-07" >INV-07: Inverter 07</option>
+                        
+                            <option value="INV-08" >INV-08: Inverter 08</option>
+                        
+                            <option value="INV-09" >INV-09: Inverter 09</option>
+                        
+                            <option value="INV-10" >INV-10: Inverter 10</option>
+                        
+                            <option value="INV-11" >INV-11: Inverter 11</option>
+                        
+                            <option value="INV-12" >INV-12: Inverter 12</option>
+                        
+                            <option value="INV-13" >INV-13: Inverter 13</option>
+                        
+                            <option value="MFM-LT" >MFM-LT: LT Meter</option>
+                        
+                            <option value="MFM-OUT" >MFM-OUT: Outgoing MFM (Main Export/Import)</option>
+                        
+                            <option value="WMS-01" >WMS-01: Weather Monitoring Station</option>
+                        
+                    </select>
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
+                    <select name="metric_id" id="input-metric-4" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; box-sizing:border-box;">
+                        <option value="active_power" >Active Power (kW)</option>
+                        <option value="temperature" >Temperature (°C)</option>
+                        <option value="daily_yield" >Daily Yield (kWh)</option>
+                        <option value="gti" selected>GTI Irradiance (W/m²)</option>
+                        <option value="ghi" >GHI Irradiance (W/m²)</option>
+                        <option value="power_factor" >Power Factor</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="export-btn" onclick="closeTrendModal(4)">Cancel</button>
+                <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <script>
+// Modal Open / Close Controllers
+window.openTrendModal = function(panelIndex) {
+    const id = `config-modal-${panelIndex}`;
+    if (window.openModal) {
+        window.openModal(id);
+    } else {
+        const m = document.getElementById(id);
+        if (m) {
+            m.classList.remove('hidden');
+            m.classList.add('active');
+            m.style.display = 'flex';
+        }
+    }
+};
+
+window.closeTrendModal = function(panelIndex) {
+    const id = `config-modal-${panelIndex}`;
+    if (window.closeModal) {
+        window.closeModal(id);
+    } else {
+        const m = document.getElementById(id);
+        if (m) {
+            m.classList.add('hidden');
+            m.classList.remove('active');
+            m.style.display = 'none';
+        }
+    }
+};
+
+// Form Save Controller (Works in static GitHub Pages + dynamic server)
+window.handleSaveTrendConfig = function(e, panelIndex) {
+    e.preventDefault();
+    const form = e.target;
+    const title = form.querySelector(`input[name="title"]`).value;
+    const devId = form.querySelector(`select[name="device_id"]`).value;
+    const metric = form.querySelector(`select[name="metric_id"]`).value;
+
+    // Update Card UI Live
+    const titleEl = document.getElementById(`panel-title-${panelIndex}`);
+    const metaEl = document.getElementById(`panel-meta-${panelIndex}`);
+    if (titleEl) titleEl.innerText = title;
+    if (metaEl) metaEl.innerHTML = `Device: <b>${devId}</b> • Metric: <b>${metric}</b>`;
+
+    // Persist to local storage for static session continuity
+    try {
+        localStorage.setItem(`trend_cfg_${panelIndex}`, JSON.stringify({ title, devId, metric }));
+    } catch (err) {}
+
+    // Close Modal immediately
+    closeTrendModal(panelIndex);
+
+    // Toast feedback
+    if (typeof showToast === 'function') {
+        showToast(`✓ Trend Panel ${panelIndex} updated: ${title}`);
+    }
+
+    // Background server sync if live Django backend
+    if (window.location.protocol !== 'file:' && !window.location.hostname.includes('github.io') && !window.location.pathname.endsWith('.html')) {
+        const formData = new FormData(form);
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).catch(() => {});
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Restore any previously saved custom titles from localStorage
+    for (let i = 1; i <= 4; i++) {
+        try {
+            const raw = localStorage.getItem(`trend_cfg_${i}`);
+            if (raw) {
+                const data = JSON.parse(raw);
+                const titleEl = document.getElementById(`panel-title-${i}`);
+                const metaEl = document.getElementById(`panel-meta-${i}`);
+                const inputTitle = document.getElementById(`input-title-${i}`);
+                const inputDevice = document.getElementById(`input-device-${i}`);
+                const inputMetric = document.getElementById(`input-metric-${i}`);
+                if (titleEl && data.title) titleEl.innerText = data.title;
+                if (metaEl && data.devId && data.metric) metaEl.innerHTML = `Device: <b>${data.devId}</b> • Metric: <b>${data.metric}</b>`;
+                if (inputTitle && data.title) inputTitle.value = data.title;
+                if (inputDevice && data.devId) inputDevice.value = data.devId;
+                if (inputMetric && data.metric) inputMetric.value = data.metric;
+            }
+        } catch(e) {}
+    }
+
     // Initialize 4 dynamic trend charts
     const timeSlots = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
     const p1 = [0, 25, 95, 180, 245, 275, 288, 280, 240, 175, 90, 20, 0];
@@ -744,13 +830,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- Mobile Quick Bottom Navigation Bar (Phones & Small Tablets <= 768px) -->
 <nav class="mobile-bottom-nav" aria-label="Mobile Bottom Navigation">
-    <a href="./index.html" class="">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></svg>
-        <span>SCADA</span>
-    </a>
     <a href="./dashboard_analytical.html" class="">
         <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-        <span>Analytics</span>
+        <span>Analytical</span>
+    </a>
+    <a href="./index.html" class="">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></svg>
+        <span>Technical</span>
     </a>
     <a href="./inverter_overview.html" class="">
         <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>

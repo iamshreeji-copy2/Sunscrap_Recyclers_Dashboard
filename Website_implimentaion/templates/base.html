@@ -66,13 +66,13 @@
                     <svg class="accordion-arrow" width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="transition: transform 0.2s; {% if request.resolver_match.url_name not in 'dashboard,dashboard_analytical' %}transform: rotate(-90deg);{% endif %}"><path d="M7 10l5 5 5-5z"/></svg>
                 </button>
                 <div id="dashboard-submenu" class="nav-submenu {% if request.resolver_match.url_name not in 'dashboard,dashboard_analytical' %}collapsed{% endif %}">
-                    <a href="{% url 'dashboard' %}" class="nav-subitem {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" id="menu-technical-scada">
-                        <span class="subitem-icon">⚡</span>
-                        <span>Technical SCADA</span>
-                    </a>
                     <a href="{% url 'dashboard_analytical' %}" class="nav-subitem {% if request.resolver_match.url_name == 'dashboard_analytical' %}active{% endif %}" id="menu-analytical-forecasting">
                         <span class="subitem-icon">📊</span>
-                        <span>Analytical & Forecasting</span>
+                        <span>Analytical</span>
+                    </a>
+                    <a href="{% url 'dashboard' %}" class="nav-subitem {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" id="menu-technical-scada">
+                        <span class="subitem-icon">⚡</span>
+                        <span>Technical</span>
                     </a>
                 </div>
             </div>
@@ -339,13 +339,13 @@
 
 <!-- Mobile Quick Bottom Navigation Bar (Phones & Small Tablets <= 768px) -->
 <nav class="mobile-bottom-nav" aria-label="Mobile Bottom Navigation">
-    <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></svg>
-        <span>SCADA</span>
-    </a>
     <a href="{% url 'dashboard_analytical' %}" class="{% if request.resolver_match.url_name == 'dashboard_analytical' %}active{% endif %}">
         <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-        <span>Analytics</span>
+        <span>Analytical</span>
+    </a>
+    <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></svg>
+        <span>Technical</span>
     </a>
     <a href="{% url 'inverter_overview' %}" class="{% if request.resolver_match.url_name == 'inverter_overview' %}active{% endif %}">
         <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>

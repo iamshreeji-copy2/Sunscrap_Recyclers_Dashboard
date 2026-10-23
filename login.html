@@ -14,21 +14,85 @@
     <link rel="stylesheet" href="./static/css/theme.css">
     <style>
         body {
-            background: linear-gradient(135deg, #0B1329 0%, #172554 50%, #0F172A 100%);
+            background-color: #06110F;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
         }
+
+        /* Fullscreen Aesthetic Background Carousel */
+        .carousel-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: 0;
+            background-color: #06110F;
+        }
+
+        .carousel-slide-base,
+        .carousel-slide-incoming {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(0.40) contrast(1.2) saturate(1.15);
+            transform: scale(1.03);
+            will-change: clip-path, transform;
+        }
+
+        .carousel-slide-incoming {
+            clip-path: inset(0 100% 0 0);
+            z-index: 2;
+        }
+
+        .carousel-wipe-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 3px;
+            background: #FFFFFF;
+            box-shadow: 0 0 16px 4px rgba(255, 255, 255, 0.95), 0 0 32px 8px rgba(0, 131, 116, 0.8);
+            z-index: 3;
+            pointer-events: none;
+            opacity: 0;
+            will-change: left, opacity;
+        }
+
+        .carousel-dark-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(6, 17, 15, 0.55) 0%, rgba(3, 8, 7, 0.88) 100%),
+                        linear-gradient(180deg, rgba(0, 56, 49, 0.35) 0%, rgba(6, 17, 15, 0.75) 100%);
+            z-index: 4;
+            pointer-events: none;
+            backdrop-filter: blur(2px);
+        }
+
         .login-card {
+            position: relative;
+            z-index: 10;
             background: var(--surface);
             border-radius: var(--radius-lg);
             width: 100%;
             max-width: 480px;
             overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.15);
+            animation: modal-pop 0.3s ease-out;
         }
         .login-banner {
             width: 100%;
@@ -149,6 +213,25 @@
 </head>
 <body>
 
+<!-- Fullscreen Aesthetic Dark Carousel Background with Glowing White Wipe Line -->
+<div class="carousel-background" id="login-carousel" aria-hidden="true">
+    <div class="carousel-slide-base" id="slide-base" style="background-image: url('./static/assets/carousel/slide1.png');"></div>
+    <div class="carousel-slide-incoming" id="slide-incoming"></div>
+    <div class="carousel-wipe-line" id="wipe-line"></div>
+    <div class="carousel-dark-overlay"></div>
+    <!-- Preload sources -->
+    <div style="display:none;" id="carousel-sources">
+        <span data-src="./static/assets/carousel/slide1.png"></span>
+        <span data-src="./static/assets/carousel/slide2.png"></span>
+        <span data-src="./static/assets/carousel/slide3.png"></span>
+        <span data-src="./static/assets/carousel/slide4.png"></span>
+        <span data-src="./static/assets/carousel/slide5.png"></span>
+        <span data-src="./static/assets/carousel/slide6.png"></span>
+        <span data-src="./static/assets/carousel/slide7.png"></span>
+        <span data-src="./static/assets/carousel/slide8.png"></span>
+    </div>
+</div>
+
 <div class="login-card">
     <img src="./static/assets/solar-banner.png" alt="SATs Solar Plant" class="login-banner" onerror="this.style.background='linear-gradient(135deg, #008374 0%, #003831 100%)'; this.style.height='90px';">
     
@@ -183,7 +266,7 @@
         
 
         <form method="POST" action="./index.html" onsubmit="handleWorkstationLogin(event)">
-            <input type="hidden" name="csrfmiddlewaretoken" value="iOVG3z66Hji9YlCx89TLYMWHCQAmVNLDcU2hoGZPujes18OrjFafAook0hMimjcL">
+            <input type="hidden" name="csrfmiddlewaretoken" value="VvKkMqcVQskMC1wtH4UaAVPQraPiWV2bquidIl04QZdKuEk1dA2T24dqWFVzLB0P">
             <!-- Telemetry inputs auto-filled by client JavaScript -->
             <input type="hidden" id="login-device-name" name="device_name" value="">
             <input type="hidden" id="login-approx-location" name="approx_location" value="Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)">
@@ -382,6 +465,76 @@ function handleWorkstationLogin(event) {
         }
     }
 }
+
+// =========================================================================
+// Fullscreen Background Carousel with Vertical White Line Wipe (Every 3s)
+// =========================================================================
+(function initLoginBackgroundCarousel() {
+    const baseSlide = document.getElementById('slide-base');
+    const incomingSlide = document.getElementById('slide-incoming');
+    const wipeLine = document.getElementById('wipe-line');
+    const sources = Array.from(document.querySelectorAll('#carousel-sources span'))
+                         .map(s => s.getAttribute('data-src'))
+                         .filter(Boolean);
+
+    if (!baseSlide || !incomingSlide || !wipeLine || !sources.length) return;
+
+    // Helper to resolve relative path if static GitHub Pages
+    const isStatic = window.location.protocol === 'file:' || 
+                     window.location.hostname.includes('github.io') || 
+                     window.location.pathname.endsWith('.html');
+
+    const cleanSlides = sources.map(src => {
+        if (isStatic && src.startsWith('/static/')) return '.' + src;
+        return src;
+    });
+
+    // Preload all 8 slides in memory
+    cleanSlides.forEach(src => {
+        const img = new Image();
+        img.src = src;
+    });
+
+    let currentIndex = 0;
+    baseSlide.style.backgroundImage = `url('${cleanSlides[0]}')`;
+
+    const WIPE_DURATION = 1050; // 1.05s smooth aesthetic wipe
+    const INTERVAL = 3000;       // 3.0s total cycle
+
+    setInterval(() => {
+        const nextIndex = (currentIndex + 1) % cleanSlides.length;
+        const nextUrl = cleanSlides[nextIndex];
+
+        // 1. Stage the incoming slide behind wipe line
+        incomingSlide.style.transition = 'none';
+        wipeLine.style.transition = 'none';
+        incomingSlide.style.backgroundImage = `url('${nextUrl}')`;
+        incomingSlide.style.clipPath = 'inset(0 100% 0 0)';
+        wipeLine.style.left = '0%';
+        wipeLine.style.opacity = '1';
+
+        // Force browser layout repaint
+        void incomingSlide.offsetHeight;
+
+        // 2. Animate incoming slide reveal and white vertical sweep in lockstep
+        const timing = 'cubic-bezier(0.4, 0.0, 0.2, 1)';
+        incomingSlide.style.transition = `clip-path ${WIPE_DURATION}ms ${timing}`;
+        wipeLine.style.transition = `left ${WIPE_DURATION}ms ${timing}, opacity 250ms ease`;
+
+        incomingSlide.style.clipPath = 'inset(0 0% 0 0)';
+        wipeLine.style.left = '100%';
+
+        // 3. Complete wipe: transfer to base slide and reset incoming
+        setTimeout(() => {
+            wipeLine.style.opacity = '0';
+            baseSlide.style.backgroundImage = `url('${nextUrl}')`;
+            incomingSlide.style.transition = 'none';
+            incomingSlide.style.clipPath = 'inset(0 100% 0 0)';
+            currentIndex = nextIndex;
+        }, WIPE_DURATION + 60);
+
+    }, INTERVAL);
+})();
 </script>
 
 </body>
