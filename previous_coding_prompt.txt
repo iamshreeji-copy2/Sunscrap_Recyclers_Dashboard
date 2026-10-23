@@ -618,3 +618,23 @@ Deliverable / Outcome:
 - Re-rendered static distribution in gh_pages_deploy/ and verified all 26 HTML pages.
 - Passed all 7 Django unit tests (python3 manage.py test tests).
 - Pushed production build to GitHub repository and live GitHub Pages.
+
+---
+PROMPT #27 — UI Cleanup, Location Autocomplete, Role Switcher Move
+DATE: 2026-10-23
+COMMIT: f646b88
+
+REQUESTS:
+1. Remove the redundant "SAT Solutions (SATs)" / "SATs Solar Plant" type of text from the header
+2. Physical Site Location field → smart dropdown with OpenStreetMap Nominatim autocomplete suggestions (auto-fills GPS lat/lng too)
+3. Remove Admin/Viewer role switcher button from main dashboard header — keep it in Operator Profile & Settings
+
+CHANGES MADE:
+- base.html: Removed <button id="btn-toggle-role"> pill from .header-right (lines 203-206)
+- base.html: Updated mobile dropdown onclick to call toggleOperatorRole() directly
+- base.html: Replaced plain <input> for Physical Site Location with autocomplete widget + dropdown
+- base.html: Nominatim suggestions dropdown #location-suggestions-dropdown added
+- profile.html: Added "Operator View Mode" card with btn-toggle-role + role-display-badge
+- plant_settings.html: Cleaned photo caption text (removed redundant bracketed capacity)
+- app.js: Added initLocationAutocomplete() IIFE (Nominatim OSM, debounced 350ms, keyboard nav, auto-fills GPS fields)
+- app.js: Fixed initRoleSwitcher() to not require btn+badge both — applies role class even on pages without the button
