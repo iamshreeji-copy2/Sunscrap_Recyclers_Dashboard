@@ -47,13 +47,15 @@
 </head>
 <body>
 <div class="app-container">
-    <!-- Desktop 248px Sidebar -->
-    <aside class="app-sidebar">
+    <!-- Desktop 248px Sidebar & Mobile Off-canvas Drawer -->
+    <aside class="app-sidebar" id="app-sidebar">
         <div class="sidebar-brand">
             <a href="./index.html" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #FFFFFF; font-weight: 800; font-size: 1.08rem; letter-spacing: 0.5px;">
                 <span style="color: var(--secondary);">⚡</span>
                 <span>SATs SCADA</span>
             </a>
+            <!-- Dedicated Mobile & Tablet Close Button -->
+            <button type="button" class="btn-close-mobile-sidebar" onclick="closeMobileSidebar()" aria-label="Close navigation">&times;</button>
         </div>
         
         <nav class="sidebar-nav">
@@ -164,6 +166,9 @@
         </nav>
     </aside>
 
+    <!-- Mobile & Tablet Sidebar Backdrop Overlay -->
+    <div id="mobile-sidebar-overlay" class="mobile-sidebar-overlay" onclick="closeMobileSidebar()"></div>
+
     <!-- Main Content Shell -->
     <main class="app-main">
         <!-- Sticky Header (70px) -->
@@ -230,6 +235,24 @@
                         </div>
 
                         <div style="padding:4px 0;">
+                            <!-- Mobile Action: Switch Operator Role -->
+                            <button type="button" class="profile-menu-item mobile-only-menu-item" id="btn-dropdown-toggle-role" onclick="if(window.toggleOperatorRole){ window.toggleOperatorRole(); } else { const b = document.getElementById('btn-toggle-role'); if(b) b.click(); }" title="Switch Operator Role (Admin vs Viewer)">
+                                <svg width="16" height="16" fill="var(--primary)" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                <span>Switch Role (Admin / Viewer)</span>
+                            </button>
+
+                            <!-- Mobile Action: Expiring Share Portal -->
+                            <button type="button" class="profile-menu-item mobile-only-menu-item" id="btn-dropdown-share-modal" onclick="if(window.openShareModal){ window.openShareModal(); } else if(window.openModal){ window.openModal('modal-expiring-share-backdrop'); }" title="Generate Time-Limited Expiring Share Link">
+                                <svg width="16" height="16" fill="#3B82F6" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                                <span>Expiring Share Link</span>
+                            </button>
+
+                            <!-- Mobile Action: Discussion / Notes -->
+                            <button type="button" class="profile-menu-item mobile-only-menu-item" id="btn-dropdown-plant-notes" onclick="if(window.openModal){ window.openModal('modal-plant-comments-backdrop'); } else { const m = document.getElementById('modal-plant-comments-backdrop'); if(m){ m.classList.remove('hidden'); m.style.display='flex'; } }" title="Plant Telemetry Discussion & Engineering Remarks">
+                                <svg width="16" height="16" fill="#0EA5E9" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                                <span>Plant Discussion Notes</span>
+                            </button>
+
                             <!-- Plant Details & GPS Settings (Moved under Profile Button) -->
                             <button type="button" class="profile-menu-item" id="btn-open-plant-details" title="Plant Location, Owner Details & GPS Coordinates" onclick="if(window.openPlantMetadataModal){ window.openPlantMetadataModal(); } else if(window.openModal){ window.openModal('modal-plant-metadata-backdrop'); } else { const m = document.getElementById('modal-plant-metadata-backdrop'); if(m){ m.classList.remove('hidden'); m.style.display='flex'; } }">
                                 <svg width="16" height="16" fill="#3B82F6" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
@@ -296,7 +319,7 @@
         <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
         Alarm Summary Filters
     </div>
-    <form method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) auto; gap: 12px; align-items: flex-end;">
+    <form method="GET" class="filter-form-grid">
         <div>
             <label style="display:block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">State</label>
             <select name="state" style="width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; background: var(--surface);">
@@ -376,7 +399,7 @@
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
         Print
     </button>
-    <button type="button" class="export-btn export-btn-primary btn-open-email-modal" data-snapshot-id="4278e014-a1ed-4a8e-b951-1529d736afa8" data-report-name="Alarm &amp; Faults Lifecycle Management" title="Email snapshot to authorized recipients">
+    <button type="button" class="export-btn export-btn-primary btn-open-email-modal" data-snapshot-id="d073c3b3-7f11-4206-b15d-160a83077fef" data-report-name="Alarm &amp; Faults Lifecycle Management" title="Email snapshot to authorized recipients">
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
         Email
     </button>
@@ -471,6 +494,34 @@
         </div>
     </main>
 </div>
+
+<!-- Mobile Quick Bottom Navigation Bar (Phones & Small Tablets <= 768px) -->
+<nav class="mobile-bottom-nav" aria-label="Mobile Bottom Navigation">
+    <a href="./index.html" class="">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></svg>
+        <span>SCADA</span>
+    </a>
+    <a href="./dashboard_analytical.html" class="">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+        <span>Analytics</span>
+    </a>
+    <a href="./inverter_overview.html" class="">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+        <span>Inverters</span>
+    </a>
+    <a href="./report_summary.html" class="">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+        <span>Reports</span>
+    </a>
+    <a href="./alert_logs.html" class="">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+        <span>Alerts</span>
+    </a>
+    <button type="button" class="mobile-nav-btn" onclick="openMobileSidebar()" aria-label="Open Full 22-Module Menu">
+        <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        <span>Menu</span>
+    </button>
+</nav>
 
 <!-- Backdrop Overlay for Accessibility Drawer -->
 <div id="accessibility-backdrop" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1150; display:none;"></div>
@@ -688,7 +739,7 @@
             <button type="button" id="btn-close-plant-photo-modal" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
         </div>
         <div class="modal-body" style="padding: 20px;">
-            <div style="position:relative; width:100%; height:320px; border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--border); background:#0F172A; margin-bottom:16px;">
+            <div style="position:relative; width:100%; height:clamp(180px, 35vh, 320px); border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--border); background:#0F172A; margin-bottom:16px;">
                 <img id="plant-photo-main-viewer" class="plant-facility-photo" src="./static/assets/plant-aerial.svg" alt="SATs Solar Plant" style="width:100%; height:100%; object-fit:cover;">
                 <div style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent, rgba(15,23,42,0.85)); padding:14px 18px; color:#FFF;">
                     <div style="font-weight:800; font-size:1rem;" id="plant-photo-title">Sanand GIDC Solar Array — Aerial Overview</div>
@@ -858,7 +909,7 @@
         </div>
         <div class="modal-body" style="padding: 22px;">
             <form id="form-plant-metadata" onsubmit="savePlantMetadata(event)">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                <div class="form-grid-2col">
                     <div>
                         <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Plant / Organization Name</label>
                         <input type="text" id="plant-meta-name" value="SAT Solutions (SATs)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
@@ -882,11 +933,11 @@
                         <input type="file" id="plant-photo-file-modal" accept="image/*" style="display:none;" onchange="handlePlantPhotoUpload(event)">
                     </div>
 
-                    <div style="display:flex; gap:12px; align-items:center;">
+                    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
                         <div style="position:relative; width:130px; height:75px; border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--border); background:#0F172A; flex-shrink:0;">
                             <img id="plant-photo-metadata-preview" class="plant-facility-photo" src="./static/assets/plant-aerial.svg" alt="Site Photo" style="width:100%; height:100%; object-fit:cover;">
                         </div>
-                        <div style="flex:1;">
+                        <div style="flex:1; min-width:200px;">
                             <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">Choose a facility preset or upload your custom plant photograph:</div>
                             <div style="display:flex; gap:6px; flex-wrap:wrap;">
                                 <button type="button" class="export-btn" onclick="selectPresetPlantPhoto('aerial')" style="font-size:0.7rem; padding:2px 8px;">☀️ Aerial Array</button>
@@ -902,7 +953,7 @@
                     <input type="text" id="plant-meta-location" value="Plot 148, Sanand GIDC Phase II, Ahmedabad, Gujarat, India" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                <div class="form-grid-2col">
                     <div>
                         <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Owner Name</label>
                         <input type="text" id="plant-meta-owner" value="Darshan Patel" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>
@@ -915,11 +966,11 @@
 
                 <!-- GPS Coordinates Section -->
                 <div style="background:var(--surface-alt); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border); margin-bottom: 14px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
                         <span style="font-size:0.8rem; font-weight:700; color:var(--text-main);">GPS Coordinates (Latitude & Longitude)</span>
                         <button type="button" class="export-btn" onclick="detectGPSLocation()" style="font-size:0.72rem; padding:3px 8px;">📍 Auto-Detect GPS</button>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-grid-2col" style="gap:10px; margin-bottom:0;">
                         <div>
                             <label style="display:block; font-size:0.72rem; color:var(--text-muted); margin-bottom:2px;">Latitude (°N)</label>
                             <input type="text" id="plant-meta-lat" value="22.9868" style="width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem; font-family:monospace;">
@@ -934,7 +985,7 @@
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 6px;">
+                <div class="form-grid-2col" style="margin-bottom:6px;">
                     <div>
                         <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Timezone</label>
                         <input type="text" id="plant-meta-tz" value="Asia/Kolkata (IST +05:30)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;" required>

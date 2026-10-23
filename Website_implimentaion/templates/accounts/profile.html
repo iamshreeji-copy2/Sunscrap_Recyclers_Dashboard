@@ -20,7 +20,7 @@
         <form method="POST" id="profile-details-form" onsubmit="handleProfileUpdate(event)">
             {% csrf_token %}
             <input type="hidden" name="action" value="update_details">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <div class="form-grid-2col">
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Username</label>
                     <input type="text" id="profile-username" value="{{ user.username }}" disabled style="width:100%; padding:9px 12px; background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-muted);">
@@ -64,7 +64,7 @@
         <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:16px;">
             Configure geographical plant coordinates, physical plot location, facility contact information, and upload official site photography.
         </p>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="grid-2col-responsive">
             <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px; display:flex; flex-direction:column; justify-content:space-between;">
                 <div>
                     <strong style="font-size:0.92rem; color:var(--text-main); display:flex; align-items:center; gap:6px;">
@@ -107,7 +107,7 @@
                 <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Current Password</label>
                 <input type="password" name="current_password" required style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <div class="form-grid-2col">
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">New Password (Min 8 chars)</label>
                     <input type="password" name="new_password" required minlength="8" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">

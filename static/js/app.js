@@ -1494,6 +1494,20 @@ function initRoleSwitcher() {
     });
 }
 
+window.toggleOperatorRole = function() {
+    let isViewer = localStorage.getItem('scada_role_mode') === 'viewer';
+    isViewer = !isViewer;
+    if (typeof applyRoleMode === 'function') {
+        applyRoleMode(isViewer);
+    }
+    try {
+        localStorage.setItem('scada_role_mode', isViewer ? 'viewer' : 'admin');
+    } catch (e) {}
+    if (typeof showToast === 'function') {
+        showToast(isViewer ? 'Switched to Viewer Mode (Sensitive settings masked)' : 'Switched to Administrator Mode (Full permissions)');
+    }
+};
+
 function applyRoleMode(isViewer) {
     const badge = document.getElementById('role-display-badge');
     if (isViewer) {
@@ -2095,9 +2109,38 @@ function initWebsiteTracking() {
 }
 
 // =========================================================================
-// 22. Full Mode & Aesthetic Layout Engine (Sidebar Collapse & Fullscreen)
+// 22. Mobile Drawer & Full Mode Layout Engine (Responsive & Fullscreen)
 // =========================================================================
+window.openMobileSidebar = function() {
+    const sidebar = document.querySelector('.app-sidebar');
+    const overlay = document.getElementById('mobile-sidebar-overlay');
+    if (sidebar) sidebar.classList.add('mobile-open');
+    if (overlay) overlay.classList.add('active');
+    document.body.classList.add('mobile-nav-active');
+};
+
+window.closeMobileSidebar = function() {
+    const sidebar = document.querySelector('.app-sidebar');
+    const overlay = document.getElementById('mobile-sidebar-overlay');
+    if (sidebar) sidebar.classList.remove('mobile-open');
+    if (overlay) overlay.classList.remove('active');
+    document.body.classList.remove('mobile-nav-active');
+};
+
 window.toggleSidebarFullMode = function() {
+    const isMobileOrTablet = window.innerWidth <= 1024;
+    const sidebar = document.querySelector('.app-sidebar');
+
+    if (isMobileOrTablet) {
+        if (sidebar && sidebar.classList.contains('mobile-open')) {
+            window.closeMobileSidebar();
+        } else {
+            window.openMobileSidebar();
+        }
+        return;
+    }
+
+    // Desktop Full Mode (Widescreen)
     const isCollapsed = document.body.classList.toggle('full-mode');
     document.body.classList.toggle('sidebar-collapsed', isCollapsed);
     try {
@@ -2138,21 +2181,39 @@ window.toggleFullscreenDisplay = function() {
 };
 
 function initFullModeController() {
-    // 1. Restore saved Full Mode preference
+    // 1. Auto-close mobile sidebar when clicking any navigation link on mobile/tablet
+    document.querySelectorAll('.app-sidebar .sidebar-nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 1024) {
+                window.closeMobileSidebar();
+            }
+        });
+    });
+
+    // 2. Close mobile sidebar on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            window.closeMobileSidebar();
+        }
+    });
+
+    // 3. Restore saved Full Mode preference (Only on desktop > 1024px)
     try {
-        const savedFullMode = localStorage.getItem('sats_full_mode');
-        if (savedFullMode === 'true') {
-            document.body.classList.add('full-mode');
-            document.body.classList.add('sidebar-collapsed');
-            const toggleBtn = document.getElementById('btn-toggle-sidebar');
-            if (toggleBtn) {
-                toggleBtn.setAttribute('title', 'Exit Full Mode / Show Sidebar Menu');
-                toggleBtn.setAttribute('aria-pressed', 'true');
+        if (window.innerWidth > 1024) {
+            const savedFullMode = localStorage.getItem('sats_full_mode');
+            if (savedFullMode === 'true') {
+                document.body.classList.add('full-mode');
+                document.body.classList.add('sidebar-collapsed');
+                const toggleBtn = document.getElementById('btn-toggle-sidebar');
+                if (toggleBtn) {
+                    toggleBtn.setAttribute('title', 'Exit Full Mode / Show Sidebar Menu');
+                    toggleBtn.setAttribute('aria-pressed', 'true');
+                }
             }
         }
     } catch (e) {}
 
-    // 2. Fullscreen API state tracking for icon switcher
+    // 4. Fullscreen API state tracking for icon switcher
     const updateFsIcon = () => {
         const isFs = !!document.fullscreenElement;
         const iconEnter = document.getElementById('icon-fs-enter');
@@ -2169,6 +2230,13 @@ function initFullModeController() {
 
     document.addEventListener('fullscreenchange', updateFsIcon);
     document.addEventListener('webkitfullscreenchange', updateFsIcon);
+
+    // 5. Clean up mobile classes when window resizes to desktop width
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 1024) {
+            window.closeMobileSidebar();
+        }
+    });
 }
 
 
