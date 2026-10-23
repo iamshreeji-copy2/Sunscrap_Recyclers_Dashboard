@@ -158,6 +158,18 @@ def main():
         f.write("")
     print("✓ Created .nojekyll for GitHub Pages static serving")
 
+    # 6. Copy root favicon files for browser discovery
+    fav_src = os.path.join(src_static, "assets", "favicon.ico")
+    if os.path.exists(fav_src):
+        shutil.copy(fav_src, os.path.join(OUTPUT_DIR, "favicon.ico"))
+    fav_svg = os.path.join(src_static, "assets", "favicon.svg")
+    if os.path.exists(fav_svg):
+        shutil.copy(fav_svg, os.path.join(OUTPUT_DIR, "favicon.svg"))
+    fav_png = os.path.join(src_static, "assets", "favicon.png")
+    if os.path.exists(fav_png):
+        shutil.copy(fav_png, os.path.join(OUTPUT_DIR, "favicon.png"))
+    print("✓ Deployed root favicon.ico, favicon.svg, and favicon.png")
+
     # 6. Mirror complete Django project source into Website_implimentaion/
     dst_django = os.path.join(OUTPUT_DIR, "Website_implimentaion")
     os.makedirs(dst_django, exist_ok=True)

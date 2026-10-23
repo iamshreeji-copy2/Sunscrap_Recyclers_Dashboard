@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="favSun" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#EF4444" />
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#1E3A8A" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bgGrad)" stroke="#38BDF8" stroke-width="1.5"/>
+  <g transform="translate(2, 2)">
+    <circle cx="30" cy="30" r="15" fill="url(#favSun)" />
+    <!-- Solar Rays -->
+    <path d="M 30 5 L 34 11 L 26 11 Z" fill="#FBBF24" />
+    <path d="M 30 55 L 34 49 L 26 49 Z" fill="#FBBF24" />
+    <path d="M 5 30 L 11 34 L 11 26 Z" fill="#FBBF24" />
+    <path d="M 55 30 L 49 34 L 49 26 Z" fill="#FBBF24" />
+    <path d="M 12 12 L 18 15 L 15 19 Z" fill="#FBBF24" />
+    <path d="M 48 48 L 42 45 L 45 41 Z" fill="#FBBF24" />
+    <path d="M 12 48 L 18 45 L 15 41 Z" fill="#FBBF24" />
+    <path d="M 48 12 L 42 15 L 45 19 Z" fill="#FBBF24" />
+    <!-- PV Grid Cells Inside Sun -->
+    <rect x="22" y="22" width="7" height="7" rx="1.5" fill="#0A1128" stroke="#38BDF8" stroke-width="0.75" opacity="0.95"/>
+    <rect x="31" y="22" width="7" height="7" rx="1.5" fill="#0A1128" stroke="#38BDF8" stroke-width="0.75" opacity="0.95"/>
+    <rect x="22" y="31" width="7" height="7" rx="1.5" fill="#0A1128" stroke="#38BDF8" stroke-width="0.75" opacity="0.95"/>
+    <rect x="31" y="31" width="7" height="7" rx="1.5" fill="#0A1128" stroke="#38BDF8" stroke-width="0.75" opacity="0.95"/>
+  </g>
+</svg>

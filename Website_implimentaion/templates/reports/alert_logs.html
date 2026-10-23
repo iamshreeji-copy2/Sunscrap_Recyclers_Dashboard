@@ -9,11 +9,17 @@
             SCADA Alarm & Alert Incident History Log
         </h1>
         <div style="font-size: 0.85rem; color: var(--text-muted);">
-            Real-time telemetry fault register &bull; Sunscrap Recyclers PVT LTD (3,900 kW AC / 4,640 kWp DC facility).
+            Real-time telemetry fault register &bull; SAT Solutions (3,900 kW AC / 4,640 kWp DC facility).
         </div>
     </div>
 
     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <!-- Clean Back to Dashboard Navigation Button -->
+        <a href="{% url 'dashboard' %}" class="export-btn" id="btn-back-to-dashboard" style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-weight: 700; font-size: 0.82rem; background: var(--surface); color: var(--text-main); text-decoration: none;">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            <span>← Back to SCADA Dashboard</span>
+        </a>
+
         <button type="button" class="export-btn" id="btn-trigger-page-siren" style="background: #DC2626; color: #FFF; font-weight: 700; border: none; padding: 8px 16px; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);">
             <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
             <span>⚡ Test Emergency Siren</span>
@@ -23,33 +29,42 @@
     </div>
 </div>
 
-<!-- Active Critical Incident Spotlight Card -->
-<div style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.12) 0%, rgba(185, 28, 28, 0.05) 100%); border: 1.5px solid #DC2626; border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.15);">
+<!-- Active Critical Incident Spotlight Card with Dismiss & Silence Controls -->
+<div id="spotlight-active-fault-card" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.12) 0%, rgba(185, 28, 28, 0.05) 100%); border: 1.5px solid #DC2626; border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.15); position: relative; transition: all 0.3s ease;">
+    <!-- Close / Dismiss Top-Right Button -->
+    <button type="button" onclick="dismissActiveSpotlightAlarm()" title="Dismiss / Close Alarm Card" style="position: absolute; top: 12px; right: 14px; background: none; border: none; font-size: 1.4rem; color: #DC2626; cursor: pointer; padding: 2px 6px; line-height: 1; font-weight: 700;">&times;</button>
+
     <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px;">
-        <div style="display: flex; align-items: flex-start; gap: 14px;">
-            <div style="background: #DC2626; color: #FFF; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 900; flex-shrink: 0;">
+        <div style="display: flex; align-items: flex-start; gap: 14px; flex: 1; min-width: 300px;">
+            <div id="spotlight-fault-icon" style="background: #DC2626; color: #FFF; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 900; flex-shrink: 0;">
                 !
             </div>
             <div>
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-                    <span style="background: #DC2626; color: #FFF; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;">CRITICAL ACTIVE FAULT</span>
-                    <strong style="font-size: 1.1rem; color: #DC2626;">Grid Under-voltage Trip — AC active power dropped to 0.00 kW.</strong>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap;">
+                    <span id="spotlight-fault-badge" style="background: #DC2626; color: #FFF; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;">CRITICAL ACTIVE FAULT</span>
+                    <strong id="spotlight-fault-title" style="font-size: 1.1rem; color: #DC2626;">Grid Under-voltage Trip — AC active power dropped to 0.00 kW.</strong>
                 </div>
-                <div style="font-size: 0.85rem; color: var(--text-main); line-height: 1.4;">
+                <div id="spotlight-fault-desc" style="font-size: 0.85rem; color: var(--text-main); line-height: 1.4;">
                     Inverter output disconnect triggered. Immediate operator acknowledgment and grid feeder inspection required.
                 </div>
                 <div style="display: flex; gap: 18px; margin-top: 10px; font-size: 0.82rem; flex-wrap: wrap;">
                     <div><strong>Target Device:</strong> <span class="font-mono">Inverter 08 (Inv-08 / 320 kWp)</span></div>
                     <div><strong>Status Code:</strong> <span class="font-mono" style="color: #DC2626; font-weight: 700;">ERR-402 (Grid Under-voltage)</span></div>
-                    <div><strong>Timestamp:</strong> <span class="font-mono">01:32:05 PM IST</span></div>
-                    <div><strong>Alarm State:</strong> <span style="color: #DC2626; font-weight: 800;">ACTIVE / UNACKNOWLEDGED</span></div>
+                    <div><strong>Timestamp:</strong> <span class="font-mono" id="spotlight-fault-time">01:32:05 PM IST</span></div>
+                    <div><strong>Alarm State:</strong> <span id="spotlight-fault-state" style="color: #DC2626; font-weight: 800;">ACTIVE / UNACKNOWLEDGED</span></div>
                 </div>
             </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <a href="inverter_overview.html?inverter=INV-08" class="export-btn export-btn-primary" style="padding: 10px 18px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-                <span>Inspect Inverter 08 Plots & Tables ➔</span>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+            <button type="button" id="btn-dismiss-spotlight-alarm" onclick="dismissActiveSpotlightAlarm()" class="export-btn" style="padding: 9px 16px; font-weight: 800; background: #DC2626; color: #FFF; border: none; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35); cursor: pointer;" title="Dismiss alarm banner and silence emergency siren">
+                <span>✕ Dismiss & Silence Siren</span>
+            </button>
+            <button type="button" id="btn-ack-spotlight-alarm" onclick="acknowledgeActiveSpotlightAlarm()" class="export-btn" style="padding: 9px 16px; font-weight: 700; background: #D97706; color: #FFF; border: none; display: flex; align-items: center; gap: 6px; cursor: pointer;" title="Acknowledge fault event">
+                <span>✓ Acknowledge Event</span>
+            </button>
+            <a href="{% url 'inverter_overview' %}?inverter=INV-08" class="export-btn export-btn-primary" style="padding: 9px 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; text-decoration: none;">
+                <span>Inspect Inverter 08 Plots ➔</span>
             </a>
         </div>
     </div>
@@ -319,5 +334,81 @@ function acknowledgeAlarm(id) {
         }
     } catch(e) {}
 }
+
+// Dedicated Active Spotlight Fault Controls
+function dismissActiveSpotlightAlarm() {
+    if (typeof stopSirenSound === 'function') stopSirenSound();
+    const card = document.getElementById('spotlight-active-fault-card');
+    if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+            card.style.display = 'none';
+        }, 300);
+    }
+    localStorage.setItem('sats_active_alarm_dismissed', 'true');
+    const activeKpi = document.getElementById('kpi-active-alarms');
+    if (activeKpi) activeKpi.innerText = '0';
+    const badge = document.getElementById('alert-counter-badge');
+    if (badge) badge.style.display = 'none';
+    if (typeof showToast === 'function') {
+        showToast('Active critical alarm dismissed & emergency siren silenced.');
+    }
+}
+
+function acknowledgeActiveSpotlightAlarm() {
+    if (typeof stopSirenSound === 'function') stopSirenSound();
+    const card = document.getElementById('spotlight-active-fault-card');
+    const badge = document.getElementById('spotlight-fault-badge');
+    const state = document.getElementById('spotlight-fault-state');
+    const title = document.getElementById('spotlight-fault-title');
+    const icon = document.getElementById('spotlight-fault-icon');
+    
+    if (badge) {
+        badge.innerText = 'ACKNOWLEDGED';
+        badge.style.background = '#10B981';
+    }
+    if (state) {
+        state.innerText = 'ACKNOWLEDGED & SILENCED';
+        state.style.color = '#10B981';
+    }
+    if (title) {
+        title.style.color = 'var(--text-main)';
+    }
+    if (icon) {
+        icon.innerText = '✓';
+        icon.style.background = '#10B981';
+    }
+    if (card) {
+        card.style.borderColor = '#10B981';
+        card.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.04) 100%)';
+        card.style.boxShadow = '0 4px 14px rgba(16, 185, 129, 0.15)';
+    }
+    localStorage.setItem('sats_active_alarm_acknowledged', 'true');
+    const activeKpi = document.getElementById('kpi-active-alarms');
+    if (activeKpi) activeKpi.innerText = '0';
+    const ackKpi = document.getElementById('kpi-ack-alarms');
+    if (ackKpi) {
+        const current = parseInt(ackKpi.innerText) || 7;
+        ackKpi.innerText = (current + 1).toString();
+    }
+    const badgeTop = document.getElementById('alert-counter-badge');
+    if (badgeTop) badgeTop.style.display = 'none';
+    if (typeof showToast === 'function') {
+        showToast('Fault acknowledged by operator. Siren silenced.');
+    }
+}
+
+// Restore saved spotlight state on page load
+document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('sats_active_alarm_dismissed') === 'true') {
+        const card = document.getElementById('spotlight-active-fault-card');
+        if (card) card.style.display = 'none';
+        const activeKpi = document.getElementById('kpi-active-alarms');
+        if (activeKpi) activeKpi.innerText = '0';
+    } else if (localStorage.getItem('sats_active_alarm_acknowledged') === 'true') {
+        acknowledgeActiveSpotlightAlarm();
+    }
+});
 </script>
 {% endblock %}

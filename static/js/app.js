@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initPlantPhotoManager();
     initDashboardNavFilter();
     initProfileManager();
+    initWebsiteTracking();
 });
 
 // =========================================================================
@@ -1287,7 +1288,7 @@ function initExpiringShareSystem() {
         btnWhatsAppDirect.addEventListener('click', () => {
             const displayEl = document.getElementById('display-share-url');
             const url = displayEl ? displayEl.innerText : window.location.href;
-            const text = `☀️ *Sunscrap Solar SCADA — Temporary Access Portal*\n🔗 Secure Link: ${url}\n⏳ Valid for: ${currentShareExpiryHours} Hours\n🔒 Authorized by Plant Administration`;
+            const text = `☀️ *SATs Solar SCADA — Temporary Access Portal*\n🔗 Secure Link: ${url}\n⏳ Valid for: ${currentShareExpiryHours} Hours\n🌐 Website: https://satsolutions.in/\n📧 Support: info.sats123@gmail.com\n🔒 Authorized by SAT Solutions Administration`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         });
     }
@@ -1414,11 +1415,11 @@ window.savePlantMetadata = function(event) {
     if (event) event.preventDefault();
 
     const metadata = {
-        name: document.getElementById('plant-meta-name')?.value || 'Sunscrap Recyclers PVT LTD',
+        name: document.getElementById('plant-meta-name')?.value || 'SAT Solutions (SATs)',
         capacity: document.getElementById('plant-meta-capacity')?.value || '3,900 kW AC / 4,640 kWp DC',
-        location: document.getElementById('plant-meta-location')?.value || 'Sanand GIDC Phase II, Gujarat',
+        location: document.getElementById('plant-meta-location')?.value || 'Plot 148, Sanand GIDC Phase II, Ahmedabad, Gujarat, India',
         owner: document.getElementById('plant-meta-owner')?.value || 'Darshan Patel',
-        contact: document.getElementById('plant-meta-contact')?.value || 'darshan@sunscrap.local',
+        contact: document.getElementById('plant-meta-contact')?.value || 'info.sats123@gmail.com (+91 94256 55845)',
         lat: document.getElementById('plant-meta-lat')?.value || '22.9868',
         lng: document.getElementById('plant-meta-lng')?.value || '72.3787',
         timezone: document.getElementById('plant-meta-tz')?.value || 'Asia/Kolkata',
@@ -2008,4 +2009,59 @@ window.handleProfileUpdate = function(event) {
         return false;
     }
 };
+
+// =========================================================================
+// 21. Real-Time Website Visitor & Telemetry Tracking Engine
+// =========================================================================
+function initWebsiteTracking() {
+    try {
+        // 1. Session tracking
+        let sessionId = sessionStorage.getItem('sats_session_id');
+        if (!sessionId) {
+            sessionId = 'SATS-SESS-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+            sessionStorage.setItem('sats_session_id', sessionId);
+        }
+
+        // 2. Increment pageview counter
+        let hitCount = parseInt(localStorage.getItem('sats_page_views') || '1428', 10);
+        hitCount += 1;
+        localStorage.setItem('sats_page_views', hitCount.toString());
+
+        // 3. Update DOM counters
+        const countElements = document.querySelectorAll('#tracker-pageviews-count');
+        countElements.forEach(el => {
+            el.innerText = hitCount.toLocaleString() + ' hits';
+        });
+
+        // 4. Capture visitor telemetry
+        const telemetry = {
+            sessionId: sessionId,
+            url: window.location.pathname + window.location.search,
+            referrer: document.referrer || 'Direct Station Access',
+            timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB') + ' IST',
+            iso: new Date().toISOString(),
+            platform: navigator.platform || 'Unknown OS',
+            userAgent: navigator.userAgent.split(' ')[0],
+            screenResolution: `${window.screen.width}x${window.screen.height}`,
+            colorDepth: `${window.screen.colorDepth}-bit`,
+            language: navigator.language || 'en-US',
+            connectionType: navigator.connection ? navigator.connection.effectiveType : '4g/Broadband',
+            siteDomain: 'https://satsolutions.in/'
+        };
+
+        let logs = JSON.parse(localStorage.getItem('sats_visitor_telemetry') || '[]');
+        logs.unshift(telemetry);
+        localStorage.setItem('sats_visitor_telemetry', JSON.stringify(logs.slice(0, 50)));
+
+        window.getVisitorTrackingSummary = function() {
+            return {
+                totalHits: hitCount,
+                currentSession: sessionId,
+                recentVisits: logs
+            };
+        };
+    } catch(err) {
+        console.warn('Website tracking init bypassed:', err);
+    }
+}
 

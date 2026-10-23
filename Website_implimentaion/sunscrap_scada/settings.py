@@ -122,10 +122,12 @@ LOGOUT_REDIRECT_URL = '/login'
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = BASE_DIR / 'data' / 'captured_emails'
 
-# Plant-wide specifications
+# Plant-wide specifications & SATs Branding
 DATA_SOURCE = os.environ.get('DATA_SOURCE', 'demo')  # 'demo' or 'live'
-PLANT_ORGANIZATION = "Sunscrap Recyclers PVT LTD"
-PLANT_NAME = "Sunscrap Solar Plant"
+PLANT_ORGANIZATION = "SAT Solutions (SATs)"
+PLANT_NAME = "SATs Solar Plant"
+PLANT_WEBSITE = "https://satsolutions.in/"
+PLANT_EMAIL = "info.sats123@gmail.com"
 PLANT_AC_CAPACITY_KW = 3900.0
 PLANT_DC_CAPACITY_KWP = 4640.0
 PLANT_TIMEZONE = "Asia/Kolkata"
