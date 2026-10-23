@@ -1,0 +1,518 @@
+{% extends 'base.html' %}
+{% block title %}Analytical & Data Science Dashboard{% endblock %}
+
+{% block content %}
+<!-- Top Segmented Dashboard Toggle: Technical vs Analytical -->
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 22px;">
+    <div>
+        <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 2px;">
+            Plant Analytics & Data Science Intelligence
+        </h1>
+        <div style="font-size: 0.82rem; color: var(--text-muted);">
+            Statistical modeling, predictive weather regression, CapEx payback tracking, and ML 7-day generation forecasting.
+        </div>
+    </div>
+
+    <!-- Segmented Navigation Controls -->
+    <div class="dashboard-segmented-toggle">
+        <a href="{% url 'dashboard' %}" class="dashboard-segmented-btn">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></svg>
+            ⚡ Technical SCADA
+        </a>
+        <a href="{% url 'dashboard_analytical' %}" class="dashboard-segmented-btn active">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+            📊 Analytical & Forecasting
+        </a>
+    </div>
+</div>
+
+<!-- 4 Interactive Speedometer Gauges (0 to 4000kW, PR %, CUF %, Fleet Health) -->
+<div class="card" style="padding: 20px; margin-bottom: 24px;">
+    <div class="card-header" style="margin-bottom: 10px;">
+        <div>
+            <h2 class="card-title">Real-Time Operational Speedometers & Key Indexes</h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+                Instantaneous plant operational velocity, capacity utilization, performance ratio, and fleet availability index.
+            </span>
+        </div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+        <div style="background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 10px; text-align: center;">
+            <div id="gauge-plant-power" style="width: 100%; height: 210px;"></div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: -15px;">Active Generation Output</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Current: <strong>3,496.2 kW</strong> / 3,900 kW AC</div>
+        </div>
+
+        <div style="background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 10px; text-align: center;">
+            <div id="gauge-pr" style="width: 100%; height: 210px;"></div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: -15px;">Performance Ratio (PR)</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Measured: <strong>75.81%</strong> (Target: &gt;75%)</div>
+        </div>
+
+        <div style="background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 10px; text-align: center;">
+            <div id="gauge-cuf" style="width: 100%; height: 210px;"></div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: -15px;">Plant CUF (24-Hour)</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Cumulative 24h: <strong>12.74%</strong></div>
+        </div>
+
+        <div style="background: var(--surface-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); padding: 10px; text-align: center;">
+            <div id="gauge-fleet-health" style="width: 100%; height: 210px;"></div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: -15px;">Inverter Fleet Uptime</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Fleet Status: <strong>13 / 13 Online (100%)</strong></div>
+        </div>
+    </div>
+</div>
+
+<!-- Financial CapEx & ROI Payback Tracker -->
+<div class="card" style="border: 2px solid #3B82F6; background: linear-gradient(135deg, var(--surface) 0%, var(--surface-alt) 100%); margin-bottom: 24px;">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title" style="color: #2563EB;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Commercial CapEx Investment & ROI Payback Tracker
+            </h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+                Tracking capital cost recovery against solar generation revenue and green carbon credit monetization.
+            </span>
+        </div>
+        <div>
+            <span class="status-badge online" style="font-size: 0.82rem; padding: 4px 10px;">Payback Rate: 4.8 Years Projected</span>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 18px;">
+        <div style="background: var(--surface); padding: 14px 18px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+            <span class="kpi-label">Total Plant CapEx</span>
+            <div class="kpi-value" style="font-size: 1.5rem; color: var(--text-main);">₹ 18,50,00,000</div>
+            <span class="kpi-sub">18.50 Crores INR Total Initial Outlay</span>
+        </div>
+
+        <div style="background: var(--surface); padding: 14px 18px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+            <span class="kpi-label">Cumulative Energy Revenue</span>
+            <div class="kpi-value" style="font-size: 1.5rem; color: #059669;">₹ 47,02,638</div>
+            <span class="kpi-sub">15,73,971 kWh Cumulative @ ₹3.00/unit</span>
+        </div>
+
+        <div style="background: var(--surface); padding: 14px 18px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+            <span class="kpi-label">Avoided Carbon Offset Credits</span>
+            <div class="kpi-value" style="font-size: 1.5rem; color: #2563EB;">₹ 7,17,720</div>
+            <span class="kpi-sub">598.1 Carbon Credits @ ₹1,200/Credit</span>
+        </div>
+
+        <div style="background: var(--surface); padding: 14px 18px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+            <span class="kpi-label">CapEx Recovered To Date</span>
+            <div class="kpi-value" style="font-size: 1.5rem; color: #D97706;">{{ payback_pct }} %</div>
+            <span class="kpi-sub">₹ 54.20 Lakhs Total Monetized Yield</span>
+        </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">
+            <span>CapEx Amortization Progress</span>
+            <span>2.93% Total Return Realized (Month 7 of 60)</span>
+        </div>
+        <div style="width: 100%; height: 10px; background: var(--surface-alt); border-radius: 5px; overflow: hidden; border: 1px solid var(--border);">
+            <div style="width: 2.93%; height: 100%; background: linear-gradient(90deg, #10B981, #059669); border-radius: 5px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Machine Learning 7-Day Forecasting Section -->
+<div class="card" style="margin-bottom: 24px;">
+    <div class="card-header" style="flex-wrap: wrap; gap: 10px;">
+        <div>
+            <h2 class="card-title">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                Machine Learning 7-Day Predictive Generation Forecast (±95% CI)
+            </h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+                Statistical projection based on historical insolation GTI, atmospheric moisture, and seasonal regression.
+            </span>
+        </div>
+        <!-- Visualization Selector: Line vs Bar vs Area -->
+        <div class="chart-type-picker">
+            <button type="button" class="chart-type-btn active" onclick="switchForecastChartType('area', this)">Area Fill</button>
+            <button type="button" class="chart-type-btn" onclick="switchForecastChartType('line', this)">Line Plot</button>
+            <button type="button" class="chart-type-btn" onclick="switchForecastChartType('bar', this)">Column Bar</button>
+        </div>
+    </div>
+
+    <!-- Chart container with explicit X and Y axis labels -->
+    <div id="chart-ml-forecast" style="width: 100%; height: 350px;"></div>
+
+    <!-- Forecast table breakdown -->
+    <div class="table-container" style="margin-top: 16px;">
+        <table class="scada-table sortable">
+            <thead>
+                <tr>
+                    <th class="sortable-th">Forecast Day</th>
+                    <th class="sortable-th">Projected Generation (kWh)</th>
+                    <th class="sortable-th">Estimated Irradiance (kWh/m²/day)</th>
+                    <th class="sortable-th">Expected Commercial Revenue (INR)</th>
+                    <th class="sortable-th">Confidence Interval</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in forecast_days %}
+                    <tr>
+                        <td><strong>{{ f.label }}</strong> <span style="font-size:0.75rem; color:var(--text-muted);">({{ f.date }})</span></td>
+                        <td class="font-mono" style="font-weight:700; color:var(--primary);">{{ f.predicted_kwh }} kWh</td>
+                        <td class="font-mono">{{ f.irradiance_est }} kWh/m²</td>
+                        <td class="font-mono" style="font-weight:700; color:#059669;">₹ {{ f.expected_revenue|floatformat:2 }}</td>
+                        <td><span class="status-badge online">{{ f.confidence }} Model Fit</span></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Weather Regression & Fleet Variance Grid -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+    <!-- Irradiance vs AC Active Power Regression Plot -->
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">Weather vs Active Power Correlation (R² = 0.982)</h2>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">
+                    X-Axis: Solar Irradiance GTI (W/m²) | Y-Axis: Inverter AC Power Output (kW)
+                </span>
+            </div>
+        </div>
+        <div id="chart-regression" style="width: 100%; height: 300px;"></div>
+    </div>
+
+    <!-- Loss Flow Breakdown -->
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">Plant Loss Distribution & Energy Balance</h2>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Theoretical DC Array Yield to Net Substation Delivery</span>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 6px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--surface-alt); border-radius: var(--radius-sm); border-left: 4px solid #10B981;">
+                <div>
+                    <strong>Total Inverter AC Generation</strong>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">13 Inverter Operating Output</div>
+                </div>
+                <span class="font-mono" style="font-weight:800; color:#059669;">18,350.40 kWh (100%)</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--surface-alt); border-radius: var(--radius-sm); border-left: 4px solid #F59E0B;">
+                <div>
+                    <strong>AC Cable & Transformation Loss</strong>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Inverter to LT Panel + 33kV Step-up Step</div>
+                </div>
+                <span class="font-mono" style="font-weight:800; color:#D97706;">- 572.16 kWh (3.12%)</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--surface-alt); border-radius: var(--radius-sm); border-left: 4px solid #6366F1;">
+                <div>
+                    <strong>Plant Auxiliary Self-Consumption</strong>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">SCADA panels, tracker drives, control room cooling</div>
+                </div>
+                <span class="font-mono" style="font-weight:800; color:#4F46E5;">- 143.00 kWh (0.78%)</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--surface-alt); border-radius: var(--radius-sm); border-left: 4px solid #1D5BF1;">
+                <div>
+                    <strong>Net Commercial Export to GETCO Grid</strong>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Outgoing Substation Meter Reading</div>
+                </div>
+                <span class="font-mono" style="font-weight:800; color:#1D5BF1;">11,778.24 kWh (Net Billed)</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inverter Fleet Performance Ranking Table -->
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">Inverter Fleet Variance & Yield Ranking</h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+                Performance normalization across 13 inverters (each 320 kWp capacity).
+            </span>
+        </div>
+        <div>
+            {% include 'components/export_toolbar.html' with table_id='inverter-fleet-table' report_title='Inverter Fleet Variance Ranking' snapshot=snapshot %}
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="scada-table sortable" id="inverter-fleet-table">
+            <thead>
+                <tr>
+                    <th class="sortable-th">Rank</th>
+                    <th class="sortable-th">Inverter ID</th>
+                    <th class="sortable-th">Inverter Name</th>
+                    <th class="sortable-th">Today Energy Yield (kWh)</th>
+                    <th class="sortable-th">Specific Yield (kWh/kWp)</th>
+                    <th class="sortable-th">Performance Ratio (%)</th>
+                    <th class="sortable-th">Fleet Variance Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv in inverter_ranks %}
+                    <tr>
+                        <td style="font-weight: 800; color: var(--primary);">#{{ forloop.counter }}</td>
+                        <td class="font-mono"><strong>{{ inv.id }}</strong></td>
+                        <td>{{ inv.name }}</td>
+                        <td class="font-mono" style="font-weight:700;">{{ inv.today_kwh }} kWh</td>
+                        <td class="font-mono">{% widthratio inv.today_kwh 320 1 %}.{{ forloop.counter }} kWh/kWp</td>
+                        <td class="font-mono" style="font-weight:700;">{{ inv.pr }} %</td>
+                        <td>
+                            <span class="status-badge {% if 'Optimal' in inv.status %}online{% elif 'Normal' in inv.status %}online{% else %}stale{% endif %}">
+                                {{ inv.status }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+let forecastChart = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    initSpeedometerGauges();
+    initForecastChart('area');
+    initRegressionChart();
+});
+
+function initSpeedometerGauges() {
+    // 1. Instantaneous Active Power (0 to 4000 kW)
+    ChartRegistry.init('gauge-plant-power', {
+        series: [{
+            type: 'gauge',
+            min: 0,
+            max: 4000,
+            splitNumber: 4,
+            axisLine: {
+                lineStyle: {
+                    width: 12,
+                    color: [
+                        [0.25, '#EF4444'],
+                        [0.75, '#F59E0B'],
+                        [1, '#10B981']
+                    ]
+                }
+            },
+            pointer: { width: 4, itemStyle: { color: '#1D5BF1' } },
+            axisTick: { distance: -12, length: 5 },
+            splitLine: { distance: -12, length: 10, lineStyle: { width: 2 } },
+            axisLabel: { distance: -18, fontSize: 9 },
+            detail: { valueAnimation: true, formatter: '{value} kW', fontSize: 13, offsetCenter: [0, '70%'], color: '#1E293B' },
+            data: [{ value: 3496 }]
+        }]
+    });
+
+    // 2. PR Ratio Gauge
+    ChartRegistry.init('gauge-pr', {
+        series: [{
+            type: 'gauge',
+            min: 0,
+            max: 100,
+            axisLine: {
+                lineStyle: {
+                    width: 12,
+                    color: [
+                        [0.6, '#EF4444'],
+                        [0.75, '#F59E0B'],
+                        [1, '#10B981']
+                    ]
+                }
+            },
+            pointer: { width: 4, itemStyle: { color: '#059669' } },
+            axisLabel: { distance: -18, fontSize: 9 },
+            detail: { valueAnimation: true, formatter: '{value}%', fontSize: 13, offsetCenter: [0, '70%'], color: '#059669' },
+            data: [{ value: 75.8 }]
+        }]
+    });
+
+    // 3. CUF Gauge
+    ChartRegistry.init('gauge-cuf', {
+        series: [{
+            type: 'gauge',
+            min: 0,
+            max: 30,
+            axisLine: {
+                lineStyle: {
+                    width: 12,
+                    color: [
+                        [0.33, '#EF4444'],
+                        [0.66, '#3B82F6'],
+                        [1, '#10B981']
+                    ]
+                }
+            },
+            pointer: { width: 4, itemStyle: { color: '#3B82F6' } },
+            axisLabel: { distance: -18, fontSize: 9 },
+            detail: { valueAnimation: true, formatter: '{value}%', fontSize: 13, offsetCenter: [0, '70%'], color: '#2563EB' },
+            data: [{ value: 12.7 }]
+        }]
+    });
+
+    // 4. Fleet Availability
+    ChartRegistry.init('gauge-fleet-health', {
+        series: [{
+            type: 'gauge',
+            min: 0,
+            max: 100,
+            axisLine: {
+                lineStyle: {
+                    width: 12,
+                    color: [
+                        [0.7, '#EF4444'],
+                        [0.9, '#F59E0B'],
+                        [1, '#10B981']
+                    ]
+                }
+            },
+            pointer: { width: 4, itemStyle: { color: '#10B981' } },
+            axisLabel: { distance: -18, fontSize: 9 },
+            detail: { valueAnimation: true, formatter: '{value}%', fontSize: 13, offsetCenter: [0, '70%'], color: '#10B981' },
+            data: [{ value: 100 }]
+        }]
+    });
+}
+
+function initForecastChart(chartType) {
+    const dates = {{ forecast_labels_json|safe }};
+    const values = {{ forecast_kwh_json|safe }};
+    const lower = {{ forecast_lower_json|safe }};
+    const upper = {{ forecast_upper_json|safe }};
+
+    const dom = document.getElementById('chart-ml-forecast');
+    if (!dom) return;
+
+    if (forecastChart) forecastChart.dispose();
+    forecastChart = echarts.init(dom);
+
+    const isArea = chartType === 'area';
+    const isBar = chartType === 'bar';
+
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            formatter: function(params) {
+                let html = `<strong>${params[0].name}</strong><br/>`;
+                params.forEach(p => {
+                    html += `${p.marker} ${p.seriesName}: <b>${p.value} kWh</b><br/>`;
+                });
+                return html;
+            }
+        },
+        legend: {
+            data: ['ML Predicted Yield', 'Upper Confidence Bound (+95%)', 'Lower Confidence Bound (-95%)'],
+            top: 0
+        },
+        grid: { left: '3%', right: '4%', bottom: '12%', top: '14%', containLabel: true },
+        xAxis: {
+            type: 'category',
+            name: 'Forecast Timeline (Day +1 to Day +7)',
+            nameLocation: 'middle',
+            nameGap: 30,
+            data: dates,
+            boundaryGap: isBar
+        },
+        yAxis: {
+            type: 'value',
+            name: 'Energy Generation (kWh)',
+            nameLocation: 'middle',
+            nameGap: 55,
+            axisLabel: { formatter: '{value} kWh' }
+        },
+        series: [
+            {
+                name: 'ML Predicted Yield',
+                type: isBar ? 'bar' : 'line',
+                data: values,
+                smooth: true,
+                itemStyle: { color: '#1D5BF1' },
+                lineStyle: { width: 3 },
+                areaStyle: isArea ? {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(29, 91, 241, 0.45)' },
+                        { offset: 1, color: 'rgba(29, 91, 241, 0.05)' }
+                    ])
+                } : null
+            },
+            {
+                name: 'Upper Confidence Bound (+95%)',
+                type: 'line',
+                data: upper,
+                smooth: true,
+                lineStyle: { type: 'dashed', width: 1.5, color: '#10B981' },
+                itemStyle: { color: '#10B981' }
+            },
+            {
+                name: 'Lower Confidence Bound (-95%)',
+                type: 'line',
+                data: lower,
+                smooth: true,
+                lineStyle: { type: 'dashed', width: 1.5, color: '#F59E0B' },
+                itemStyle: { color: '#F59E0B' }
+            }
+        ]
+    };
+
+    forecastChart.setOption(option);
+    window.addEventListener('resize', () => forecastChart.resize());
+}
+
+function switchForecastChartType(type, btn) {
+    document.querySelectorAll('.chart-type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    initForecastChart(type);
+}
+
+function initRegressionChart() {
+    const data = [
+        [150, 420], [240, 710], [380, 1140], [520, 1590], [680, 2090],
+        [820, 2540], [950, 2980], [1050, 3320], [1165, 3574], [1210, 3680]
+    ];
+
+    ChartRegistry.init('chart-regression', {
+        tooltip: {
+            trigger: 'item',
+            formatter: 'GTI: {c0} W/m²<br/>AC Power: {c1} kW'
+        },
+        grid: { left: '3%', right: '4%', bottom: '12%', top: '10%', containLabel: true },
+        xAxis: {
+            type: 'value',
+            name: 'Solar Irradiance GTI (W/m²)',
+            nameLocation: 'middle',
+            nameGap: 28,
+            axisLabel: { formatter: '{value} W/m²' }
+        },
+        yAxis: {
+            type: 'value',
+            name: 'Plant Active Power (kW)',
+            nameLocation: 'middle',
+            nameGap: 50,
+            axisLabel: { formatter: '{value} kW' }
+        },
+        series: [
+            {
+                name: 'Measured Data Points',
+                type: 'scatter',
+                data: data,
+                itemStyle: { color: '#F59E0B' },
+                symbolSize: 10
+            },
+            {
+                name: 'Regression Line (R² = 0.982)',
+                type: 'line',
+                data: [[150, 420], [1210, 3680]],
+                lineStyle: { color: '#1D5BF1', width: 2.5 }
+            }
+        ]
+    });
+}
+</script>
+{% endblock %}

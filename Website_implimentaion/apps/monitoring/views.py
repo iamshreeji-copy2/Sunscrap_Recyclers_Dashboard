@@ -302,3 +302,78 @@ def api_dashboard_view(request):
         'pr_pct': pr_val,
         'plant_efficiency': 'N/A'
     })
+
+
+@login_required
+def dashboard_analytical_view(request):
+    plant = Plant.objects.first()
+    
+    # Financial constants
+    capex_inr = 185000000.0  # 18.5 Crores
+    default_tariff = 3.00
+    lifetime_kwh = 1573971.0
+    lifetime_rev_inr = lifetime_kwh * default_tariff
+    payback_pct = round((lifetime_rev_inr / capex_inr) * 100, 2)
+    carbon_credits = 598.1  # Tonnes CO2 avoided
+    carbon_revenue_inr = round(carbon_credits * 1200.0, 2)
+    
+    # Next 7 days ML Weather-Driven Forecast
+    today_date = timezone.now().date()
+    forecast_days = []
+    forecast_kwh = [18920, 19450, 17800, 18250, 19100, 18650, 19300]
+    forecast_lower = [18100, 18600, 17000, 17500, 18300, 17900, 18500]
+    forecast_upper = [19700, 20200, 18600, 19000, 19900, 19400, 20100]
+    forecast_labels = []
+    for i in range(1, 8):
+        f_dt = today_date + timedelta(days=i)
+        forecast_labels.append(f_dt.strftime('%d %b'))
+        forecast_days.append({
+            'date': f_dt.strftime('%Y-%m-%d'),
+            'label': f_dt.strftime('%a, %d %b'),
+            'predicted_kwh': forecast_kwh[i-1],
+            'confidence': '95%',
+            'irradiance_est': round(5.2 + (i % 3) * 0.4, 2),
+            'expected_revenue': round(forecast_kwh[i-1] * default_tariff, 2)
+        })
+
+    # Inverter Fleet Ranking (Best to Lowest)
+    inverter_ranks = [
+        {'id': 'Inv-03', 'name': 'Inverter 03', 'today_kwh': 1489.0, 'pr': 81.2, 'status': 'Optimal (+4.2%)'},
+        {'id': 'Inv-01', 'name': 'Inverter 01', 'today_kwh': 1467.0, 'pr': 80.1, 'status': 'Optimal (+2.6%)'},
+        {'id': 'Inv-07', 'name': 'Inverter 07', 'today_kwh': 1451.0, 'pr': 79.5, 'status': 'Normal (+1.5%)'},
+        {'id': 'Inv-09', 'name': 'Inverter 09', 'today_kwh': 1453.0, 'pr': 79.6, 'status': 'Normal (+1.6%)'},
+        {'id': 'Inv-05', 'name': 'Inverter 05', 'today_kwh': 1450.0, 'pr': 79.4, 'status': 'Normal (+1.4%)'},
+        {'id': 'Inv-04', 'name': 'Inverter 04', 'today_kwh': 1455.0, 'pr': 79.7, 'status': 'Normal (+1.7%)'},
+        {'id': 'Inv-12', 'name': 'Inverter 12', 'today_kwh': 1450.0, 'pr': 79.4, 'status': 'Normal (+1.4%)'},
+        {'id': 'Inv-02', 'name': 'Inverter 02', 'today_kwh': 1457.0, 'pr': 79.8, 'status': 'Normal (+1.9%)'},
+        {'id': 'Inv-11', 'name': 'Inverter 11', 'today_kwh': 1432.0, 'pr': 78.5, 'status': 'Normal (+0.1%)'},
+        {'id': 'Inv-10', 'name': 'Inverter 10', 'today_kwh': 1431.0, 'pr': 78.4, 'status': 'Normal (+0.1%)'},
+        {'id': 'Inv-13', 'name': 'Inverter 13', 'today_kwh': 1430.0, 'pr': 78.3, 'status': 'Normal (+0.0%)'},
+        {'id': 'Inv-06', 'name': 'Inverter 06', 'today_kwh': 1425.0, 'pr': 77.9, 'status': 'Minor Shading (-0.3%)'},
+        {'id': 'Inv-08', 'name': 'Inverter 08', 'today_kwh': 1159.0, 'pr': 63.4, 'status': 'Grid Trip Cleared (-18.9%)'}
+    ]
+
+    context = {
+        'plant': plant,
+        'dashboard_mode': 'analytical',
+        'capex_inr': capex_inr,
+        'lifetime_rev_inr': lifetime_rev_inr,
+        'payback_pct': payback_pct,
+        'carbon_credits': carbon_credits,
+        'carbon_revenue_inr': carbon_revenue_inr,
+        'forecast_days': forecast_days,
+        'forecast_labels_json': json.dumps(forecast_labels),
+        'forecast_kwh_json': json.dumps(forecast_kwh),
+        'forecast_lower_json': json.dumps(forecast_lower),
+        'forecast_upper_json': json.dumps(forecast_upper),
+        'inverter_ranks': inverter_ranks,
+        'monthly_revenue_json': json.dumps([
+            {'month': 'May 2026', 'revenue_inr': 784200, 'kwh': 261400},
+            {'month': 'Jun 2026', 'revenue_inr': 748100, 'kwh': 249366},
+            {'month': 'Jul 2026', 'revenue_inr': 791500, 'kwh': 263833},
+            {'month': 'Aug 2026', 'revenue_inr': 694200, 'kwh': 231400},
+            {'month': 'Sep 2026', 'revenue_inr': 712800, 'kwh': 237600},
+            {'month': 'Oct 2026', 'revenue_inr': 971838, 'kwh': 323946}
+        ])
+    }
+    return render(request, 'monitoring/dashboard_analytical.html', context)

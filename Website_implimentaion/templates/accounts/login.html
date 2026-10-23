@@ -125,6 +125,33 @@
         <h1 class="login-title">Sunscrap Solar SCADA</h1>
         <p class="login-sub">Sign in with authorized plant operator credentials</p>
 
+        <!-- Credentials Helper Card -->
+        <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:18px;">
+            <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Authorized Login Credentials</span>
+                <span style="font-size:0.7rem; color:var(--success); font-weight:700;">● Ready</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; margin-bottom:6px; padding:4px 0; border-bottom:1px dashed var(--border);">
+                <div>
+                    <strong>Admin:</strong> <code style="background:rgba(0,0,0,0.06); padding:2px 4px; border-radius:3px;">admin</code> / <code style="background:rgba(0,0,0,0.06); padding:2px 4px; border-radius:3px;">Sunscrap@2026</code>
+                </div>
+                <button type="button" onclick="fillCreds('admin', 'Sunscrap@2026')" class="export-btn" style="padding:2px 8px; font-size:0.72rem;">Fill Admin</button>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; padding:4px 0;">
+                <div>
+                    <strong>Viewer:</strong> <code style="background:rgba(0,0,0,0.06); padding:2px 4px; border-radius:3px;">viewer</code> / <code style="background:rgba(0,0,0,0.06); padding:2px 4px; border-radius:3px;">Viewer@2026</code>
+                </div>
+                <button type="button" onclick="fillCreds('viewer', 'Viewer@2026')" class="export-btn" style="padding:2px 8px; font-size:0.72rem;">Fill Viewer</button>
+            </div>
+        </div>
+
+        <script>
+        function fillCreds(u, p) {
+            document.getElementById('username').value = u;
+            document.getElementById('password').value = p;
+        }
+        </script>
+
         {% if messages %}
             <div style="margin-bottom: 16px;">
                 {% for msg in messages %}

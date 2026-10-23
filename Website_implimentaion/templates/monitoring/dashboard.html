@@ -1,7 +1,29 @@
 {% extends 'base.html' %}
-{% block title %}Plant Dashboard{% endblock %}
+{% block title %}Plant Dashboard (Technical SCADA){% endblock %}
 
 {% block content %}
+<!-- Top Segmented Dashboard Toggle: Technical vs Analytical -->
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px;">
+    <div>
+        <h1 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin-bottom: 2px;">
+            Technical SCADA Operational Dashboard
+        </h1>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">
+            Real-time telemetry, 13 inverter MPPT strings, Outgoing MFM grid power, and Kipp & Zonen WMS sensors.
+        </div>
+    </div>
+    <div class="dashboard-segmented-toggle">
+        <a href="{% url 'dashboard' %}" class="dashboard-segmented-btn active">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></svg>
+            ⚡ Technical SCADA
+        </a>
+        <a href="{% url 'dashboard_analytical' %}" class="dashboard-segmented-btn">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+            📊 Analytical & Forecasting
+        </a>
+    </div>
+</div>
+
 <!-- Screenshot Parity Notification Banners -->
 <div class="banner-info-otp">
     <div style="display: flex; align-items: center; gap: 10px;">
@@ -318,6 +340,9 @@ document.addEventListener('DOMContentLoaded', () => {
         grid: { left: '3%', right: '4%', bottom: '10%', top: '14%', containLabel: true },
         xAxis: {
             type: 'category',
+            name: 'Timeline (15m Intervals IST)',
+            nameLocation: 'middle',
+            nameGap: 30,
             data: times,
             boundaryGap: false
         },
@@ -325,12 +350,16 @@ document.addEventListener('DOMContentLoaded', () => {
             {
                 type: 'value',
                 name: 'Active Power (kW)',
+                nameLocation: 'middle',
+                nameGap: 55,
                 position: 'left',
                 axisLabel: { formatter: '{value} kW' }
             },
             {
                 type: 'value',
-                name: 'Irradiance (W/m²)',
+                name: 'Solar Irradiance (W/m²)',
+                nameLocation: 'middle',
+                nameGap: 45,
                 position: 'right',
                 axisLabel: { formatter: '{value} W/m²' },
                 splitLine: { show: false }
@@ -383,9 +412,21 @@ document.addEventListener('DOMContentLoaded', () => {
     ChartRegistry.init('dashboard-generation-export-chart', {
         tooltip: { trigger: 'axis' },
         legend: { data: ['Inverter Generation (kWh)', 'Meter Export (kWh)'], top: 0 },
-        grid: { left: '3%', right: '3%', bottom: '5%', top: '15%', containLabel: true },
-        xAxis: { type: 'category', data: times },
-        yAxis: { type: 'value', name: 'Energy (kWh)' },
+        grid: { left: '3%', right: '3%', bottom: '10%', top: '15%', containLabel: true },
+        xAxis: { 
+            type: 'category', 
+            name: 'Observation Intervals (15-Minute Timeline)',
+            nameLocation: 'middle',
+            nameGap: 30,
+            data: times 
+        },
+        yAxis: { 
+            type: 'value', 
+            name: 'Energy Generated / Exported (kWh)',
+            nameLocation: 'middle',
+            nameGap: 55,
+            axisLabel: { formatter: '{value} kWh' }
+        },
         series: [
             {
                 name: 'Inverter Generation (kWh)',

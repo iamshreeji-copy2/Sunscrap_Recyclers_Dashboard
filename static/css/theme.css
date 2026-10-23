@@ -1068,3 +1068,179 @@ th.sort-desc .sort-indicator {
   box-shadow: var(--shadow-sm);
 }
 
+/* ==========================================================================
+   Version v2: Floating Back-to-Top Circular Button
+   ========================================================================== */
+.btn-back-to-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1D5BF1 0%, #1E40AF 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(29, 91, 241, 0.45);
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  z-index: 1050;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.85);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.btn-back-to-top:hover {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  box-shadow: 0 6px 24px rgba(29, 91, 241, 0.65);
+  transform: translateY(-3px) scale(1.08);
+}
+
+/* ==========================================================================
+   Version v2: Segmented Dashboard Switcher (Technical vs Analytical)
+   ========================================================================== */
+.dashboard-segmented-toggle {
+  display: inline-flex;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 4px;
+  gap: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-segmented-btn {
+  padding: 7px 18px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.dashboard-segmented-btn:hover {
+  color: var(--text-main);
+}
+
+.dashboard-segmented-btn.active {
+  background: var(--primary);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(29, 91, 241, 0.35);
+}
+
+/* ==========================================================================
+   Version v2: Expiring Share Link Modal & Granular Privacy Masking
+   ========================================================================== */
+.share-token-box {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: monospace;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  word-break: break-all;
+  margin: 12px 0;
+  color: var(--text-main);
+}
+
+.privacy-mask-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.privacy-mask-item:hover {
+  background: var(--surface-alt);
+  border-color: var(--primary);
+}
+
+.privacy-mask-item input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+/* Role Based Access & Sensitive Masking */
+.viewer-mode .sensitive-admin-only {
+  display: none !important;
+}
+
+.viewer-mode .sensitive-financial {
+  filter: blur(4px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.viewer-mode-badge {
+  background: #F59E0B;
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* Speedometer & Dynamic Visualization Switcher */
+.chart-type-picker {
+  display: flex;
+  gap: 4px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+}
+
+.chart-type-btn {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.chart-type-btn:hover {
+  color: var(--text-main);
+}
+
+.chart-type-btn.active {
+  background: var(--primary);
+  color: #FFFFFF;
+}
+
+

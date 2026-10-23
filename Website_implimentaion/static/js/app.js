@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initWhatsAppSharing();
     initZipDownload();
     initAlertLogsManager();
+    initBackToTopButton();
+    initExpiringShareSystem();
+    initPlantMetadataManager();
+    initRoleSwitcher();
 });
 
 // =========================================================================
@@ -974,4 +978,307 @@ function renderAlarmLogsTable() {
             </td>
         </tr>
     `).join('');
+}
+
+// =========================================================================
+// 11. Version v2: Floating Back-to-Top Circular Button
+// =========================================================================
+function initBackToTopButton() {
+    const btn = document.getElementById('btn-back-to-top');
+    if (!btn) return;
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 280) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+    });
+
+    btn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
+// =========================================================================
+// 12. Version v2: Expiring Share Link Generator with Privacy Controls
+// =========================================================================
+let currentShareExpiryHours = 1;
+
+function initExpiringShareSystem() {
+    const btnOpen = document.getElementById('btn-open-share-modal');
+    const modalBackdrop = document.getElementById('modal-expiring-share-backdrop');
+    const btnClose = document.getElementById('btn-close-share-modal');
+    const btnCopy = document.getElementById('btn-copy-share-url');
+    const btnWhatsAppDirect = document.getElementById('btn-share-whatsapp-direct');
+
+    if (btnOpen && modalBackdrop) {
+        btnOpen.addEventListener('click', () => {
+            modalBackdrop.classList.remove('hidden');
+            generateExpiringShareUrl();
+        });
+    }
+
+    const closeModal = () => {
+        if (modalBackdrop) modalBackdrop.classList.add('hidden');
+    };
+
+    if (btnClose) btnClose.addEventListener('click', closeModal);
+    if (modalBackdrop) {
+        modalBackdrop.addEventListener('click', (e) => {
+            if (e.target === modalBackdrop) closeModal();
+        });
+    }
+
+    // Expiry duration chips
+    document.querySelectorAll('.btn-share-expiry').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.btn-share-expiry').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const exp = btn.getAttribute('data-expiry');
+            if (exp === '1h') currentShareExpiryHours = 1;
+            else if (exp === '24h') currentShareExpiryHours = 24;
+            else if (exp === '7d') currentShareExpiryHours = 168;
+            else if (exp === '30d') currentShareExpiryHours = 720;
+            else currentShareExpiryHours = 48;
+
+            generateExpiringShareUrl();
+        });
+    });
+
+    // Checkbox triggers
+    ['mask-financial', 'mask-mppt', 'mask-admin-settings'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', generateExpiringShareUrl);
+    });
+
+    // Copy action
+    if (btnCopy) {
+        btnCopy.addEventListener('click', () => {
+            const displayEl = document.getElementById('display-share-url');
+            if (displayEl) {
+                const url = displayEl.innerText;
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('Expiring share link copied to clipboard!');
+                }).catch(() => {
+                    showToast('Link copied!');
+                });
+            }
+        });
+    }
+
+    // Direct WhatsApp share of expiring link
+    if (btnWhatsAppDirect) {
+        btnWhatsAppDirect.addEventListener('click', () => {
+            const displayEl = document.getElementById('display-share-url');
+            const url = displayEl ? displayEl.innerText : window.location.href;
+            const text = `☀️ *Sunscrap Solar SCADA — Temporary Access Portal*\n🔗 Secure Link: ${url}\n⏳ Valid for: ${currentShareExpiryHours} Hours\n🔒 Authorized by Plant Administration`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        });
+    }
+
+    // Check inbound share token & expiration on page load
+    checkInboundShareLink();
+}
+
+function generateExpiringShareUrl() {
+    const displayEl = document.getElementById('display-share-url');
+    const indicatorEl = document.getElementById('share-expiry-indicator');
+    if (!displayEl) return;
+
+    const maskFin = document.getElementById('mask-financial')?.checked ?? true;
+    const maskMppt = document.getElementById('mask-mppt')?.checked ?? false;
+    const maskAdm = document.getElementById('mask-admin-settings')?.checked ?? true;
+
+    const expiresAt = Date.now() + (currentShareExpiryHours * 3600 * 1000);
+    const token = 'SCADA-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+
+    const baseUrl = window.location.origin + window.location.pathname;
+    const shareUrl = `${baseUrl}?share_token=${token}&exp=${expiresAt}&mask_fin=${maskFin}&mask_mppt=${maskMppt}&mask_adm=${maskAdm}`;
+
+    displayEl.innerText = shareUrl;
+    if (indicatorEl) {
+        const expDate = new Date(expiresAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+        indicatorEl.innerHTML = `✓ Link active until <strong>${expDate}</strong> (${currentShareExpiryHours}h limit)`;
+    }
+}
+
+function checkInboundShareLink() {
+    const params = new URLSearchParams(window.location.search);
+    const shareToken = params.get('share_token');
+    const exp = params.get('exp');
+
+    if (shareToken && exp) {
+        const expTimestamp = parseInt(exp, 10);
+        if (Date.now() > expTimestamp) {
+            // Expired link banner
+            const banner = document.createElement('div');
+            banner.style.cssText = 'position:fixed; top:0; left:0; right:0; background:#DC2626; color:#FFF; padding:12px; text-align:center; font-weight:700; z-index:99999; box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+            banner.innerHTML = '⚠️ This temporary SCADA share link has EXPIRED. Please request an updated link from the plant administrator.';
+            document.body.prepend(banner);
+        } else {
+            // Apply privacy masking
+            if (params.get('mask_adm') === 'true') {
+                document.body.classList.add('viewer-mode');
+            }
+            if (params.get('mask_fin') === 'true') {
+                document.querySelectorAll('#display-revenue-today, #display-revenue-export, #display-revenue-lifetime, .revenue-currency-select').forEach(el => {
+                    el.style.filter = 'blur(5px)';
+                    el.title = 'Masked by Link Owner';
+                });
+            }
+            showToast('Loaded via Guest Share Link with customized privacy mask');
+        }
+    }
+}
+
+// =========================================================================
+// 13. Version v2: Plant Metadata, Owner Details & GPS Location Editor
+// =========================================================================
+function initPlantMetadataManager() {
+    const btnOpen = document.getElementById('btn-open-plant-details');
+    const modalBackdrop = document.getElementById('modal-plant-metadata-backdrop');
+    const btnClose = document.getElementById('btn-close-plant-metadata');
+
+    if (btnOpen && modalBackdrop) {
+        btnOpen.addEventListener('click', () => {
+            modalBackdrop.classList.remove('hidden');
+            loadSavedPlantMetadataToForm();
+        });
+    }
+
+    const closeModal = () => {
+        if (modalBackdrop) modalBackdrop.classList.add('hidden');
+    };
+
+    if (btnClose) btnClose.addEventListener('click', closeModal);
+    if (modalBackdrop) {
+        modalBackdrop.addEventListener('click', (e) => {
+            if (e.target === modalBackdrop) closeModal();
+        });
+    }
+
+    // Apply saved metadata to page on boot
+    applySavedPlantMetadataToDOM();
+}
+
+function loadSavedPlantMetadataToForm() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('sunscrap_plant_metadata') || '{}');
+        if (saved.name) document.getElementById('plant-meta-name').value = saved.name;
+        if (saved.capacity) document.getElementById('plant-meta-capacity').value = saved.capacity;
+        if (saved.location) document.getElementById('plant-meta-location').value = saved.location;
+        if (saved.owner) document.getElementById('plant-meta-owner').value = saved.owner;
+        if (saved.contact) document.getElementById('plant-meta-contact').value = saved.contact;
+        if (saved.lat) document.getElementById('plant-meta-lat').value = saved.lat;
+        if (saved.lng) document.getElementById('plant-meta-lng').value = saved.lng;
+        if (saved.timezone) document.getElementById('plant-meta-tz').value = saved.timezone;
+        if (saved.grid) document.getElementById('plant-meta-grid').value = saved.grid;
+    } catch(e) {}
+}
+
+function applySavedPlantMetadataToDOM() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('sunscrap_plant_metadata') || '{}');
+        if (saved.name) {
+            document.querySelectorAll('.plant-title').forEach(el => {
+                el.firstChild.textContent = saved.name + ' ';
+            });
+        }
+        if (saved.lat && saved.lng) {
+            const link = document.getElementById('plant-gmaps-link');
+            if (link) {
+                link.href = `https://maps.google.com/?q=${saved.lat},${saved.lng}`;
+                link.innerText = `${saved.lat}° N, ${saved.lng}° E (View on Map)`;
+            }
+        }
+    } catch(e) {}
+}
+
+window.savePlantMetadata = function(event) {
+    if (event) event.preventDefault();
+
+    const metadata = {
+        name: document.getElementById('plant-meta-name')?.value || 'Sunscrap Recyclers PVT LTD',
+        capacity: document.getElementById('plant-meta-capacity')?.value || '3,900 kW AC / 4,640 kWp DC',
+        location: document.getElementById('plant-meta-location')?.value || 'Sanand GIDC Phase II, Gujarat',
+        owner: document.getElementById('plant-meta-owner')?.value || 'Darshan Patel',
+        contact: document.getElementById('plant-meta-contact')?.value || 'darshan@sunscrap.local',
+        lat: document.getElementById('plant-meta-lat')?.value || '22.9868',
+        lng: document.getElementById('plant-meta-lng')?.value || '72.3787',
+        timezone: document.getElementById('plant-meta-tz')?.value || 'Asia/Kolkata',
+        grid: document.getElementById('plant-meta-grid')?.value || '11 kV Feeder / GETCO 66 kV Substation',
+        updatedAt: new Date().toISOString()
+    };
+
+    localStorage.setItem('sunscrap_plant_metadata', JSON.stringify(metadata));
+    applySavedPlantMetadataToDOM();
+
+    const modalBackdrop = document.getElementById('modal-plant-metadata-backdrop');
+    if (modalBackdrop) modalBackdrop.classList.add('hidden');
+
+    showToast('Plant details and GPS location updated & persisted!');
+};
+
+window.detectGPSLocation = function() {
+    if (navigator.geolocation) {
+        showToast('Acquiring high-accuracy GPS coordinates...');
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const lat = pos.coords.latitude.toFixed(4);
+                const lng = pos.coords.longitude.toFixed(4);
+                const latInput = document.getElementById('plant-meta-lat');
+                const lngInput = document.getElementById('plant-meta-lng');
+                if (latInput) latInput.value = lat;
+                if (lngInput) lngInput.value = lng;
+                showToast(`GPS Position detected: ${lat}° N, ${lng}° E`);
+            },
+            (err) => {
+                showToast('Using factory default calibrated coordinates (22.9868, 72.3787).');
+            },
+            { timeout: 6000 }
+        );
+    } else {
+        showToast('Geolocation not supported on this device.');
+    }
+};
+
+// =========================================================================
+// 14. Version v2: Operator Role Switcher (Admin vs Restricted Viewer)
+// =========================================================================
+function initRoleSwitcher() {
+    const btn = document.getElementById('btn-toggle-role');
+    const badge = document.getElementById('role-display-badge');
+    if (!btn || !badge) return;
+
+    let isViewer = localStorage.getItem('scada_role_mode') === 'viewer';
+    applyRoleMode(isViewer);
+
+    btn.addEventListener('click', () => {
+        isViewer = !isViewer;
+        applyRoleMode(isViewer);
+        localStorage.setItem('scada_role_mode', isViewer ? 'viewer' : 'admin');
+        showToast(isViewer ? 'Switched to Viewer Mode (Sensitive settings masked)' : 'Switched to Administrator Mode (Full permissions)');
+    });
+}
+
+function applyRoleMode(isViewer) {
+    const badge = document.getElementById('role-display-badge');
+    if (isViewer) {
+        document.body.classList.add('viewer-mode');
+        if (badge) {
+            badge.innerText = 'Viewer (Restricted)';
+            badge.style.background = '#F59E0B';
+        }
+    } else {
+        document.body.classList.remove('viewer-mode');
+        if (badge) {
+            badge.innerText = 'Admin (Full Access)';
+            badge.style.background = '#1D5BF1';
+        }
+    }
 }

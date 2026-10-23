@@ -10,6 +10,7 @@ OUTPUT_DIR = "/home/linux/Documents/Darshan_SCADA_Software_October_2026/gh_pages
 
 PAGES = [
     ("/dashboard", "index.html"),
+    ("/dashboard/analytical", "dashboard_analytical.html"),
     ("/inverters/overview", "inverter_overview.html"),
     ("/mfm/overview", "mfm_overview.html"),
     ("/reports/summary", "report_summary.html"),
@@ -29,6 +30,7 @@ PAGES = [
 ]
 
 URL_REPLACEMENTS = [
+    (r'href="/dashboard/analytical"', 'href="./dashboard_analytical.html"'),
     (r'href="/dashboard"', 'href="./index.html"'),
     (r'href="/home"', 'href="./index.html"'),
     (r'href="/inverters/overview"', 'href="./inverter_overview.html"'),
