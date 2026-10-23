@@ -245,9 +245,10 @@
                     </div>
                 </div>
 
-                <!-- Dedicated Quick Sign Out Thumbnail Button -->
-                <a href="./login.html" id="btn-workstation-logout" class="header-icon-btn" title="Sign out of workstation session" style="color:#DC2626; border-color:rgba(220,38,38,0.3); background:rgba(220,38,38,0.05);">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                <!-- Dedicated Quick Sign Out GUI Pill Button (No line breaks, GUI styled) -->
+                <a href="./login.html" id="btn-workstation-logout" class="gui-signout-btn" title="Sign out of workstation session">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <span>Logout</span>
                 </a>
             </div>
         </header>
@@ -386,7 +387,7 @@ function toggleDateInputs(mode) {
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
         Print
     </button>
-    <button type="button" class="export-btn export-btn-primary btn-open-email-modal" data-snapshot-id="ad4cbdd0-5542-4674-ba8a-754a644146d1" data-report-name="Plant Generation &amp; Summary Overview" title="Email snapshot to authorized recipients">
+    <button type="button" class="export-btn export-btn-primary btn-open-email-modal" data-snapshot-id="ccd58954-f556-4db1-aed9-27caf952553d" data-report-name="Plant Generation &amp; Summary Overview" title="Email snapshot to authorized recipients">
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
         Email
     </button>

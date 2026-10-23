@@ -297,6 +297,34 @@ body.reduced-motion * {
   color: var(--primary);
 }
 
+/* GUI-Based Workstation Logout Button (No wrapping, clean GUI badge) */
+.gui-signout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 18px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: none;
+  color: #DC2626;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.12);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.gui-signout-btn:hover {
+  background: #DC2626;
+  color: #FFFFFF;
+  border-color: #DC2626;
+  box-shadow: 0 3px 8px rgba(220, 38, 38, 0.35);
+  transform: translateY(-1px);
+}
+
 /* Financial Revenue KPI Card */
 .kpi-card.kpi-revenue {
   background: linear-gradient(135deg, var(--surface), var(--surface-alt));
