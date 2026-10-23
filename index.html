@@ -577,7 +577,7 @@
             <span style="font-size: 0.8rem; color: var(--text-muted);">Dual-Axis: Active Power (kW) vs GTI/GHI (W/m²)</span>
         </div>
     </div>
-    <div id="dashboard-power-irradiance-chart" style="width: 100%; height: 380px;"></div>
+    <div id="dashboard-power-irradiance-chart" style="width: 100%; height: 420px;"></div>
 </div>
 
 <div class="card">
@@ -585,7 +585,7 @@
         <h2 class="card-title">Inverter Cumulative Yield vs Meter Export</h2>
         <span style="font-size: 0.8rem; color: var(--text-muted);">Comparison of Generation against Export (Daily / Interval 1 Hour)</span>
     </div>
-    <div id="dashboard-generation-export-chart" style="width: 100%; height: 320px;"></div>
+    <div id="dashboard-generation-export-chart" style="width: 100%; height: 350px;"></div>
     <div style="font-size:0.8rem; color:#B45309; background:#FEF3C7; border-left:4px solid #D97706; padding:8px 14px; border-radius:var(--radius-sm); margin-top:14px; font-weight:600;">
         ⚠️ Date Range is limited to a maximum of 7 DAYS. Please select a shorter range.
     </div>
@@ -611,37 +611,66 @@ document.addEventListener('DOMContentLoaded', () => {
             data: ['Inverter Total Power (kW)', 'Outgoing Export Power (kW)', 'GTI (W/m²)', 'GHI (W/m²)'],
             top: 0
         },
-        grid: { left: '3%', right: '4%', bottom: '10%', top: '14%', containLabel: true },
+        grid: { left: 85, right: 85, bottom: 78, top: 55, containLabel: false },
         xAxis: {
             type: 'category',
             name: 'Timeline (15m Intervals IST)',
             nameLocation: 'middle',
-            nameGap: 30,
+            nameGap: 34,
+            nameTextStyle: {
+                fontWeight: 700,
+                fontSize: 12,
+                color: 'var(--text-muted)'
+            },
             data: times,
-            boundaryGap: false
+            boundaryGap: false,
+            axisLabel: {
+                margin: 12,
+                color: 'var(--text-muted)'
+            }
         },
         yAxis: [
             {
                 type: 'value',
                 name: 'Active Power (kW)',
                 nameLocation: 'middle',
-                nameGap: 55,
+                nameRotate: 90,
+                nameGap: 62,
+                nameTextStyle: {
+                    fontWeight: 700,
+                    fontSize: 12,
+                    color: '#008374'
+                },
                 position: 'left',
-                axisLabel: { formatter: '{value} kW' }
+                axisLabel: {
+                    formatter: '{value} kW',
+                    color: 'var(--text-muted)',
+                    margin: 8
+                }
             },
             {
                 type: 'value',
                 name: 'Solar Irradiance (W/m²)',
                 nameLocation: 'middle',
-                nameGap: 45,
+                nameRotate: -90,
+                nameGap: 62,
+                nameTextStyle: {
+                    fontWeight: 700,
+                    fontSize: 12,
+                    color: '#F59E0B'
+                },
                 position: 'right',
-                axisLabel: { formatter: '{value} W/m²' },
+                axisLabel: {
+                    formatter: '{value} W/m²',
+                    color: 'var(--text-muted)',
+                    margin: 8
+                },
                 splitLine: { show: false }
             }
         ],
         dataZoom: [
             { type: 'inside', start: 0, end: 100 },
-            { type: 'slider', start: 0, end: 100, bottom: 0, height: 20 }
+            { type: 'slider', start: 0, end: 100, bottom: 6, height: 18, textStyle: { color: 'var(--text-muted)' } }
         ],
         series: [
             {
@@ -686,20 +715,24 @@ document.addEventListener('DOMContentLoaded', () => {
     ChartRegistry.init('dashboard-generation-export-chart', {
         tooltip: { trigger: 'axis' },
         legend: { data: ['Inverter Generation (kWh)', 'Meter Export (kWh)'], top: 0 },
-        grid: { left: '3%', right: '3%', bottom: '10%', top: '15%', containLabel: true },
+        grid: { left: 85, right: 35, bottom: 65, top: 48, containLabel: false },
         xAxis: { 
             type: 'category', 
             name: 'Observation Intervals (15-Minute Timeline)',
             nameLocation: 'middle',
-            nameGap: 30,
-            data: times 
+            nameGap: 32,
+            nameTextStyle: { fontWeight: 700, fontSize: 12, color: 'var(--text-muted)' },
+            data: times,
+            axisLabel: { margin: 10, color: 'var(--text-muted)' }
         },
         yAxis: { 
             type: 'value', 
             name: 'Energy Generated / Exported (kWh)',
             nameLocation: 'middle',
-            nameGap: 55,
-            axisLabel: { formatter: '{value} kWh' }
+            nameRotate: 90,
+            nameGap: 62,
+            nameTextStyle: { fontWeight: 700, fontSize: 12, color: '#008374' },
+            axisLabel: { formatter: '{value} kWh', color: 'var(--text-muted)' }
         },
         series: [
             {

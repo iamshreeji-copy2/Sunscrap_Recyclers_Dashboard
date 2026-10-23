@@ -936,21 +936,25 @@ function initForecastChart(chartType) {
             data: ['ML Predicted Yield', 'Upper Confidence Bound (+95%)', 'Lower Confidence Bound (-95%)'],
             top: 0
         },
-        grid: { left: '3%', right: '4%', bottom: '12%', top: '14%', containLabel: true },
+        grid: { left: 85, right: 35, bottom: 65, top: 48, containLabel: false },
         xAxis: {
             type: 'category',
             name: 'Forecast Timeline (Day +1 to Day +7)',
             nameLocation: 'middle',
-            nameGap: 30,
+            nameGap: 32,
+            nameTextStyle: { fontWeight: 700, fontSize: 12, color: 'var(--text-muted)' },
             data: dates,
+            axisLabel: { margin: 10, color: 'var(--text-muted)' },
             boundaryGap: isBar
         },
         yAxis: {
             type: 'value',
             name: 'Energy Generation (kWh)',
             nameLocation: 'middle',
-            nameGap: 55,
-            axisLabel: { formatter: '{value} kWh' }
+            nameRotate: 90,
+            nameGap: 62,
+            nameTextStyle: { fontWeight: 700, fontSize: 12, color: '#008374' },
+            axisLabel: { formatter: '{value} kWh', color: 'var(--text-muted)' }
         },
         series: [
             {
@@ -1007,20 +1011,23 @@ function initRegressionChart() {
             trigger: 'item',
             formatter: 'GTI: {c0} W/m²<br/>AC Power: {c1} kW'
         },
-        grid: { left: '3%', right: '4%', bottom: '12%', top: '10%', containLabel: true },
+        grid: { left: 85, right: 35, bottom: 65, top: 40, containLabel: false },
         xAxis: {
             type: 'value',
             name: 'Solar Irradiance GTI (W/m²)',
             nameLocation: 'middle',
-            nameGap: 28,
-            axisLabel: { formatter: '{value} W/m²' }
+            nameGap: 32,
+            nameTextStyle: { fontWeight: 700, fontSize: 12, color: 'var(--text-muted)' },
+            axisLabel: { formatter: '{value} W/m²', margin: 10, color: 'var(--text-muted)' }
         },
         yAxis: {
             type: 'value',
             name: 'Plant Active Power (kW)',
             nameLocation: 'middle',
-            nameGap: 50,
-            axisLabel: { formatter: '{value} kW' }
+            nameRotate: 90,
+            nameGap: 62,
+            nameTextStyle: { fontWeight: 700, fontSize: 12, color: '#008374' },
+            axisLabel: { formatter: '{value} kW', color: 'var(--text-muted)' }
         },
         series: [
             {

@@ -827,24 +827,27 @@ document.addEventListener('DOMContentLoaded', () => {
     ChartRegistry.init('chart-inv-ac-dc', {
         tooltip: { trigger: 'axis' },
         legend: { data: ['AC Power (kW)', 'DC Power (kW)'], top: 0 },
-        grid: { left: '8%', right: '5%', bottom: '15%', top: '15%', containLabel: true },
+        grid: { left: 80, right: 35, bottom: 65, top: 48, containLabel: false },
         xAxis: {
             type: 'category',
             data: times,
             name: 'Timeline (IST)',
             nameLocation: 'middle',
-            nameGap: 28,
-            nameTextStyle: { fontWeight: 700, color: 'var(--text-muted)' }
+            nameGap: 30,
+            nameTextStyle: { fontWeight: 700, fontSize: 12, color: 'var(--text-muted)' },
+            axisLabel: { margin: 10, color: 'var(--text-muted)' }
         },
         yAxis: {
             type: 'value',
             name: 'Inverter Power Output (kW)',
             nameLocation: 'middle',
-            nameGap: 42,
-            nameTextStyle: { fontWeight: 700, color: 'var(--text-muted)' }
+            nameRotate: 90,
+            nameGap: 58,
+            nameTextStyle: { fontWeight: 700, fontSize: 12, color: '#008374' },
+            axisLabel: { color: 'var(--text-muted)' }
         },
         series: [
-            { name: 'AC Power (kW)', type: 'line', data: ac_data, smooth: true, itemStyle: { color: '#1D5BF1' }, lineStyle: { width: 2.5 } },
+            { name: 'AC Power (kW)', type: 'line', data: ac_data, smooth: true, itemStyle: { color: '#008374' }, lineStyle: { width: 2.5 } },
             { name: 'DC Power (kW)', type: 'line', data: dc_data, smooth: true, itemStyle: { color: '#F59E0B' }, lineStyle: { width: 2.5 } }
         ]
     });
@@ -852,21 +855,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Temperature Chart with explicit X and Y axis labels
     ChartRegistry.init('chart-inv-temp', {
         tooltip: { trigger: 'axis' },
-        grid: { left: '8%', right: '5%', bottom: '15%', top: '15%', containLabel: true },
+        grid: { left: 80, right: 35, bottom: 65, top: 40, containLabel: false },
         xAxis: {
             type: 'category',
             data: times,
             name: 'Timeline (IST)',
             nameLocation: 'middle',
-            nameGap: 28,
-            nameTextStyle: { fontWeight: 700, color: 'var(--text-muted)' }
+            nameGap: 30,
+            nameTextStyle: { fontWeight: 700, fontSize: 12, color: 'var(--text-muted)' },
+            axisLabel: { margin: 10, color: 'var(--text-muted)' }
         },
         yAxis: {
             type: 'value',
             name: 'Internal Enclosure Temp (°C)',
             nameLocation: 'middle',
-            nameGap: 38,
-            nameTextStyle: { fontWeight: 700, color: 'var(--text-muted)' }
+            nameRotate: 90,
+            nameGap: 55,
+            nameTextStyle: { fontWeight: 700, fontSize: 12, color: '#EF4444' },
+            axisLabel: { color: 'var(--text-muted)' }
         },
         series: [
             {
