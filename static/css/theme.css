@@ -548,15 +548,32 @@ body.sidebar-collapsed .btn-menu-toggle {
 
 .sidebar-brand {
   height: var(--header-height);
-  padding: 12px 18px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.sidebar-brand-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  margin: 0 auto;
+}
+
 .sidebar-brand img, .sidebar-brand svg {
-  height: 44px;
+  height: 42px;
+  max-width: 180px;
   width: auto;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
 }
 
 .sidebar-nav {
@@ -1699,6 +1716,10 @@ th.sort-desc .sort-indicator {
 /* Mobile Sidebar Close Button */
 .btn-close-mobile-sidebar {
   display: none;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
   color: #FFFFFF;
@@ -1707,8 +1728,8 @@ th.sort-desc .sort-indicator {
   padding: 4px 8px;
   cursor: pointer;
   border-radius: var(--radius-sm);
-  margin-left: auto;
   transition: background 0.15s ease;
+  z-index: 10;
 }
 
 .btn-close-mobile-sidebar:hover {

@@ -691,3 +691,21 @@ CHANGES MADE:
 - login.html: Set .carousel-slide opacity to 0.92 and raised brightness filter from 0.40 to 0.80 (with 1.08 contrast and 1.15 saturation).
 - login.html: Lightened .carousel-dark-overlay from heavy 55%-88% dark vignette down to subtle 20%-45% gradient.
 - login.html: Removed heavy backdrop blur so solar array imagery is sharp, vivid, and clearly visible behind the login card.
+
+---
+PROMPT #31 — Centered Sidebar Brand Logo & Simplified Left Menu Navigation
+DATE: 2026-10-23
+
+REQUESTS:
+1. Make the SATs logo centered vertically and horizontally in the left side menu
+2. Remove the 📊 Analytical and ⚡ Technical options from the left side menu
+3. Keep the on-page segmented toggle as it is (⚡ Technical SCADA and 📊 Analytical & Forecasting)
+
+CHANGES MADE:
+- theme.css: Updated .sidebar-brand to display: flex; align-items: center; justify-content: center; text-align: center; position: relative;. Added .sidebar-brand-link with display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; margin: 0 auto;. Styled .sidebar-brand img with margin: 0 auto; display: block;.
+- theme.css: Repositioned mobile drawer close button (.btn-close-mobile-sidebar) using position: absolute; right: 12px; top: 50%; transform: translateY(-50%); so it no longer disrupts flexbox horizontal centering of the brand logo on mobile devices.
+- base.html: Simplified Dashboard & Monitoring sidebar section by removing accordion dropdown and sub-items (Analytical / Technical). Replaced with a direct nav link to "SCADA Operational Dashboard" ({% url 'dashboard' %}) which stays active for both technical and analytical dashboard views.
+- base.html: Updated mobile quick bottom nav bar: unified first button to "SCADA" pointing to {% url 'dashboard' %}, removing duplicate/confusing Analytical/Technical split on mobile.
+- dashboard.html & dashboard_analytical.html: Preserved top segmented toggle buttons ("⚡ Technical SCADA" vs "📊 Analytical & Forecasting") for fast switching between telemetry monitoring and predictive forecasting.
+- build_static_site.py: Rebuilt static distribution in gh_pages_deploy with all 26 pages updated.
+
