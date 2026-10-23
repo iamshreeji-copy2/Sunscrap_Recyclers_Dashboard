@@ -1,0 +1,114 @@
+================================================================================
+SUNSCRAP SOLAR SCADA — CHRONOLOGICAL USER CODING PROMPT ARCHIVE
+Project Directory: /home/linux/Documents/Darshan_SCADA_Software_October_2026
+Generated: 2026-10-23 02:50:00 PM IST
+Total Prompts Recorded: 8
+================================================================================
+
+--------------------------------------------------------------------------------
+PROMPT #1
+Date & Time (IST): 2026-10-23 01:02:09 PM IST
+Date & Time (UTC): 2026-10-23 07:32:09 UTC
+--------------------------------------------------------------------------------
+/goal cd /home/linux/Documents/Darshan_SCADA_Software_October_2026, start the implimentation here, make the website implimetnaion here, /home/linux/Documents/Darshan_SCADA_Software_October_2026/Website_implimentaion in this folder and make the complete checkpoint file this is complated or this is pending in roder to preserve tthe task compaltion reports in case of teh i need to changes the agent and make teh this checkpoint report should be the easily understnadbel byt the new coding agent and it should be teh new llm should star thte impltaion by consuming less numebr of tikens..
+
+--------------------------------------------------------------------------------
+PROMPT #2
+Date & Time (IST): 2026-10-23 01:33:03 PM IST
+Date & Time (UTC): 2026-10-23 08:03:03 UTC
+--------------------------------------------------------------------------------
+make the accesisbiility button and in that mput this colro and font size and the light and dark mode in to it, , make the one logic in teh dashbaord, shoe me the how much inr rs. the eletricity produced in teh inr, for that you may need to ask for the conversion currentcy ainr, dolelr, euro or poinn.e.g, one unit is the 3rs. so you need to do the multiplicaiton of that,..and kinf od this..and also deploy tis website tot eh github pages, make teh enw one repo of this 
+iamshreeji-copy2, and make the github pages enable and deploy it on the github as of now..and give me the link and the makjet eh readmd file and all teh ..
+
+--------------------------------------------------------------------------------
+PROMPT #3
+Date & Time (IST): 2026-10-23 01:43:26 PM IST
+Date & Time (UTC): 2026-10-23 08:13:26 UTC
+--------------------------------------------------------------------------------
+make one alery box where you can set the alert and alery should make the sound and make the bluink of the red screen pop up which should have the cancel button also..to close the popoup, when i click on the aleert windows go button it should go directly to specific page, where the alert logs detencted amke teh lgos also, add the share on whatsaap fieature also, and add the email features, and downlaod in teh zip file also, add the omnthly and deily reports ffrom this, /home/linux/Documents/Darshan_SCADA_Software_October_2026/Reports,make sthe sort options also in teh each tbales, you should check teh all features from this path, /home/linux/Documents/Darshan_SCADA_Software_October_2026/Screenshots where i saved the screenshots in teh pdf format, /home/linux/Documents/Darshan_SCADA_Software_October_2026/Screenshots, and add the missing features in our website and add the login page in teh deployed website, and make teh weebsiteor the github repo name to the Sunscrap_Recyclers_Dashboard,
+
+--------------------------------------------------------------------------------
+PROMPT #4
+Date & Time (IST): 2026-10-23 01:57:32 PM IST
+Date & Time (UTC): 2026-10-23 08:27:32 UTC
+--------------------------------------------------------------------------------
+first of all take the backup of the current code for the safe reason and make this code as teh version v1 website, and in the v2 website, make teh two kind of teh dahsboard option, one is the analystical and teh second is the technical, analysitical will contains teh finanacial and the future plan absed data analsysis or the datascience based dashbaord, and the technical dahbaord will contains this all , current ...one webiste avaialbel at this path, https://iamshreeji-copy2.github.io/iamshreeji-copy2/, andd teh dffernet kind of teh grpahs for the bweter visulalization and the make sure there should be the iunteractive graphs and the clolroful gprahs to explaint eh ifnormation with low latecny write the x and y axis int eh all teh plots, dont miss that, make sure to freeze the right side bar, Sunscrap Solar SCADA
+Dashboard & Monitoring
+Plant Dashboard
+Inverter Overview (13)
+MFM Overview (LT/Out)
+Reports & Analytics
+Plant Summary
+Energy Generation
+Inverter Generation
+Alarm & Faults
+Multi-Trends (4-Panel)
+Custom Report Builder
+Inverter Parameters (69 Col)
+MFM Parameters
+WMS Parameters
+Communication Health
+Jobs & Delivery
+Downloads Center
+Report Schedules
+System Settings
+Plant & Capacity
+Device Topology
+System Health
+Security Audit, and in teh bottom right side there should be one circle which shouw the click to go on top, and make the more efficient website...and add the login creditintial tot he main website, and make hidden some of the information which are the sensitive and not needed, hide form teh viewer users, the option of the share, which will create the new link will have the en[[piry time, 1 hours, 24 hours, custom hours, or days or months or range, ..lkund of which wil have the access to the viewer or the able to see some of the website infomraiton as per the plant owner set, which informaiton should show to the that user, which sharing the link with him or her, and make the effective website and make sure that is the produce grade website and quality assutance proof.
+add the option to add the -plan detials such as the lcoaiton, owener name and the owener details and time zone and the gps based lcoation save in teh website and make teh one backed datasbase which should save this all the infomraiton in to that, is the radis or the django is the okay rhen create then make sure the github pages should support this it should not ask me for the money, okay..make the more personalized website this and sav ethe all the logs and the information if any users set any new ifnormation then, as shownin teh speenshot, you can use the different kind of the plots, like speedometer and much more and you can give t he option to suer to set the or to view the data in which kind of the plots, and it should have the anomation and low latency.
+
+--------------------------------------------------------------------------------
+PROMPT #5
+Date & Time (IST): 2026-10-23 02:06:21 PM IST
+Date & Time (UTC): 2026-10-23 08:36:21 UTC
+--------------------------------------------------------------------------------
+admin can able to ad the new or deplete teh existintg users, make this changes also,
+i am wonder, the dashbaord is showing the full ifnormaiton and then after it is showing the login button, ...i am logged out but it is showing the login button..and able to see the all ifnormation ..reduce or remove this kind of the issues, and make sure when anyone click on teh website it should first do teh login to the website only..then after it should able to see the all dahsbaord and teh wesites data. when i minimse or close the alert it should open the previous alreayt history when i am clicking on that icon, and make sure who logged in and who loggied out which times it should save that all teh ofnoration along with their lcoation and the device name and their broweser and approximate lcoation and teh netowrk provider all teh fonraiton it sould be saved int eh  backed for the developer to resovlet eh queries, first user is developer, second is the admin, third is teh plan owner, forth is the any one who third party able to see or teh comment on teh dashbaord,
+add the siren music in the website when it needed the siren it should play the siren.
+Grid Under-voltage Trip — AC active power dropped to 0.00 kW.
+Inverter output disconnect triggered. Immediate operator acknowledgment required.
+Target Device
+Inverter 08 (Inv-08 / 320 kWp)
+Status Code
+ERR-402 (Grid Under-voltage)
+Event Timestamp
+01:32:05 PM IST
+Alarm State
+ACTIVE / UNACKNOWLEDGED, it should allow me to go to the Target Device
+Inverter 08 (Inv-08 / 320 kWp) plot or the tables, and it should save the all the alerts logs, for the user...it can able to see for th efuture resefermmce
+
+--------------------------------------------------------------------------------
+PROMPT #6
+Date & Time (IST): 2026-10-23 02:25:09 PM IST
+Date & Time (UTC): 2026-10-23 08:55:09 UTC
+--------------------------------------------------------------------------------
+make sure to give the cancel button to teh red alert box, so anyone can close it after seeing it..it should be closable ..
+"✕ Cancel & Silence Siren" is now working, in teh exsiting deployed website check and tell me what is teh issues, and why it is "https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/login.html" this login apge have the alerm windows, it should have the lgoin pages simply.
+make teh one new apge for the alart logs, where each apge should have the go abck option to gor thethe prevuisous page, donte make teh any pages uncorelated to teh prvious our main websites, .and add the option to add teh plant image phototo option, to ...
+
+--------------------------------------------------------------------------------
+PROMPT #7
+Date & Time (IST): 2026-10-23 02:44:03 PM IST
+Date & Time (UTC): 2026-10-23 09:14:03 UTC
+--------------------------------------------------------------------------------
+dont show the Authorized Operator Roles (1-Click Fill)
+● RBAC Active
+1. Developer
+developer / Dev@2026
+2. Administrator
+admin / Sunscrap@2026
+3. Plant Owner
+darshan_owner / Owner@2026
+4. Third Party
+viewer / Viewer@2026, , this should be privates,
+after login, i am again seeing the "CRITICAL PLANT ALARM DETECTED
+PRIORITY 1" ...it should be the cloasable and the and make teh cancel and silence siren.....it should be the clickable and it should be the
+
+--------------------------------------------------------------------------------
+PROMPT #8
+Date & Time (IST): 2026-10-23 02:49:39 PM IST
+Date & Time (UTC): 2026-10-23 09:19:39 UTC
+--------------------------------------------------------------------------------
+can you write the all previous coding prompt here, /home/linux/Documents/Darshan_SCADA_Software_October_2026/previous_coding_prompt.txt in this file date and time wise, ...so i can save it for the future reference..short and large all the prompts.
+
