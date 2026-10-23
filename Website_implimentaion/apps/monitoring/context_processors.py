@@ -13,7 +13,7 @@ def plant_context(request):
     wms_count = Device.objects.filter(device_type=DeviceType.WMS).count()
     
     return {
-        'PLANT_ORGANIZATION': getattr(settings, 'PLANT_ORGANIZATION', 'SAT Solutions (SATs)'),
+        'PLANT_ORGANIZATION': getattr(settings, 'PLANT_ORGANIZATION', 'SATs (Semiconductor Analysis and Testing Solutions)'),
         'PLANT_NAME': getattr(settings, 'PLANT_NAME', 'SATs Solar Plant'),
         'PLANT_WEBSITE': getattr(settings, 'PLANT_WEBSITE', 'https://satsolutions.in/'),
         'PLANT_EMAIL': getattr(settings, 'PLANT_EMAIL', 'info.sats123@gmail.com'),

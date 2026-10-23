@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # Sunscrap SCADA domain apps
+    # SATs SCADA domain apps
     'apps.accounts.apps.AccountsConfig',
     'apps.plant.apps.PlantConfig',
     'apps.telemetry.apps.TelemetryConfig',
@@ -124,7 +124,7 @@ EMAIL_FILE_PATH = BASE_DIR / 'data' / 'captured_emails'
 
 # Plant-wide specifications & SATs Branding
 DATA_SOURCE = os.environ.get('DATA_SOURCE', 'demo')  # 'demo' or 'live'
-PLANT_ORGANIZATION = "SAT Solutions (SATs)"
+PLANT_ORGANIZATION = "SATs (Semiconductor Analysis and Testing Solutions)"
 PLANT_NAME = "SATs Solar Plant"
 PLANT_WEBSITE = "https://satsolutions.in/"
 PLANT_EMAIL = "info.sats123@gmail.com"

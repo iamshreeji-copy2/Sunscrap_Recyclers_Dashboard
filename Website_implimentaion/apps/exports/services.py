@@ -24,7 +24,7 @@ def generate_csv(snapshot, file_path):
         writer = csv.writer(f)
         
         # Header comments / Metadata
-        writer.writerow([f"# Sunscrap Solar SCADA - {snapshot.title}"])
+        writer.writerow([f"# SATs Solar SCADA - {snapshot.title}"])
         writer.writerow([f"# Period: {snapshot.period_label} | Generated: {snapshot.generated_at.strftime('%Y-%m-%d %H:%M:%S')}"])
         writer.writerow([])
         
@@ -67,7 +67,7 @@ def generate_xlsx(snapshot, file_path):
     
     # Sheet 1: Report Data
     ws = workbook.add_worksheet('Telemetry Data')
-    ws.write(0, 0, f"Sunscrap Solar SCADA — {snapshot.title}", title_fmt)
+    ws.write(0, 0, f"SATs Solar SCADA — {snapshot.title}", title_fmt)
     ws.write(1, 0, f"Period: {snapshot.period_label} | Scope: {snapshot.interval_label} | Generated: {snapshot.generated_at.strftime('%Y-%m-%d %H:%M:%S')}", meta_fmt)
     
     keys = [col.get('key') for col in snapshot.columns]
@@ -106,8 +106,8 @@ def generate_xlsx(snapshot, file_path):
         ('Data As Of (UTC/Local)', str(snapshot.data_as_of)),
         ('Snapshot ID', str(snapshot.snapshot_id)),
         ('Total Filtered Rows', snapshot.row_count),
-        ('Plant Name', 'Sunscrap Solar Plant'),
-        ('Organization', 'Sunscrap Recyclers PVT LTD'),
+        ('Plant Name', 'SATs Solar Plant'),
+        ('Organization', 'SATs (Semiconductor Analysis and Testing Solutions)'),
         ('Configured AC Capacity', '3,900 kW'),
         ('Configured DC Capacity', '4,640 kWp'),
         ('Plant Timezone', 'Asia/Kolkata'),
@@ -164,9 +164,9 @@ def generate_pdf(snapshot, file_path):
     elements = []
     
     # Title & Metadata
-    elements.append(Paragraph(f"SUNSCRAP SOLAR SCADA — {snapshot.title.upper()}", title_style))
+    elements.append(Paragraph(f"SATS SOLAR SCADA — {snapshot.title.upper()}", title_style))
     elements.append(Paragraph(
-        f"Plant: Sunscrap Recyclers PVT LTD (3,900 kW AC / 4,640 kWp DC) | Period: {snapshot.period_label} | Generated: {snapshot.generated_at.strftime('%Y-%m-%d %H:%M:%S')}",
+        f"Plant: SATs (Semiconductor Analysis and Testing Solutions) (3900 kW AC / 4640 kWp DC) | Period: {snapshot.period_label} | Generated: {snapshot.generated_at.strftime('%Y-%m-%d %H:%M:%S')}",
         meta_style
     ))
     elements.append(Spacer(1, 10))

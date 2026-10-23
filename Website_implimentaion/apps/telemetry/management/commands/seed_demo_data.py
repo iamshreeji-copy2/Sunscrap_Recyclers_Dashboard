@@ -59,4 +59,4 @@ class Command(BaseCommand):
         self.stdout.write("Generating continuous interval time series for charts...")
         seed_historical_telemetry(days=1)
 
-        self.stdout.write(self.style.SUCCESS("Sunscrap Solar SCADA database successfully seeded and operational!"))
+        self.stdout.write(self.style.SUCCESS("SATs Solar SCADA database successfully seeded and operational!"))

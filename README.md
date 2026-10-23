@@ -1,6 +1,6 @@
-# Sunscrap Solar SCADA v2.4 — Sunscrap Recyclers PVT LTD
+# SATs Solar SCADA v2.4 — SAT Solutions (Semiconductor Analysis and Testing Solutions)
 
-A production-grade Solar Photovoltaic SCADA & Intelligent Analytics Platform engineered for **Sunscrap Recyclers PVT LTD** (3,900 kW AC / 4,640 kWp DC Grid-Tied Solar Power Facility located in Sanand GIDC Phase II, Ahmedabad, Gujarat, India).
+A production-grade Solar Photovoltaic SCADA & Intelligent Analytics Platform engineered for **SATs — Semiconductor Analysis and Testing Solutions** (3900 kW AC / 4640 kWp DC Grid-Tied Solar Power Facility located in Sanand GIDC Phase II, Ahmedabad, Gujarat, India).
 
 [![GitHub Pages Deployment](https://img.shields.io/badge/GitHub%20Pages-Live%20Portal-success?style=for-the-badge&logo=github)](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/)
 [![Version](https://img.shields.io/badge/Version-v2.4%20Production-blue?style=for-the-badge)](https://github.com/iamshreeji-copy2/Sunscrap_Recyclers_Dashboard)
@@ -19,7 +19,7 @@ A production-grade Solar Photovoltaic SCADA & Intelligent Analytics Platform eng
 | Role | Username | Password | Key Permissions |
 |---|---|---|---|
 | **Lead Developer** | `developer` | `Dev@2026` | Full telemetry diagnostics, device signatures, browser/network audit log |
-| **System Administrator** | `admin` | `Sunscrap@2026` | Full control, User Management (Add/Delete Users), Plant topology & threshold editor |
+| **System Administrator** | `admin` | `SATs@2026` / `Sunscrap@2026` | Full control, User Management (Add/Delete Users), Plant topology & threshold editor |
 | **Plant Owner** | `darshan_owner` | `Owner@2026` | CapEx payback ROI tracker, revenue in INR (₹), expiring share links, plant metadata |
 | **Third-Party Viewer / Commenter**| `viewer` | `Viewer@2026` | Sanitized telemetry dashboards, plant operations discussion notes, masked admin settings |
 

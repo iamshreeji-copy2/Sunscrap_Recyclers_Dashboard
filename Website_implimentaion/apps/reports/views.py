@@ -187,8 +187,8 @@ def report_export_zip_view(request):
     with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as z:
         # Add metadata audit file
         meta = (
-            f"Organization: Sunscrap Recyclers PVT LTD\n"
-            f"Plant Capacity: 3,900 kW AC / 4,640 kWp DC\n"
+            f"Organization: SATs (Semiconductor Analysis and Testing Solutions)\n"
+            f"Plant Capacity: 3900 kW AC / 4640 kWp DC\n"
             f"Report: {report_name}\n"
             f"Export Date: {today}\n"
             f"Timezone: Asia/Kolkata\n"
@@ -208,7 +208,7 @@ def report_export_zip_view(request):
 
     buffer.seek(0)
     response = HttpResponse(buffer.getvalue(), content_type='application/zip')
-    response['Content-Disposition'] = f'attachment; filename="Sunscrap_{report_name}_{today}.zip"'
+    response['Content-Disposition'] = f'attachment; filename="SATs_{report_name}_{today}.zip"'
     return response
 
 

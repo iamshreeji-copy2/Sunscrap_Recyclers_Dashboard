@@ -22,7 +22,7 @@ class User(AbstractUser):
         help_text="Role-based access: Developer, Administrator, Plant Owner, or Third-Party Viewer"
     )
     phone = models.CharField(max_length=20, blank=True, null=True)
-    organization = models.CharField(max_length=150, default="Sunscrap Recyclers PVT LTD")
+    organization = models.CharField(max_length=150, default="SATs (Semiconductor Analysis and Testing Solutions)")
     email_verified = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

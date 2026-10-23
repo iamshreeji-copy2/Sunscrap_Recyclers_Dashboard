@@ -1,1 +1,1 @@
-# Sunscrap Solar SCADA Application Package
+# SATs Solar SCADA Application Package - SAT Solutions

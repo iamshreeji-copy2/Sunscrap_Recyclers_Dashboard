@@ -51,7 +51,7 @@
     <aside class="app-sidebar">
         <div class="sidebar-brand">
             <a href="./index.html" style="display: flex; align-items: center; text-decoration: none;">
-                <img src="./static/assets/sats-logo.svg" alt="SATs Solar SCADA" onerror="this.src='/static/assets/sunscrap-logo.svg'">
+                <img src="./static/assets/sats-official-logo.png" alt="SATs - Semiconductor Analysis and Testing Solutions" style="max-height: 48px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));" onerror="this.src='/static/assets/sats-logo.svg';">
             </a>
         </div>
         
@@ -153,13 +153,23 @@
             </a>
         </nav>
 
-        <div class="sidebar-footer">
-            <div style="font-weight:700; color:var(--text-main); margin-bottom:2px;">SATs Solar SCADA v2.4</div>
-            <a href="https://satsolutions.in/" target="_blank" rel="noopener noreferrer" style="color:var(--primary); text-decoration:none; font-weight:600; display:flex; align-items:center; gap:4px; margin-bottom:4px; font-size:0.8rem;">
-                <span>🌐 satsolutions.in</span>
-            </a>
-            <div style="font-size:0.72rem; color:var(--text-muted); line-height:1.4;">
-                📧 <a href="mailto:info.sats123@gmail.com" style="color:var(--text-muted); text-decoration:none;">info.sats123@gmail.com</a><br>
+        <div class="sidebar-footer" style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <div style="font-weight:700; color:var(--text-main); font-size: 0.85rem;">SATs Solar SCADA</div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <a href="https://satsolutions.in/" target="_blank" rel="noopener noreferrer" class="social-thumb-btn" style="width:30px; height:30px;" title="Official Website: satsolutions.in">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                </a>
+                <a href="mailto:info.sats123@gmail.com" class="social-thumb-btn" style="width:30px; height:30px;" title="Contact Email: info.sats123@gmail.com">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                </a>
+                <a href="https://www.linkedin.com/in/semiconductor-analysis-and-testing-solutions-sats-8a4a29307/" target="_blank" rel="noopener noreferrer" class="social-thumb-btn" style="width:30px; height:30px;" title="LinkedIn: SAT Solutions">
+                    <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.2a1.64 1.64 0 0 0-1.64 1.64 1.64 1.64 0 0 0 1.64 1.64 1.64 1.64 0 0 0 1.64-1.64A1.64 1.64 0 0 0 7.83 6.2z"/></svg>
+                </a>
+                <a href="https://www.youtube.com/@Semiconductortestingsolutions" target="_blank" rel="noopener noreferrer" class="social-thumb-btn" style="width:30px; height:30px;" title="YouTube: @Semiconductortestingsolutions">
+                    <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                </a>
+            </div>
+            <div style="font-size:0.7rem; color:var(--text-muted); line-height:1.4;">
                 © 2026 SAT Solutions. All rights reserved.
             </div>
         </div>
@@ -174,14 +184,12 @@
                 <button type="button" id="btn-toggle-sidebar" class="btn-menu-toggle" onclick="toggleSidebarFullMode()" title="Toggle Menu / View in Full Mode (Hide/Unhide Sidebar)" aria-label="Toggle Full Mode">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
-                <div class="plant-title">
-                    SATs Solar Plant
+                <div class="plant-title" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <span style="font-weight:800; font-size:1.12rem; color:var(--text-main);">SATs Solar Plant</span>
+                    <span style="font-size:0.86rem; font-weight:700; color:var(--primary); background:var(--primary-light); padding:2px 8px; border-radius:12px; border:1px solid var(--border);">(3900 kW AC / 4640 kWp DC)</span>
                     
                         <span class="badge-demo">Demo Data</span>
                     
-                </div>
-                <div style="font-size: 0.8rem; color: var(--text-muted);">
-                    3900 kW AC / 4640 kWp DC
                 </div>
             </div>
 
@@ -327,7 +335,7 @@
             <button type="button" class="btn-close-modal" onclick="document.getElementById('new-schedule-modal').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
         </div>
         <form method="POST">
-            <input type="hidden" name="csrfmiddlewaretoken" value="jdcQYYWw1AW77nMwOM8mEuV0TAq9TCDppTdN5pkUQJh2ehuUYiMpUAAsJS0kObi1">
+            <input type="hidden" name="csrfmiddlewaretoken" value="IXJKkjgJpw8q53AQATsdKY3q9HgPcUkKWfhqeTYgWpYEFRWAb46RwhC6dkahQMzO">
             <input type="hidden" name="action" value="create">
             <div class="modal-body">
                 <div style="margin-bottom: 12px;">
@@ -376,23 +384,37 @@
 
 
             <!-- Global SATs Professional Workstation Footer -->
-            <footer class="app-global-footer" style="margin-top: 40px; padding: 18px 22px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; font-size: 0.82rem; color: var(--text-muted); background: var(--surface); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">
-                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                    <img src="./static/assets/sats-logo.svg" alt="SATs Logo" style="height: 22px; width: auto;" onerror="this.style.display='none'">
+            <footer class="app-global-footer" style="margin-top: 40px; padding: 22px 20px; border-top: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; font-size: 0.82rem; color: var(--text-muted); background: var(--surface); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);">
+                <!-- Center: SATs Logo and Copyright -->
+                <div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                    <img src="./static/assets/sats-official-logo.png" alt="SAT Solutions" style="height: 28px; width: auto; object-fit: contain;" onerror="this.src='/static/assets/sats-logo.svg';">
                     <span>© 2026 <strong>SAT Solutions</strong>. All rights reserved.</span>
-                    <span>&bull;</span>
-                    <a href="https://satsolutions.in/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 4px;">
-                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                        <span>satsolutions.in</span>
+                </div>
+
+                <!-- Center: Social Media Thumbnails Only (No full text links) -->
+                <div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                    <a href="https://satsolutions.in/" target="_blank" rel="noopener noreferrer" class="social-thumb-btn" title="Official Website: satsolutions.in">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
                     </a>
-                    <span>&bull;</span>
-                    <a href="mailto:info.sats123@gmail.com" style="color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 4px;">
-                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                        <span>info.sats123@gmail.com</span>
+                    <a href="mailto:info.sats123@gmail.com" class="social-thumb-btn" title="Email: info.sats123@gmail.com">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    </a>
+                    <a href="https://www.linkedin.com/in/semiconductor-analysis-and-testing-solutions-sats-8a4a29307/" target="_blank" rel="noopener noreferrer" class="social-thumb-btn" title="LinkedIn: Semiconductor Analysis and Testing Solutions">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.2a1.64 1.64 0 0 0-1.64 1.64 1.64 1.64 0 0 0 1.64 1.64 1.64 1.64 0 0 0 1.64-1.64A1.64 1.64 0 0 0 7.83 6.2z"/></svg>
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=61559400863942" target="_blank" rel="noopener noreferrer" class="social-thumb-btn" title="Facebook: SAT Solutions">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </a>
+                    <a href="https://www.youtube.com/@Semiconductortestingsolutions" target="_blank" rel="noopener noreferrer" class="social-thumb-btn" title="YouTube: @Semiconductortestingsolutions">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                    <a href="tel:+917990042066" class="social-thumb-btn" title="Phone: +91 79900 42066">
+                        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
                     </a>
                 </div>
-                <!-- Live Website Tracking & Telemetry Indicator Badge -->
-                <div id="sats-telemetry-status-badge" style="display: flex; align-items: center; gap: 8px; font-size: 0.76rem; background: var(--surface-alt); padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border);">
+
+                <!-- Center: Live Website Tracking & Telemetry Indicator Badge -->
+                <div id="sats-telemetry-status-badge" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.76rem; background: var(--surface-alt); padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border);">
                     <span class="live-pulse" style="width: 8px; height: 8px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
                     <span>Website Telemetry & Tracking Active</span>
                     <span style="opacity:0.5;">|</span>
@@ -440,7 +462,7 @@
             </div>
             <div style="display:flex; flex-direction:column; gap:8px;">
                 <button type="button" class="acc-choice-btn btn-color-mode active" data-color="vibrant" style="justify-content:flex-start;">
-                    🌈 Vibrant Sunscrap Solar (Default)
+                    🌈 Vibrant SATs Solar (Default)
                 </button>
                 <button type="button" class="acc-choice-btn btn-color-mode" data-color="grayscale" style="justify-content:flex-start;">
                     ⚪ Monochrome Grayscale Mode
@@ -614,16 +636,16 @@
         <div class="modal-header" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);">
             <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFF; display:flex; align-items:center; gap:8px;">
                 <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-                Sunscrap Solar Facility Photography & Site Gallery
+                SATs Solar Facility Photography & Site Gallery
             </h3>
             <button type="button" id="btn-close-plant-photo-modal" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
         </div>
         <div class="modal-body" style="padding: 20px;">
             <div style="position:relative; width:100%; height:320px; border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--border); background:#0F172A; margin-bottom:16px;">
-                <img id="plant-photo-main-viewer" class="plant-facility-photo" src="./static/assets/plant-aerial.svg" alt="Sunscrap Solar Plant" style="width:100%; height:100%; object-fit:cover;">
+                <img id="plant-photo-main-viewer" class="plant-facility-photo" src="./static/assets/plant-aerial.svg" alt="SATs Solar Plant" style="width:100%; height:100%; object-fit:cover;">
                 <div style="position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent, rgba(15,23,42,0.85)); padding:14px 18px; color:#FFF;">
                     <div style="font-weight:800; font-size:1rem;" id="plant-photo-title">Sanand GIDC Solar Array — Aerial Overview</div>
-                    <div style="font-size:0.78rem; color:#93C5FD;">3,900 kW AC / 4,640 kWp DC &bull; GPS: 22.9868° N, 72.3787° E</div>
+                    <div style="font-size:0.78rem; color:#93C5FD;">SAT Solutions &bull; (3900 kW AC / 4640 kWp DC) &bull; GPS: 22.9868° N, 72.3787° E</div>
                 </div>
             </div>
 

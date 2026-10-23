@@ -99,7 +99,7 @@ def main():
     login_data = urllib.parse.urlencode({
         'csrfmiddlewaretoken': csrf_token,
         'username': 'admin',
-        'password': 'Sunscrap@2026',
+        'password': 'SATs@2026',
         'remember_me': 'on'
     }).encode('utf-8')
     opener.open(f"{BASE_URL}/login", data=login_data)

@@ -56,9 +56,9 @@ class PlantCalculations:
 def seed_plant_and_devices():
     """Initializes the plant topology with 13 Sungrow Inverters, 2 MFMs, 1 WMS."""
     plant, _ = Plant.objects.get_or_create(
-        name="Sunscrap Solar Plant",
+        name="SATs Solar Plant",
         defaults={
-            'organization': "Sunscrap Recyclers PVT LTD",
+            'organization': "SATs (Semiconductor Analysis and Testing Solutions)",
             'timezone': "Asia/Kolkata",
             'ac_capacity_kw': 3900.0,
             'dc_capacity_kwp': 4640.0,

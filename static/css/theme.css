@@ -1,26 +1,30 @@
 :root {
-  --primary: #1D5BF1;
-  --primary-hover: #1546C4;
-  --primary-light: #EEF4FF;
-  --nav-bg: #0D1A36;
-  --nav-hover: #1A2E5A;
-  --nav-active: #25427C;
-  --background: #F4F7FC;
+  /* Official SAT Solutions (https://satsolutions.in/) Corporate Palette */
+  --primary: #008374;
+  --primary-hover: #006d60;
+  --primary-dark: #00796b;
+  --primary-light: #E6F5F3;
+  --secondary: #F85A40;
+  --nav-bg: #003831;
+  --nav-hover: #005047;
+  --nav-active: #008374;
+  --background: #F4F9F8;
   --surface: #FFFFFF;
-  --surface-alt: #F8FAFD;
-  --text-main: #17243A;
-  --text-muted: #617086;
-  --text-dim: #94A3B8;
-  --border: #E2E8F0;
-  --border-light: #F1F5F9;
-  --success: #12865C;
-  --success-bg: #E6F4EA;
-  --warning: #B7791F;
+  --surface-alt: #EFF7F6;
+  --text-main: #222222;
+  --text-muted: #556B67;
+  --text-dim: #8BA39F;
+  --border: #D1E5E2;
+  --border-light: #E8F3F1;
+  --success: #008374;
+  --success-bg: #E6F5F3;
+  --warning: #F59E0B;
   --warning-bg: #FEF3C7;
-  --error: #C43E43;
+  --error: #E11D48;
   --error-bg: #FEE2E2;
   --accent-gold: #F59E0B;
-  --accent-cyan: #0EA5E9;
+  --accent-cyan: #008374;
+  --accent-coral: #F85A40;
   
   --font-scale: 1;
   --sidebar-width: 248px;
@@ -28,9 +32,9 @@
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
-  --shadow-sm: 0 1px 3px rgba(13, 26, 54, 0.05);
-  --shadow-md: 0 4px 12px rgba(13, 26, 54, 0.08);
-  --shadow-lg: 0 10px 25px rgba(13, 26, 54, 0.12);
+  --shadow-sm: 0 1px 3px rgba(0, 56, 49, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 56, 49, 0.08);
+  --shadow-lg: 0 10px 25px rgba(0, 56, 49, 0.12);
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -47,45 +51,45 @@ body.grayscale-mode .badge-demo {
 
 /* Dark Mode */
 body.dark-mode {
-  --background: #0B132B;
-  --surface: #17223B;
-  --surface-alt: #1F2D4A;
-  --text-main: #F8FAFC;
-  --text-muted: #94A3B8;
-  --text-dim: #64748B;
-  --border: #2D3E63;
-  --border-light: #23314F;
-  --nav-bg: #070D1E;
-  --nav-hover: #132247;
-  --nav-active: #1D5BF1;
+  --background: #091715;
+  --surface: #102623;
+  --surface-alt: #163632;
+  --text-main: #F1F8F6;
+  --text-muted: #95B4AE;
+  --text-dim: #6B8B85;
+  --border: #234E47;
+  --border-light: #1A3D37;
+  --nav-bg: #06110F;
+  --nav-hover: #0C211D;
+  --nav-active: #008374;
   --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.6);
   --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.7);
-  --primary-light: rgba(29, 91, 241, 0.2);
-  --success-bg: rgba(18, 134, 92, 0.25);
-  --warning-bg: rgba(183, 121, 31, 0.25);
-  --error-bg: rgba(196, 62, 67, 0.25);
+  --primary-light: rgba(0, 131, 116, 0.25);
+  --success-bg: rgba(0, 131, 116, 0.25);
+  --warning-bg: rgba(245, 158, 11, 0.25);
+  --error-bg: rgba(225, 29, 72, 0.25);
 }
 
 body.dark-mode .app-header {
-  background-color: #17223B;
-  border-bottom-color: #2D3E63;
+  background-color: #102623;
+  border-bottom-color: #234E47;
 }
 
 body.dark-mode .scada-table td {
-  border-bottom-color: #23314F;
+  border-bottom-color: #1A3D37;
 }
 
 body.dark-mode .scada-table tbody tr:hover {
-  background-color: #1F2D4A;
+  background-color: #163632;
 }
 
 body.dark-mode input,
 body.dark-mode select,
 body.dark-mode textarea {
-  background-color: #1F2D4A !important;
-  color: #F8FAFC !important;
-  border-color: #2D3E63 !important;
+  background-color: #163632 !important;
+  color: #F1F8F6 !important;
+  border-color: #234E47 !important;
 }
 
 /* High Contrast Mode */
@@ -236,6 +240,42 @@ body.reduced-motion * {
   border-color: var(--primary);
   color: var(--primary);
   transform: translateY(-1px);
+}
+
+/* Social Media Thumbnail-Only Icon Buttons */
+.social-thumb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--primary);
+  text-decoration: none;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.social-thumb-btn:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 131, 116, 0.35);
+}
+
+body.dark-mode .social-thumb-btn {
+  background: #163632;
+  border-color: #234E47;
+  color: #00A896;
+}
+
+body.dark-mode .social-thumb-btn:hover {
+  background: #008374;
+  border-color: #008374;
+  color: #FFFFFF;
 }
 
 .header-icon-badge {

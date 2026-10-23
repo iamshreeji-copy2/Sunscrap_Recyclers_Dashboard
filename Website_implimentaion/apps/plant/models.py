@@ -6,8 +6,8 @@ class DeviceType(models.TextChoices):
     WMS = 'wms', 'Weather Monitoring Station (WMS)'
 
 class Plant(models.Model):
-    name = models.CharField(max_length=150, default="Sunscrap Solar Plant")
-    organization = models.CharField(max_length=150, default="Sunscrap Recyclers PVT LTD")
+    name = models.CharField(max_length=150, default="SATs Solar Plant")
+    organization = models.CharField(max_length=150, default="SATs (Semiconductor Analysis and Testing Solutions)")
     timezone = models.CharField(max_length=50, default="Asia/Kolkata")
     ac_capacity_kw = models.FloatField(default=3900.0, help_text="Total plant AC rated capacity in kW")
     dc_capacity_kwp = models.FloatField(default=4640.0, help_text="Total plant DC peak capacity in kWp")
