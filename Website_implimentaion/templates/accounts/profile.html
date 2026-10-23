@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Operator Profile & Security</h1>
+        <a href="{% url 'logout' %}" class="export-btn" style="color: var(--error); border-color: var(--error);">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            Sign Out
+        </a>
+    </div>
+
+    <!-- Account Details -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Operator Credentials & Organization</h2>
+            <a href="{% url 'profile_email' %}" class="export-btn">Change Email (Verified)</a>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_details">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Username</label>
+                    <input type="text" value="{{ user.username }}" disabled style="width:100%; padding:9px 12px; background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-muted);">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Assigned Role</label>
+                    <input type="text" value="{{ user.get_role_display }}" disabled style="width:100%; padding:9px 12px; background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-muted);">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">First Name</label>
+                    <input type="text" name="first_name" value="{{ user.first_name }}" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Last Name</label>
+                    <input type="text" name="last_name" value="{{ user.last_name }}" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Registered Email</label>
+                    <input type="email" value="{{ user.email }}" disabled style="width:100%; padding:9px 12px; background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-muted);">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Phone Number</label>
+                    <input type="text" name="phone" value="{{ user.phone|default:'' }}" placeholder="+91 98765 43210" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+            </div>
+            <button type="submit" class="export-btn export-btn-primary">Update Profile Details</button>
+        </form>
+    </div>
+
+    <!-- Password Management -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Change Password</h2>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="change_password">
+            <div style="margin-bottom: 14px;">
+                <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Current Password</label>
+                <input type="password" name="current_password" required style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">New Password (Min 8 chars)</label>
+                    <input type="password" name="new_password" required minlength="8" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Confirm New Password</label>
+                    <input type="password" name="confirm_password" required minlength="8" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+            </div>
+            <button type="submit" class="export-btn export-btn-primary">Save New Password</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

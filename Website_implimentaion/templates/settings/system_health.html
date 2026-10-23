@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}System Health{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="margin-bottom: 20px;">
+        <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Operational System Health & Diagnostics</h1>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+            Liveness, storage headroom, database connection, telemetry ingest health, and background worker queues.
+        </div>
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card kpi-green">
+            <span class="kpi-label">System State</span>
+            <div class="kpi-value" style="color: var(--success); font-size: 1.6rem;">{{ health.status }}</div>
+            <span class="kpi-sub">All monitored subsystems online</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Free Storage Space</span>
+            <div class="kpi-value">{{ health.disk_free_gb }} <span class="kpi-unit">GB</span></div>
+            <span class="kpi-sub">{{ health.disk_used_pct }}% of {{ health.disk_total_gb }} GB utilized</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Database Subsystem</span>
+            <div class="kpi-value" style="font-size: 1.25rem;">Active</div>
+            <span class="kpi-sub">{{ health.database }}</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Active Monitored Devices</span>
+            <div class="kpi-value">{{ health.total_devices }} <span class="kpi-unit">Units</span></div>
+            <span class="kpi-sub">13 Inverters, 2 MFMs, 1 WMS</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

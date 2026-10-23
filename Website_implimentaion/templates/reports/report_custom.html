@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}{{ report_title }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
+    <div>
+        <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">{{ report_title }}</h1>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+            Persisted parameterized custom report builder with allowlisted metrics and six export actions.
+        </div>
+    </div>
+    <button type="button" class="export-btn export-btn-primary" onclick="document.getElementById('new-custom-report-modal').classList.add('active')">
+        + Create New Custom Report
+    </button>
+</div>
+
+<!-- Saved Configurations Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; margin-bottom: 24px;">
+    {% for cfg in configs %}
+        <div class="card" style="margin-bottom: 0;">
+            <div class="card-header">
+                <h2 class="card-title">{{ cfg.name }}</h2>
+                <form method="POST" style="margin: 0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="config_id" value="{{ cfg.id }}">
+                    <button type="submit" class="export-btn" style="color: var(--error); border-color: var(--error); padding: 2px 8px; font-size: 0.72rem;">Delete</button>
+                </form>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">{{ cfg.description|default:"Custom plant report template" }}</p>
+            <div style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 16px;">
+                <b>Aggregation:</b> {{ cfg.get_aggregation_display }} • <b>Default Period:</b> {{ cfg.get_default_period_display }}
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <a href="{% url 'report_summary' %}?period={{ cfg.default_period }}" class="export-btn export-btn-primary">Run Report</a>
+            </div>
+        </div>
+    {% empty %}
+        <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 36px;">
+            <p style="color: var(--text-muted); font-size: 0.95rem;">No custom report configurations created yet.</p>
+            <p style="color: var(--text-dim); font-size: 0.82rem; margin-top: 6px;">Click "+ Create New Custom Report" above to construct parameterized reports.</p>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Create Custom Report Modal -->
+<div class="modal-overlay" id="new-custom-report-modal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 style="font-size: 1rem; font-weight: 700;">Create Custom Report Configuration</h3>
+            <button type="button" class="btn-close-modal" onclick="document.getElementById('new-custom-report-modal').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create">
+            <div class="modal-body">
+                <div style="margin-bottom: 12px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Report Title</label>
+                    <input type="text" name="name" required placeholder="e.g. Daily Inverter Yield & Temperature Analysis" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Description</label>
+                    <textarea name="description" rows="2" placeholder="Brief purpose of this custom report" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;"></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div>
+                        <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Aggregation Method</label>
+                        <select name="aggregation" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                            <option value="avg">Average</option>
+                            <option value="sum">Sum</option>
+                            <option value="max">Maximum</option>
+                            <option value="min">Minimum</option>
+                            <option value="last">Last Reading</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Default Period</label>
+                        <select name="period" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="export-btn" onclick="document.getElementById('new-custom-report-modal').classList.remove('active')">Cancel</button>
+                <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

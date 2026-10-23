@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}{{ report_title }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">{{ report_title }}</h1>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Meteorological measurements: Ambient & Module Temperatures, GHI, GTI, Insolation, Humidity, Wind speed & direction.
+    </div>
+</div>
+
+{% include 'components/period_filter.html' with table_id='wms-param-table' report_title=report_title snapshot=snapshot period=period interval=interval %}
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div class="table-container">
+        <table class="scada-table" id="wms-param-table">
+            <thead>
+                <tr>
+                    {% for col in columns %}
+                        <th>{{ col.label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        {% for col in columns %}
+                            <td>
+                                {% for k, val in row.items %}
+                                    {% if k == col.key %}
+                                        {{ val }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="{{ columns|length }}" style="text-align:center; padding: 24px; color: var(--text-muted);">
+                            No weather observations recorded.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

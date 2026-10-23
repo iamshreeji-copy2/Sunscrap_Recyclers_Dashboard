@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}{{ report_title }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">{{ report_title }}</h1>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Field device communication availability, freshness timeouts, outage lifecycle, and SLA uptime percentages.
+    </div>
+</div>
+
+<div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 20px;">
+    {% include 'components/export_toolbar.html' with table_id='comm-table' report_title=report_title snapshot=snapshot %}
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div class="table-container">
+        <table class="scada-table" id="comm-table">
+            <thead>
+                <tr>
+                    {% for col in columns %}
+                        <th>{{ col.label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td><b>{{ row.device_id }}</b></td>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.device_type }}</td>
+                        <td>
+                            <span class="status-badge {% if row.status == 'Online' %}online{% else %}offline{% endif %}">
+                                {{ row.status }}
+                            </span>
+                        </td>
+                        <td>{{ row.last_contact }}</td>
+                        <td><b style="color: var(--success);">{{ row.uptime_pct }}%</b></td>
+                        <td><span style="font-size: 0.8rem; color: var(--text-muted);">{{ row.quality }}</span></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

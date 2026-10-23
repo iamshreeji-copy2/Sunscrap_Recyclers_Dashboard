@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}{{ report_title }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">{{ report_title }}</h1>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Outgoing Substation Meter Export vs Import energy logs and interval breakdown.
+    </div>
+</div>
+
+<!-- Cards -->
+<div class="kpi-grid" style="margin-bottom: 20px;">
+    <div class="kpi-card kpi-green">
+        <span class="kpi-label">Selected Period Total Export</span>
+        <div class="kpi-value">{{ total_export|floatformat:2 }} <span class="kpi-unit">kWh</span></div>
+        <span class="kpi-sub">Outgoing Substation Feed</span>
+    </div>
+    <div class="kpi-card">
+        <span class="kpi-label">Selected Period Total Import</span>
+        <div class="kpi-value">{{ total_import|floatformat:2 }} <span class="kpi-unit">kWh</span></div>
+        <span class="kpi-sub">Night auxiliary power import</span>
+    </div>
+</div>
+
+{% include 'components/period_filter.html' with table_id='energy-gen-table' report_title=report_title snapshot=snapshot period=period interval=interval %}
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div class="table-container">
+        <table class="scada-table" id="energy-gen-table">
+            <thead>
+                <tr>
+                    {% for col in columns %}
+                        <th>{{ col.label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        {% for col in columns %}
+                            <td>
+                                {% for k, val in row.items %}
+                                    {% if k == col.key %}
+                                        {{ val }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="{{ columns|length }}" style="text-align:center; padding: 24px; color: var(--text-muted);">
+                            No energy observations for this interval.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

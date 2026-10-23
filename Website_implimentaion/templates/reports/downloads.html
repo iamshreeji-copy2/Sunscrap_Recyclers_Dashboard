@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Downloads Center{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Export & Downloads Center</h1>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Immutable Report Snapshots, queued export jobs, format progress, and secure expiring download links.
+    </div>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div class="table-container">
+        <table class="scada-table" id="downloads-table">
+            <thead>
+                <tr>
+                    <th>Job ID</th>
+                    <th>Report Title</th>
+                    <th>Format</th>
+                    <th>Status</th>
+                    <th>Size</th>
+                    <th>Generated</th>
+                    <th>Expires</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                    <tr>
+                        <td><span style="font-family: monospace; font-size: 0.8rem;">{{ job.job_id|stringformat:".8s" }}...</span></td>
+                        <td><b>{{ job.snapshot.title }}</b></td>
+                        <td><span class="status-badge" style="background:#E2E8F0; color:#1E293B;">{{ job.export_format|upper }}</span></td>
+                        <td>
+                            <span class="status-badge {% if job.status == 'ready' %}online{% elif job.status == 'failed' %}offline{% else %}stale{% endif %}">
+                                {{ job.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if job.file_size_bytes > 0 %}
+                                {{ job.file_size_bytes|filesizeformat }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>{{ job.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>{{ job.expires_at|date:"Y-m-d" }}</td>
+                        <td>
+                            {% if job.is_downloadable %}
+                                <a href="{% url 'download_file' job.job_id %}" class="export-btn export-btn-primary" style="padding: 3px 10px; font-size: 0.75rem;">
+                                    Download
+                                </a>
+                            {% elif job.status == 'failed' %}
+                                <a href="{% url 'retry_job' job.job_id %}" class="export-btn" style="padding: 3px 10px; font-size: 0.75rem; color: var(--warning);">
+                                    Retry
+                                </a>
+                            {% else %}
+                                <span style="font-size: 0.75rem; color: var(--text-dim);">Processing ({{ job.progress_pct }}%)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 36px; color: var(--text-muted);">
+                            No exported jobs requested yet. Click Excel, CSV, or PDF from any report screen to produce downloads.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

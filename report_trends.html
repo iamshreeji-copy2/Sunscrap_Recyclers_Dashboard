@@ -1,0 +1,682 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Parameter Interactive Trends — Sunscrap Solar SCADA</title>
+    
+    <!-- Local Static CSS Tokens -->
+    <link rel="stylesheet" href="./static/css/theme.css">
+    
+    <!-- Local Offline Vendored JavaScript: HTMX & Apache ECharts -->
+    <script src="./static/vendor/htmx.min.js"></script>
+    <script src="./static/vendor/echarts.min.js"></script>
+    
+    <!-- Application Scripts -->
+    <script src="./static/js/charts.js"></script>
+    <script src="./static/js/app.js"></script>
+</head>
+<body>
+<div class="app-container">
+    <!-- Desktop 248px Sidebar -->
+    <aside class="app-sidebar">
+        <div class="sidebar-brand">
+            <a href="./index.html" style="display: flex; align-items: center; text-decoration: none;">
+                <img src="./static/assets/sunscrap-logo.svg" alt="Sunscrap Solar SCADA" onerror="this.src='/static/assets/sunscrap-logo.png'">
+            </a>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Dashboard & Monitoring</div>
+            <a href="./index.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                <span>Plant Dashboard</span>
+            </a>
+            <a href="./inverter_overview.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+                <span>Inverter Overview (13)</span>
+            </a>
+            <a href="./mfm_overview.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+                <span>MFM Overview (LT/Out)</span>
+            </a>
+
+            <div class="nav-section-title">Reports & Analytics</div>
+            <a href="./report_summary.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                <span>Plant Summary</span>
+            </a>
+            <a href="./report_energy_generation.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></svg>
+                <span>Energy Generation</span>
+            </a>
+            <a href="./report_inverter_generation.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 3v18h18v-2H5V3H3zm4 14h2v-4H7v4zm4 0h2v-8h-2v8zm4 0h2v-6h-2v6zm4 0h2v-11h-2v11z"/></svg>
+                <span>Inverter Generation</span>
+            </a>
+            <a href="./report_alarm.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                <span>Alarm & Faults</span>
+            </a>
+            <a href="./report_trends.html" class="nav-item active">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+                <span>Multi-Trends (4-Panel)</span>
+            </a>
+            <a href="./report_custom.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                <span>Custom Report Builder</span>
+            </a>
+            <a href="./report_inverter_parameter.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+                <span>Inverter Parameters (69 Col)</span>
+            </a>
+            <a href="./report_mfm_parameter.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+                <span>MFM Parameters</span>
+            </a>
+            <a href="./report_wms_parameter.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+                <span>WMS Parameters</span>
+            </a>
+            <a href="./report_communication.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+                <span>Communication Health</span>
+            </a>
+
+            <div class="nav-section-title">Jobs & Delivery</div>
+            <a href="./downloads.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                <span>Downloads Center</span>
+            </a>
+            <a href="./schedules.html" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                <span>Report Schedules</span>
+            </a>
+
+            <div class="nav-section-title">System Settings</div>
+            <a href="/settings/plant" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                <span>Plant & Capacity</span>
+            </a>
+            <a href="/settings/devices" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/></svg>
+                <span>Device Topology</span>
+            </a>
+            <a href="/settings/system-health" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                <span>System Health</span>
+            </a>
+            <a href="/settings/audit" class="nav-item ">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                <span>Security Audit</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            Sunscrap Solar SCADA v2.4<br>
+            Sunscrap Recyclers PVT LTD<br>
+            Timezone: Asia/Kolkata
+        </div>
+    </aside>
+
+    <!-- Main Content Shell -->
+    <main class="app-main">
+        <!-- Sticky Header (70px) -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="plant-title">
+                    Sunscrap Solar Plant
+                    
+                        <span class="badge-demo">Demo Data</span>
+                    
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">
+                    3900 kW AC / 4640 kWp DC
+                </div>
+            </div>
+
+            <div class="header-right">
+                <!-- Dedicated Universal Accessibility Button -->
+                <button type="button" class="accessibility-btn-trigger" id="btn-open-accessibility" title="Accessibility Hub: Colors, Font Size, Light & Dark Mode">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
+                    <span>Accessibility</span>
+                </button>
+
+                <!-- User profile badge -->
+                <a href="./profile.html" class="user-profile-badge">
+                    <div class="user-avatar">A</div>
+                    <span>admin</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Body -->
+        <div class="app-content">
+            
+
+            
+<div style="margin-bottom: 20px;">
+    <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Multi-Parameter Interactive Trends</h1>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Four independently configurable telemetry trend panels with dynamic ECharts plots.
+    </div>
+</div>
+
+<!-- 4 Trend Panels Grid -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+    
+        <div class="card" style="margin-bottom: 0;">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Active Power Trend</h2>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>INV-01</b> • Metric: <b>active_power</b></span>
+                </div>
+                <button type="button" class="export-btn" onclick="document.getElementById('config-modal-1').classList.add('active')">
+                    Configure
+                </button>
+            </div>
+            <div id="trend-chart-panel-1" style="width: 100%; height: 260px;"></div>
+        </div>
+
+        <!-- Configuration Modal for each panel -->
+        <div class="modal-overlay" id="config-modal-1">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3 style="font-size: 1rem; font-weight: 700;">Configure Trend Panel 1</h3>
+                    <button type="button" class="btn-close-modal" onclick="document.getElementById('config-modal-1').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="CDXboPoikwujzXD52op1pjg27V1S5ErNyO3FudvGQCLk87v0hw4MzhnCpVBHjtc7">
+                    <input type="hidden" name="panel_index" value="1">
+                    <div class="modal-body">
+                        <div style="margin-bottom: 14px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
+                            <input type="text" name="title" value="Active Power Trend" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                        </div>
+                        <div style="margin-bottom: 14px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
+                            <select name="device_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                                
+                                    <option value="INV-01" selected>INV-01: Inverter 01</option>
+                                
+                                    <option value="INV-02" >INV-02: Inverter 02</option>
+                                
+                                    <option value="INV-03" >INV-03: Inverter 03</option>
+                                
+                                    <option value="INV-04" >INV-04: Inverter 04</option>
+                                
+                                    <option value="INV-05" >INV-05: Inverter 05</option>
+                                
+                                    <option value="INV-06" >INV-06: Inverter 06</option>
+                                
+                                    <option value="INV-07" >INV-07: Inverter 07</option>
+                                
+                                    <option value="INV-08" >INV-08: Inverter 08</option>
+                                
+                                    <option value="INV-09" >INV-09: Inverter 09</option>
+                                
+                                    <option value="INV-10" >INV-10: Inverter 10</option>
+                                
+                                    <option value="INV-11" >INV-11: Inverter 11</option>
+                                
+                                    <option value="INV-12" >INV-12: Inverter 12</option>
+                                
+                                    <option value="INV-13" >INV-13: Inverter 13</option>
+                                
+                                    <option value="MFM-LT" >MFM-LT: LT Meter</option>
+                                
+                                    <option value="MFM-OUT" >MFM-OUT: Outgoing MFM (Main Export/Import)</option>
+                                
+                                    <option value="WMS-01" >WMS-01: Weather Monitoring Station</option>
+                                
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 14px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
+                            <select name="metric_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                                <option value="active_power" selected>Active Power (kW)</option>
+                                <option value="temperature" >Temperature (°C)</option>
+                                <option value="daily_yield" >Daily Yield (kWh)</option>
+                                <option value="gti" >GTI Irradiance (W/m²)</option>
+                                <option value="ghi" >GHI Irradiance (W/m²)</option>
+                                <option value="power_factor" >Power Factor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="export-btn" onclick="document.getElementById('config-modal-1').classList.remove('active')">Cancel</button>
+                        <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
+        <div class="card" style="margin-bottom: 0;">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Irradiance GHI / GTI</h2>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>WMS-01</b> • Metric: <b>gti</b></span>
+                </div>
+                <button type="button" class="export-btn" onclick="document.getElementById('config-modal-2').classList.add('active')">
+                    Configure
+                </button>
+            </div>
+            <div id="trend-chart-panel-2" style="width: 100%; height: 260px;"></div>
+        </div>
+
+        <!-- Configuration Modal for each panel -->
+        <div class="modal-overlay" id="config-modal-2">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3 style="font-size: 1rem; font-weight: 700;">Configure Trend Panel 2</h3>
+                    <button type="button" class="btn-close-modal" onclick="document.getElementById('config-modal-2').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="CDXboPoikwujzXD52op1pjg27V1S5ErNyO3FudvGQCLk87v0hw4MzhnCpVBHjtc7">
+                    <input type="hidden" name="panel_index" value="2">
+                    <div class="modal-body">
+                        <div style="margin-bottom: 14px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
+                            <input type="text" name="title" value="Irradiance GHI / GTI" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                        </div>
+                        <div style="margin-bottom: 14px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
+                            <select name="device_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                                
+                                    <option value="INV-01" >INV-01: Inverter 01</option>
+                                
+                                    <option value="INV-02" >INV-02: Inverter 02</option>
+                                
+                                    <option value="INV-03" >INV-03: Inverter 03</option>
+                                
+                                    <option value="INV-04" >INV-04: Inverter 04</option>
+                                
+                                    <option value="INV-05" >INV-05: Inverter 05</option>
+                                
+                                    <option value="INV-06" >INV-06: Inverter 06</option>
+                                
+                                    <option value="INV-07" >INV-07: Inverter 07</option>
+                                
+                                    <option value="INV-08" >INV-08: Inverter 08</option>
+                                
+                                    <option value="INV-09" >INV-09: Inverter 09</option>
+                                
+                                    <option value="INV-10" >INV-10: Inverter 10</option>
+                                
+                                    <option value="INV-11" >INV-11: Inverter 11</option>
+                                
+                                    <option value="INV-12" >INV-12: Inverter 12</option>
+                                
+                                    <option value="INV-13" >INV-13: Inverter 13</option>
+                                
+                                    <option value="MFM-LT" >MFM-LT: LT Meter</option>
+                                
+                                    <option value="MFM-OUT" >MFM-OUT: Outgoing MFM (Main Export/Import)</option>
+                                
+                                    <option value="WMS-01" selected>WMS-01: Weather Monitoring Station</option>
+                                
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 14px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
+                            <select name="metric_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                                <option value="active_power" >Active Power (kW)</option>
+                                <option value="temperature" >Temperature (°C)</option>
+                                <option value="daily_yield" >Daily Yield (kWh)</option>
+                                <option value="gti" selected>GTI Irradiance (W/m²)</option>
+                                <option value="ghi" >GHI Irradiance (W/m²)</option>
+                                <option value="power_factor" >Power Factor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="export-btn" onclick="document.getElementById('config-modal-2').classList.remove('active')">Cancel</button>
+                        <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
+        <div class="card" style="margin-bottom: 0;">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Inverter Temperature</h2>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>INV-01</b> • Metric: <b>temperature</b></span>
+                </div>
+                <button type="button" class="export-btn" onclick="document.getElementById('config-modal-3').classList.add('active')">
+                    Configure
+                </button>
+            </div>
+            <div id="trend-chart-panel-3" style="width: 100%; height: 260px;"></div>
+        </div>
+
+        <!-- Configuration Modal for each panel -->
+        <div class="modal-overlay" id="config-modal-3">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3 style="font-size: 1rem; font-weight: 700;">Configure Trend Panel 3</h3>
+                    <button type="button" class="btn-close-modal" onclick="document.getElementById('config-modal-3').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="CDXboPoikwujzXD52op1pjg27V1S5ErNyO3FudvGQCLk87v0hw4MzhnCpVBHjtc7">
+                    <input type="hidden" name="panel_index" value="3">
+                    <div class="modal-body">
+                        <div style="margin-bottom: 14px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
+                            <input type="text" name="title" value="Inverter Temperature" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                        </div>
+                        <div style="margin-bottom: 14px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
+                            <select name="device_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                                
+                                    <option value="INV-01" selected>INV-01: Inverter 01</option>
+                                
+                                    <option value="INV-02" >INV-02: Inverter 02</option>
+                                
+                                    <option value="INV-03" >INV-03: Inverter 03</option>
+                                
+                                    <option value="INV-04" >INV-04: Inverter 04</option>
+                                
+                                    <option value="INV-05" >INV-05: Inverter 05</option>
+                                
+                                    <option value="INV-06" >INV-06: Inverter 06</option>
+                                
+                                    <option value="INV-07" >INV-07: Inverter 07</option>
+                                
+                                    <option value="INV-08" >INV-08: Inverter 08</option>
+                                
+                                    <option value="INV-09" >INV-09: Inverter 09</option>
+                                
+                                    <option value="INV-10" >INV-10: Inverter 10</option>
+                                
+                                    <option value="INV-11" >INV-11: Inverter 11</option>
+                                
+                                    <option value="INV-12" >INV-12: Inverter 12</option>
+                                
+                                    <option value="INV-13" >INV-13: Inverter 13</option>
+                                
+                                    <option value="MFM-LT" >MFM-LT: LT Meter</option>
+                                
+                                    <option value="MFM-OUT" >MFM-OUT: Outgoing MFM (Main Export/Import)</option>
+                                
+                                    <option value="WMS-01" >WMS-01: Weather Monitoring Station</option>
+                                
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 14px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
+                            <select name="metric_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                                <option value="active_power" >Active Power (kW)</option>
+                                <option value="temperature" selected>Temperature (°C)</option>
+                                <option value="daily_yield" >Daily Yield (kWh)</option>
+                                <option value="gti" >GTI Irradiance (W/m²)</option>
+                                <option value="ghi" >GHI Irradiance (W/m²)</option>
+                                <option value="power_factor" >Power Factor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="export-btn" onclick="document.getElementById('config-modal-3').classList.remove('active')">Cancel</button>
+                        <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
+        <div class="card" style="margin-bottom: 0;">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Grid Export Power</h2>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>MFM-OUT</b> • Metric: <b>active_power</b></span>
+                </div>
+                <button type="button" class="export-btn" onclick="document.getElementById('config-modal-4').classList.add('active')">
+                    Configure
+                </button>
+            </div>
+            <div id="trend-chart-panel-4" style="width: 100%; height: 260px;"></div>
+        </div>
+
+        <!-- Configuration Modal for each panel -->
+        <div class="modal-overlay" id="config-modal-4">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3 style="font-size: 1rem; font-weight: 700;">Configure Trend Panel 4</h3>
+                    <button type="button" class="btn-close-modal" onclick="document.getElementById('config-modal-4').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="CDXboPoikwujzXD52op1pjg27V1S5ErNyO3FudvGQCLk87v0hw4MzhnCpVBHjtc7">
+                    <input type="hidden" name="panel_index" value="4">
+                    <div class="modal-body">
+                        <div style="margin-bottom: 14px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Panel Title</label>
+                            <input type="text" name="title" value="Grid Export Power" required style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                        </div>
+                        <div style="margin-bottom: 14px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Device</label>
+                            <select name="device_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                                
+                                    <option value="INV-01" >INV-01: Inverter 01</option>
+                                
+                                    <option value="INV-02" >INV-02: Inverter 02</option>
+                                
+                                    <option value="INV-03" >INV-03: Inverter 03</option>
+                                
+                                    <option value="INV-04" >INV-04: Inverter 04</option>
+                                
+                                    <option value="INV-05" >INV-05: Inverter 05</option>
+                                
+                                    <option value="INV-06" >INV-06: Inverter 06</option>
+                                
+                                    <option value="INV-07" >INV-07: Inverter 07</option>
+                                
+                                    <option value="INV-08" >INV-08: Inverter 08</option>
+                                
+                                    <option value="INV-09" >INV-09: Inverter 09</option>
+                                
+                                    <option value="INV-10" >INV-10: Inverter 10</option>
+                                
+                                    <option value="INV-11" >INV-11: Inverter 11</option>
+                                
+                                    <option value="INV-12" >INV-12: Inverter 12</option>
+                                
+                                    <option value="INV-13" >INV-13: Inverter 13</option>
+                                
+                                    <option value="MFM-LT" >MFM-LT: LT Meter</option>
+                                
+                                    <option value="MFM-OUT" selected>MFM-OUT: Outgoing MFM (Main Export/Import)</option>
+                                
+                                    <option value="WMS-01" >WMS-01: Weather Monitoring Station</option>
+                                
+                            </select>
+                        </div>
+                        <div style="margin-bottom: 14px;">
+                            <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
+                            <select name="metric_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                                <option value="active_power" selected>Active Power (kW)</option>
+                                <option value="temperature" >Temperature (°C)</option>
+                                <option value="daily_yield" >Daily Yield (kWh)</option>
+                                <option value="gti" >GTI Irradiance (W/m²)</option>
+                                <option value="ghi" >GHI Irradiance (W/m²)</option>
+                                <option value="power_factor" >Power Factor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="export-btn" onclick="document.getElementById('config-modal-4').classList.remove('active')">Cancel</button>
+                        <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize 4 dynamic trend charts
+    const timeSlots = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+    const p1 = [0, 25, 95, 180, 245, 275, 288, 280, 240, 175, 90, 20, 0];
+    const p2 = [0, 80, 250, 480, 720, 950, 1165, 1100, 920, 680, 380, 90, 0];
+    const p3 = [28, 30, 34, 39, 44, 48, 51, 51, 49, 46, 42, 38, 34];
+    const p4 = [0, 24, 93, 178, 242, 271, 284, 276, 236, 172, 88, 19, 0];
+
+    ChartRegistry.init('trend-chart-panel-1', {
+        tooltip: { trigger: 'axis' },
+        grid: { left: '3%', right: '4%', bottom: '5%', top: '10%', containLabel: true },
+        xAxis: { type: 'category', data: timeSlots },
+        yAxis: { type: 'value' },
+        series: [{ type: 'line', smooth: true, data: p1, itemStyle: { color: '#1D5BF1' }, areaStyle: { opacity: 0.1, color: '#1D5BF1' } }]
+    });
+
+    ChartRegistry.init('trend-chart-panel-2', {
+        tooltip: { trigger: 'axis' },
+        grid: { left: '3%', right: '4%', bottom: '5%', top: '10%', containLabel: true },
+        xAxis: { type: 'category', data: timeSlots },
+        yAxis: { type: 'value' },
+        series: [{ type: 'line', smooth: true, data: p2, itemStyle: { color: '#F59E0B' }, areaStyle: { opacity: 0.15, color: '#F59E0B' } }]
+    });
+
+    ChartRegistry.init('trend-chart-panel-3', {
+        tooltip: { trigger: 'axis' },
+        grid: { left: '3%', right: '4%', bottom: '5%', top: '10%', containLabel: true },
+        xAxis: { type: 'category', data: timeSlots },
+        yAxis: { type: 'value' },
+        series: [{ type: 'line', smooth: true, data: p3, itemStyle: { color: '#EF4444' } }]
+    });
+
+    ChartRegistry.init('trend-chart-panel-4', {
+        tooltip: { trigger: 'axis' },
+        grid: { left: '3%', right: '4%', bottom: '5%', top: '10%', containLabel: true },
+        xAxis: { type: 'category', data: timeSlots },
+        yAxis: { type: 'value' },
+        series: [{ type: 'bar', data: p4, itemStyle: { color: '#10B981' } }]
+    });
+});
+</script>
+
+        </div>
+    </main>
+</div>
+
+<!-- Backdrop Overlay for Accessibility Drawer -->
+<div id="accessibility-backdrop" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1150; display:none;"></div>
+
+<!-- Accessibility Drawer Panel -->
+<aside class="accessibility-panel" id="accessibility-drawer">
+    <div class="accessibility-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
+            <h3 style="font-size:1.05rem; font-weight:700;">Accessibility & HCI Hub</h3>
+        </div>
+        <button id="btn-close-accessibility" style="background:none; border:none; color:#FFFFFF; font-size:1.4rem; cursor:pointer;">&times;</button>
+    </div>
+    <div class="accessibility-body">
+        <!-- Display Mode: Light & Dark Mode -->
+        <div class="accessibility-section">
+            <div class="accessibility-title">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                Display Mode (Light / Dark)
+            </div>
+            <div class="accessibility-options-grid">
+                <button type="button" class="acc-choice-btn btn-theme-mode active" data-theme="light">
+                    ☀️ Light Mode
+                </button>
+                <button type="button" class="acc-choice-btn btn-theme-mode" data-theme="dark">
+                    🌙 Dark Mode
+                </button>
+            </div>
+        </div>
+
+        <!-- Color Vision -->
+        <div class="accessibility-section">
+            <div class="accessibility-title">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                Color Theme & Vision
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <button type="button" class="acc-choice-btn btn-color-mode active" data-color="vibrant" style="justify-content:flex-start;">
+                    🌈 Vibrant Sunscrap Solar (Default)
+                </button>
+                <button type="button" class="acc-choice-btn btn-color-mode" data-color="grayscale" style="justify-content:flex-start;">
+                    ⚪ Monochrome Grayscale Mode
+                </button>
+                <button type="button" class="acc-choice-btn btn-color-mode" data-color="high-contrast" style="justify-content:flex-start;">
+                    🔲 High-Contrast Mode
+                </button>
+            </div>
+        </div>
+
+        <!-- Font Size Scaling -->
+        <div class="accessibility-section">
+            <div class="accessibility-title" style="justify-content:space-between;">
+                <span style="display:flex; align-items:center; gap:8px;">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M2.5 4v3h5v12h3V7h5V4h-13zm19 5h-9v3h3v7h3v-7h3V9z"/></svg>
+                    Typography Font Size
+                </span>
+                <span id="font-scale-display" style="font-size:0.85rem; color:var(--primary); font-weight:700;">100%</span>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin-bottom:10px;">
+                <button type="button" class="acc-choice-btn btn-font-preset" data-scale="0.85" style="padding:6px 2px; font-size:0.75rem;">85%</button>
+                <button type="button" class="acc-choice-btn btn-font-preset active" data-scale="1.0" style="padding:6px 2px; font-size:0.75rem;">100%</button>
+                <button type="button" class="acc-choice-btn btn-font-preset" data-scale="1.15" style="padding:6px 2px; font-size:0.75rem;">115%</button>
+                <button type="button" class="acc-choice-btn btn-font-preset" data-scale="1.25" style="padding:6px 2px; font-size:0.75rem;">125%</button>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="export-btn" id="btn-font-decrease" style="flex:1; justify-content:center;">A− Smaller</button>
+                <button type="button" class="export-btn" id="btn-font-reset" style="flex:1; justify-content:center;">Reset</button>
+                <button type="button" class="export-btn" id="btn-font-increase" style="flex:1; justify-content:center;">A+ Larger</button>
+            </div>
+        </div>
+
+        <!-- Motion Preferences -->
+        <div class="accessibility-section">
+            <div class="accessibility-title">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1 14.93V17a1 1 0 0 1-2 0v-.07A8 8 0 0 1 4.07 10H5a1 1 0 0 1 0-2h-.93A8 8 0 0 1 11 4.07V5a1 1 0 0 1 2 0v-.93A8 8 0 0 1 19.93 11H19a1 1 0 0 1 0 2h.93A8 8 0 0 1 13 16.93z"/></svg>
+                Motion & Low Latency
+            </div>
+            <label style="display:flex; align-items:center; justify-content:space-between; font-size:0.85rem; cursor:pointer;">
+                <span>Reduced Motion (Zero Animations)</span>
+                <input type="checkbox" id="toggle-reduced-motion" style="width:18px; height:18px;">
+            </label>
+        </div>
+    </div>
+</aside>
+
+<!-- Modal: Email Report Modal -->
+<div class="modal-overlay" id="email-report-modal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 style="font-size: 1rem; font-weight: 700;">Email Report Snapshot</h3>
+            <button class="btn-close-modal" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+        </div>
+        <form id="email-report-form">
+            <input type="hidden" name="snapshot_id" id="email-snapshot-id" value="">
+            <div class="modal-body">
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Recipient Email Addresses (comma-separated)</label>
+                    <input type="text" name="recipients" required placeholder="operator@sunscrap.com, manager@sunscrap.com" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Subject</label>
+                    <input type="text" name="subject" id="email-subject" value="Sunscrap Solar SCADA Report" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Attachment Format</label>
+                    <select name="format" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                        <option value="xlsx">Excel Spreadsheet (.xlsx)</option>
+                        <option value="csv">Comma Separated Values (.csv)</option>
+                        <option value="pdf">PDF Document (.pdf)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close-modal export-btn">Cancel</button>
+                <button type="submit" class="export-btn export-btn-primary">Send Report</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

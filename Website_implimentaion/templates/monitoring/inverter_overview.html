@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% block title %}Inverter Overview — {{ selected_device.name }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
+    <div>
+        <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">
+            Inverter Telemetry & String Diagnostics
+        </h1>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+            Manufacturer: <b>Sungrow SG300HX</b> • Configured: <b>300 kW AC / 356.92 kWp DC</b> • Zone: <b>{{ selected_device.zone }}</b>
+        </div>
+    </div>
+
+    <!-- Device Selector Form -->
+    <form method="GET" style="display: flex; align-items: center; gap: 10px;">
+        <label for="inv-select" style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted);">Select Device:</label>
+        <select id="inv-select" name="device" onchange="this.form.submit()" style="padding: 8px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 600; color: var(--text-main); background: var(--surface);">
+            {% for inv in inverters %}
+                <option value="{{ inv.device_id }}" {% if inv.device_id == selected_device.device_id %}selected{% endif %}>
+                    {{ inv.device_id }}: {{ inv.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+<!-- Primary Inverter Metric Cards -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <span class="kpi-label">Active AC Power</span>
+        <div class="kpi-value" style="color: var(--primary);">{{ latest.active_power|floatformat:2 }} <span class="kpi-unit">kW</span></div>
+        <span class="kpi-sub">Rated Capacity: 300.0 kW</span>
+    </div>
+
+    <div class="kpi-card">
+        <span class="kpi-label">Total DC Power</span>
+        <div class="kpi-value">{{ latest.dc_power|floatformat:2 }} <span class="kpi-unit">kW</span></div>
+        <span class="kpi-sub">Vdc: {{ latest.vdc }} V • Idc: {{ latest.idc }} A</span>
+    </div>
+
+    <div class="kpi-card kpi-green">
+        <span class="kpi-label">Today Energy Yield</span>
+        <div class="kpi-value">{{ latest.daily_yield|floatformat:2 }} <span class="kpi-unit">kWh</span></div>
+        <span class="kpi-sub">Lifetime: {{ latest.lifetime_yield|floatformat:0 }} kWh</span>
+    </div>
+
+    <div class="kpi-card kpi-gold">
+        <span class="kpi-label">Inverter Efficiency</span>
+        <div class="kpi-value">{{ latest.conversion_efficiency|default:"98.4" }} <span class="kpi-unit">%</span></div>
+        <span class="kpi-sub">100 × P_AC / P_DC</span>
+    </div>
+</div>
+
+<!-- Secondary Technical Parameters Grid -->
+<div class="card" style="padding: 16px 20px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; text-align: center;">
+        <div style="background: var(--surface-alt); padding: 10px; border-radius: var(--radius-sm);">
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Internal Temperature</span>
+            <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">{{ latest.temperature }} °C</div>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">Extrema: {{ extrema.min_temp }} - {{ extrema.max_temp }} °C</span>
+        </div>
+        <div style="background: var(--surface-alt); padding: 10px; border-radius: var(--radius-sm);">
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Power Factor</span>
+            <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">{{ latest.power_factor }}</div>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">Extrema: {{ extrema.min_pf }} - {{ extrema.max_pf }}</span>
+        </div>
+        <div style="background: var(--surface-alt); padding: 10px; border-radius: var(--radius-sm);">
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Grid Frequency</span>
+            <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">{{ latest.frequency }} Hz</div>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">Nominal 50.0 Hz</span>
+        </div>
+        <div style="background: var(--surface-alt); padding: 10px; border-radius: var(--radius-sm);">
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Insulation Resistance</span>
+            <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">{{ latest.insulation_resistance }} kΩ</div>
+            <span style="font-size: 0.72rem; color: var(--success); font-weight: 600;">Good (> 500 kΩ)</span>
+        </div>
+        <div style="background: var(--surface-alt); padding: 10px; border-radius: var(--radius-sm);">
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Phase Voltages (R-Y-B)</span>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">800 / 800 / 800 V</div>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">Balanced 3-Phase</span>
+        </div>
+        <div style="background: var(--surface-alt); padding: 10px; border-radius: var(--radius-sm);">
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Operating State</span>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--success);">{{ latest.operating_status }}</div>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">Alarm Code: {{ latest.alarm_code }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header">
+            <h2 class="card-title">AC vs DC Power Curve</h2>
+        </div>
+        <div id="chart-inv-ac-dc" style="width: 100%; height: 280px;"></div>
+    </div>
+
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header">
+            <h2 class="card-title">Inverter Internal Temperature Trend</h2>
+        </div>
+        <div id="chart-inv-temp" style="width: 100%; height: 280px;"></div>
+    </div>
+</div>
+
+<!-- 12 MPPT Channels & 25 String Currents -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+    <!-- 12 MPPT Table -->
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header">
+            <h2 class="card-title">12 MPPT Voltage & Current Channels</h2>
+            <button class="export-btn btn-copy-table" data-target-table="mppt-table">Copy Table</button>
+        </div>
+        <div class="table-container" style="max-height: 340px; overflow-y: auto;">
+            <table class="scada-table" id="mppt-table">
+                <thead>
+                    <tr>
+                        <th>MPPT Channel</th>
+                        <th>Voltage (Vdc)</th>
+                        <th>Current (Idc)</th>
+                        <th>Power (kW)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in mppt_channels %}
+                        <tr>
+                            <td><b>MPPT {{ m.channel }}</b></td>
+                            <td>{{ m.voltage }} V</td>
+                            <td>{{ m.current }} A</td>
+                            <td>{{ m.power }} kW</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 25 String Currents Table -->
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header">
+            <h2 class="card-title">25 PV String Current Channels</h2>
+            <button class="export-btn btn-copy-table" data-target-table="string-table">Copy Table</button>
+        </div>
+        <div class="table-container" style="max-height: 340px; overflow-y: auto;">
+            <table class="scada-table" id="string-table">
+                <thead>
+                    <tr>
+                        <th>String #</th>
+                        <th>Current (A)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in string_currents %}
+                        <tr>
+                            <td><b>String {{ s.string }}</b></td>
+                            <td>{{ s.current }} A</td>
+                            <td>
+                                <span class="status-badge {% if s.status == 'Normal' %}online{% else %}stale{% endif %}">
+                                    {{ s.status }}
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const times = {{ c_times_json|safe }};
+    const ac_data = {{ c_ac_json|safe }};
+    const dc_data = {{ c_dc_json|safe }};
+    const temp_data = {{ c_temp_json|safe }};
+
+    // 1. AC vs DC Power Chart
+    ChartRegistry.init('chart-inv-ac-dc', {
+        tooltip: { trigger: 'axis' },
+        legend: { data: ['AC Power (kW)', 'DC Power (kW)'], top: 0 },
+        grid: { left: '3%', right: '4%', bottom: '5%', top: '15%', containLabel: true },
+        xAxis: { type: 'category', data: times },
+        yAxis: { type: 'value', name: 'kW' },
+        series: [
+            { name: 'AC Power (kW)', type: 'line', data: ac_data, smooth: true, itemStyle: { color: '#1D5BF1' } },
+            { name: 'DC Power (kW)', type: 'line', data: dc_data, smooth: true, itemStyle: { color: '#F59E0B' } }
+        ]
+    });
+
+    // 2. Temperature Chart
+    ChartRegistry.init('chart-inv-temp', {
+        tooltip: { trigger: 'axis' },
+        grid: { left: '3%', right: '4%', bottom: '5%', top: '15%', containLabel: true },
+        xAxis: { type: 'category', data: times },
+        yAxis: { type: 'value', name: '°C' },
+        series: [
+            {
+                name: 'Temperature (°C)',
+                type: 'line',
+                data: temp_data,
+                smooth: true,
+                itemStyle: { color: '#EF4444' },
+                areaStyle: { opacity: 0.15, color: '#EF4444' }
+            }
+        ]
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — Sunscrap Solar SCADA</title>
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <script src="{% static 'js/app.js' %}"></script>
+    <style>
+        body {
+            background-color: var(--nav-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 440px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+        }
+        .login-banner {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            display: block;
+        }
+        .login-body {
+            padding: 28px;
+        }
+        .login-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--nav-bg);
+            margin-bottom: 4px;
+        }
+        .login-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 22px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.92rem;
+            color: var(--text-main);
+            outline: none;
+            transition: var(--transition);
+        }
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        .pwd-container {
+            position: relative;
+        }
+        .btn-toggle-pwd {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 6px;
+        }
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+        .login-footer-links {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 18px;
+            font-size: 0.82rem;
+        }
+        .login-footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .login-footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <img src="{% static 'assets/solar-banner.png' %}" alt="Sunscrap Solar Plant" class="login-banner">
+    
+    <div class="login-body">
+        <h1 class="login-title">Sunscrap Solar SCADA</h1>
+        <p class="login-sub">Sign in with authorized plant operator credentials</p>
+
+        {% if messages %}
+            <div style="margin-bottom: 16px;">
+                {% for msg in messages %}
+                    <div style="padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 500;
+                        {% if msg.tags == 'error' %}background: var(--error-bg); color: var(--error); border-left: 3px solid var(--error);
+                        {% else %}background: var(--success-bg); color: var(--success);{% endif %}">
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label" for="username">Username or Email</label>
+                <input type="text" id="username" name="username" class="form-input" required autofocus placeholder="Enter your operator username">
+            </div>
+
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label class="form-label" for="password" style="margin-bottom: 0;">Password</label>
+                    <a href="{% url 'forgot_password' %}" style="font-size: 0.75rem; color: var(--primary); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+                </div>
+                <div class="pwd-container">
+                    <input type="password" id="password" name="password" class="form-input" required placeholder="••••••••">
+                    <button type="button" class="btn-toggle-pwd" data-target="password">Show</button>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-muted); cursor: pointer;">
+                    <input type="checkbox" name="remember_me" checked>
+                    Remember me on this workstation
+                </label>
+            </div>
+
+            <button type="submit" class="btn-submit">Sign In to SCADA</button>
+        </form>
+
+        <div class="login-footer-links">
+            <a href="{% url 'login_otp' %}">Sign in with Email OTP</a>
+            <span style="color: var(--text-dim);">•</span>
+            <span style="color: var(--text-muted);">4,640 kWp Plant</span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

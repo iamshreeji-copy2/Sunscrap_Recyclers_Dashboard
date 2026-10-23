@@ -1,0 +1,378 @@
+{% extends 'base.html' %}
+{% block title %}Plant Dashboard{% endblock %}
+
+{% block content %}
+<!-- Top Communication Health Banner -->
+<div class="card" style="padding: 14px 20px; margin-bottom: 20px; background: linear-gradient(to right, #FFFFFF, var(--surface-alt));">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 18px;">
+            <div>
+                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block;">Communication Health</span>
+                <span style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">
+                    {{ comm_stats.online }} / {{ comm_stats.total }} Devices Online
+                </span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <span class="status-badge online">{{ comm_stats.online }} Online</span>
+                {% if comm_stats.stale > 0 %}<span class="status-badge stale">{{ comm_stats.stale }} Stale</span>{% endif %}
+                {% if comm_stats.offline > 0 %}<span class="status-badge offline">{{ comm_stats.offline }} Offline</span>{% endif %}
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 20px; font-size: 0.82rem; color: var(--text-muted);">
+            <div><b>Topology:</b> 13 Inverters • 2 MFMs (LT & Outgoing) • 1 WMS</div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--success);"></span>
+                Last observation: <b>{{ last_reading_time|date:"H:i:s" }}</b> (< 30s ago)
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Primary Scientific KPIs -->
+<div class="kpi-grid">
+    <div class="kpi-card kpi-gold">
+        <span class="kpi-label">Specific Yield</span>
+        <div class="kpi-value">{{ specific_yield }} <span class="kpi-unit">kWh/kWp</span></div>
+        <span class="kpi-sub">Basis: Summed Inverter AC / 4,640 kWp DC</span>
+    </div>
+
+    <div class="kpi-card kpi-green">
+        <span class="kpi-label">Plant CUF (24-Hour)</span>
+        <div class="kpi-value">{{ cuf_val }} <span class="kpi-unit">%</span></div>
+        <span class="kpi-sub">Basis: E_AC / (3,900 kW × 24 h)</span>
+    </div>
+
+    <div class="kpi-card kpi-cyan">
+        <span class="kpi-label">Performance Ratio (PR)</span>
+        <div class="kpi-value">{% if pr_val %}{{ pr_val }} <span class="kpi-unit">%</span>{% else %}N/A{% endif %}</div>
+        <span class="kpi-sub">Basis: GTI POA Insolation (5.94 kWh/m²)</span>
+    </div>
+
+    <div class="kpi-card">
+        <span class="kpi-label">Plant Efficiency</span>
+        <div class="kpi-value" style="font-size: 1.4rem; color: var(--text-muted);">N/A</div>
+        <span class="kpi-sub">Preserved N/A (Requires engineering definition)</span>
+    </div>
+</div>
+
+<!-- Energy Generation Summary Cards -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <span class="kpi-label">Inverter Total Active Power</span>
+        <div class="kpi-value" style="color: var(--primary);">{{ total_inv_power|floatformat:2 }} <span class="kpi-unit">kW</span></div>
+        <span class="kpi-sub">13 Inverters Operating Sum</span>
+    </div>
+
+    <div class="kpi-card">
+        <span class="kpi-label">Inverter Today Generation</span>
+        <div class="kpi-value">{{ total_inv_today|floatformat:2 }} <span class="kpi-unit">kWh</span></div>
+        <span class="kpi-sub">Cumulative Today Yield (13 Inverters)</span>
+    </div>
+
+    <div class="kpi-card">
+        <span class="kpi-label">Outgoing Meter Export Today</span>
+        <div class="kpi-value">{{ out_today|floatformat:2 }} <span class="kpi-unit">kWh</span></div>
+        <span class="kpi-sub">Grid Substation Export (Active: {{ out_power }} kW)</span>
+    </div>
+
+    <div class="kpi-card">
+        <span class="kpi-label">Target Energy Achievement</span>
+        <div class="kpi-value">{% if achievement_pct %}{{ achievement_pct }} <span class="kpi-unit">%</span>{% else %}N/A{% endif %}</div>
+        <span class="kpi-sub">Target: {{ expected_kwh|floatformat:0 }} kWh</span>
+    </div>
+</div>
+
+<!-- Financial Revenue & Multi-Currency Electricity Yield Engine -->
+<div class="card" style="border: 2px solid #10B981; background: linear-gradient(to right bottom, var(--surface), var(--surface-alt));">
+    <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+        <div>
+            <h2 class="card-title" style="color: #059669;">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Solar Electricity Commercial Revenue (Tariff Multiplier)
+            </h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+                Real-time financial yield computation: <b>Units Generated (kWh) × Rate per Unit</b>
+            </span>
+        </div>
+
+        <!-- Currency & Tariff Controls -->
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <!-- Currency Selector -->
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <label for="revenue-currency-select" style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Currency:</label>
+                <select id="revenue-currency-select" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; color: var(--text-main); background: var(--surface); cursor: pointer;">
+                    <option value="INR" selected>INR (₹) — Indian Rupee</option>
+                    <option value="USD">USD ($) — US Dollar</option>
+                    <option value="EUR">EUR (€) — Euro</option>
+                    <option value="GBP">GBP (£) — British Pound</option>
+                </select>
+            </div>
+
+            <!-- Tariff Rate Input -->
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <label for="revenue-tariff-input" style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Tariff / Unit:</label>
+                <div style="display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 8px;">
+                    <span class="currency-symbol-label" style="font-weight: 800; color: #059669; font-size: 0.9rem;">₹</span>
+                    <input type="number" id="revenue-tariff-input" step="0.01" min="0" value="3.00" style="width: 70px; padding: 6px 4px; border: none; font-size: 0.9rem; font-weight: 700; outline: none; background: transparent;">
+                </div>
+            </div>
+
+            <!-- Quick Tariff Presets -->
+            <div style="display: flex; gap: 4px;">
+                <button type="button" class="export-btn btn-tariff-preset" data-rate="2.50" style="padding: 4px 8px; font-size: 0.75rem;">₹2.50</button>
+                <button type="button" class="export-btn btn-tariff-preset" data-rate="3.00" style="padding: 4px 8px; font-size: 0.75rem; background: #ECFDF5; border-color: #10B981; color: #059669; font-weight: 700;">₹3.00</button>
+                <button type="button" class="export-btn btn-tariff-preset" data-rate="3.50" style="padding: 4px 8px; font-size: 0.75rem;">₹3.50</button>
+                <button type="button" class="export-btn btn-tariff-preset" data-rate="4.20" style="padding: 4px 8px; font-size: 0.75rem;">₹4.20</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Raw Data Holders for JavaScript Financial Engine -->
+    <span id="val-revenue-today-kwh" data-kwh="{{ total_inv_today }}" style="display:none;"></span>
+    <span id="val-revenue-life-kwh" data-kwh="{{ total_inv_life }}" style="display:none;"></span>
+    <span id="val-revenue-export-kwh" data-kwh="{{ out_today }}" style="display:none;"></span>
+
+    <!-- Revenue Output KPI Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 10px;">
+        <div style="background: var(--surface); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span class="kpi-label" style="margin-bottom: 0;">Today's Inverter Revenue</span>
+                <span style="font-size: 0.72rem; font-weight: 700; background: #ECFDF5; color: #059669; padding: 2px 8px; border-radius: 12px;">Solar Yield</span>
+            </div>
+            <div class="kpi-value" id="display-revenue-today" style="color: #059669; font-size: 1.85rem;">₹ 35,763.90</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">
+                <b>{{ total_inv_today|floatformat:2 }} kWh</b> generated today @ <span id="display-rate-unit">₹3.00/unit</span>
+            </div>
+        </div>
+
+        <div style="background: var(--surface); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span class="kpi-label" style="margin-bottom: 0;">Grid Substation Export Revenue</span>
+                <span style="font-size: 0.72rem; font-weight: 700; background: var(--primary-light); color: var(--primary); padding: 2px 8px; border-radius: 12px;">Discom Feed-in</span>
+            </div>
+            <div class="kpi-value" id="display-revenue-export" style="color: var(--primary); font-size: 1.85rem;">₹ 35,334.72</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">
+                <b>{{ out_today|floatformat:2 }} kWh</b> export through Outgoing MFM
+            </div>
+        </div>
+
+        <div style="background: var(--surface); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span class="kpi-label" style="margin-bottom: 0;">Lifetime Plant Commercial Value</span>
+                <span style="font-size: 0.72rem; font-weight: 700; background: #FEF3C7; color: #B45309; padding: 2px 8px; border-radius: 12px;">Cumulative</span>
+            </div>
+            <div class="kpi-value" id="display-revenue-lifetime" style="color: #D97706; font-size: 1.85rem;">₹ 47,02,638.00</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">
+                <b>{{ total_inv_life|floatformat:0 }} kWh</b> cumulative solar generation
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Weather & Environmental Cards -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 24px;">
+    <!-- Meteorological Overview -->
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header">
+            <h2 class="card-title">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V17a1 1 0 0 1-2 0v-.07A8 8 0 0 1 4.07 10H5a1 1 0 0 1 0-2h-.93A8 8 0 0 1 11 4.07V5a1 1 0 0 1 2 0v-.93A8 8 0 0 1 19.93 11H19a1 1 0 0 1 0 2h.93A8 8 0 0 1 13 16.93z"/></svg>
+                Meteorological Station (WMS-01)
+            </h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Kipp & Zonen Calibrated Sensors</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; text-align: center;">
+            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">GHI</span>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.ghi }}</div>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">W/m²</span>
+            </div>
+            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">GTI</span>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.gti }}</div>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">W/m²</span>
+            </div>
+            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Ambient Temp</span>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.ambient_temp }}</div>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">°C</span>
+            </div>
+            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Module Temp</span>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.module_temp }}</div>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">°C</span>
+            </div>
+            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Humidity</span>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.humidity }}</div>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">%RH</span>
+            </div>
+            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">GTI Insolation</span>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.insolation_gti }}</div>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">kWh/m²</span>
+            </div>
+            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Wind Speed</span>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.wind_speed }}</div>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">m/s</span>
+            </div>
+            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Cloud Cover</span>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.cloud_cover }}</div>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Environmental Savings -->
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header">
+            <h2 class="card-title">Environmental Offset</h2>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">IEC Factors</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Avoided CO₂</span>
+                <span style="font-size: 1.15rem; font-weight: 800; color: var(--success);">{{ env_metrics.co2_saved_tonnes }} <span style="font-size: 0.8rem; font-weight: 600;">tCO₂</span></span>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Trees Equivalent</span>
+                <span style="font-size: 1.15rem; font-weight: 800; color: var(--primary);">{{ env_metrics.trees_planted }} <span style="font-size: 0.8rem; font-weight: 600;">trees</span></span>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Coal Avoided</span>
+                <span style="font-size: 1.15rem; font-weight: 800; color: var(--accent-gold);">{{ env_metrics.coal_saved_tonnes }} <span style="font-size: 0.8rem; font-weight: 600;">tonnes</span></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Apache ECharts Section -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Real-Time Power & Solar Irradiance Profiles</h2>
+        <div style="display: flex; gap: 8px;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Dual-Axis: Active Power (kW) vs GTI/GHI (W/m²)</span>
+        </div>
+    </div>
+    <div id="dashboard-power-irradiance-chart" style="width: 100%; height: 380px;"></div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Inverter Cumulative Yield vs Meter Export</h2>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Comparison of Generation against Export (15m Intervals)</span>
+    </div>
+    <div id="dashboard-generation-export-chart" style="width: 100%; height: 320px;"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const times = {{ chart_times_json|safe }};
+    const ghi = {{ chart_ghi_json|safe }};
+    const gti = {{ chart_gti_json|safe }};
+    const p_out = {{ chart_p_out_json|safe }};
+    const p_inv = {{ chart_p_inv_json|safe }};
+    const inv_yield = {{ chart_inv_yield_json|safe }};
+    const exp_yield = {{ chart_export_yield_json|safe }};
+
+    // 1. Dual-Axis Power & Irradiance Chart
+    ChartRegistry.init('dashboard-power-irradiance-chart', {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'cross' }
+        },
+        legend: {
+            data: ['Inverter Total Power (kW)', 'Outgoing Export Power (kW)', 'GTI (W/m²)', 'GHI (W/m²)'],
+            top: 0
+        },
+        grid: { left: '3%', right: '4%', bottom: '10%', top: '14%', containLabel: true },
+        xAxis: {
+            type: 'category',
+            data: times,
+            boundaryGap: false
+        },
+        yAxis: [
+            {
+                type: 'value',
+                name: 'Active Power (kW)',
+                position: 'left',
+                axisLabel: { formatter: '{value} kW' }
+            },
+            {
+                type: 'value',
+                name: 'Irradiance (W/m²)',
+                position: 'right',
+                axisLabel: { formatter: '{value} W/m²' },
+                splitLine: { show: false }
+            }
+        ],
+        dataZoom: [
+            { type: 'inside', start: 0, end: 100 },
+            { type: 'slider', start: 0, end: 100, bottom: 0, height: 20 }
+        ],
+        series: [
+            {
+                name: 'Inverter Total Power (kW)',
+                type: 'line',
+                data: p_inv,
+                smooth: true,
+                yAxisIndex: 0,
+                itemStyle: { color: '#1D5BF1' },
+                lineStyle: { width: 3 }
+            },
+            {
+                name: 'Outgoing Export Power (kW)',
+                type: 'line',
+                data: p_out,
+                smooth: true,
+                yAxisIndex: 0,
+                itemStyle: { color: '#10B981' },
+                lineStyle: { width: 2, type: 'dashed' }
+            },
+            {
+                name: 'GTI (W/m²)',
+                type: 'line',
+                data: gti,
+                smooth: true,
+                yAxisIndex: 1,
+                itemStyle: { color: '#F59E0B' },
+                areaStyle: { opacity: 0.15, color: '#F59E0B' }
+            },
+            {
+                name: 'GHI (W/m²)',
+                type: 'line',
+                data: ghi,
+                smooth: true,
+                yAxisIndex: 1,
+                itemStyle: { color: '#EF4444' }
+            }
+        ]
+    });
+
+    // 2. Generation vs Export Bar Chart
+    ChartRegistry.init('dashboard-generation-export-chart', {
+        tooltip: { trigger: 'axis' },
+        legend: { data: ['Inverter Generation (kWh)', 'Meter Export (kWh)'], top: 0 },
+        grid: { left: '3%', right: '3%', bottom: '5%', top: '15%', containLabel: true },
+        xAxis: { type: 'category', data: times },
+        yAxis: { type: 'value', name: 'Energy (kWh)' },
+        series: [
+            {
+                name: 'Inverter Generation (kWh)',
+                type: 'bar',
+                data: inv_yield,
+                itemStyle: { color: '#1D5BF1' }
+            },
+            {
+                name: 'Meter Export (kWh)',
+                type: 'bar',
+                data: exp_yield,
+                itemStyle: { color: '#10B981' }
+            }
+        ]
+    });
+});
+</script>
+{% endblock %}

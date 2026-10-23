@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Report Schedules{% endblock %}
+
+{% block content %}
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
+    <div>
+        <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Automated Report Schedules</h1>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+            Manage recurring daily, weekly, and monthly report dispatches to stakeholder email distribution lists.
+        </div>
+    </div>
+    <button type="button" class="export-btn export-btn-primary" onclick="document.getElementById('new-schedule-modal').classList.add('active')">
+        + Create Automated Schedule
+    </button>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div class="table-container">
+        <table class="scada-table" id="schedules-table">
+            <thead>
+                <tr>
+                    <th>Schedule Name</th>
+                    <th>Report Type</th>
+                    <th>Frequency</th>
+                    <th>Interval</th>
+                    <th>Recipients</th>
+                    <th>Format</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in schedules %}
+                    <tr>
+                        <td><b>{{ s.name }}</b></td>
+                        <td>{{ s.report_type|title }}</td>
+                        <td>{{ s.get_period_display }}</td>
+                        <td>{{ s.interval }}</td>
+                        <td style="max-width: 220px; overflow: hidden; text-overflow: ellipsis;">{{ s.recipients }}</td>
+                        <td><span class="status-badge" style="background:#E2E8F0; color:#1E293B;">{{ s.export_format|upper }}</span></td>
+                        <td>
+                            <span class="status-badge {% if s.is_active %}online{% else %}stale{% endif %}">
+                                {% if s.is_active %}Active{% else %}Paused{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <form method="POST" style="margin: 0;">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="toggle">
+                                <input type="hidden" name="schedule_id" value="{{ s.id }}">
+                                <button type="submit" class="export-btn" style="padding: 2px 8px; font-size: 0.72rem;">
+                                    {% if s.is_active %}Pause{% else %}Resume{% endif %}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 36px; color: var(--text-muted);">
+                            No automated report schedules configured yet.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal: New Schedule -->
+<div class="modal-overlay" id="new-schedule-modal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 style="font-size: 1rem; font-weight: 700;">Create Report Schedule</h3>
+            <button type="button" class="btn-close-modal" onclick="document.getElementById('new-schedule-modal').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create">
+            <div class="modal-body">
+                <div style="margin-bottom: 12px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Schedule Title</label>
+                    <input type="text" name="name" required placeholder="e.g. Daily Executive Generation Summary" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div>
+                        <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Report Type</label>
+                        <select name="report_type" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                            <option value="summary">Summary Report</option>
+                            <option value="energy_generation">Energy Generation</option>
+                            <option value="inverter_generation">Inverter Yield</option>
+                            <option value="alarm">Alarm Lifecycle</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Frequency Period</label>
+                        <select name="period" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                            <option value="daily">Daily (Prior Day)</option>
+                            <option value="weekly">Weekly (Monday)</option>
+                            <option value="monthly">Monthly (1st Day)</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Recipients (comma-separated emails)</label>
+                    <input type="text" name="recipients" required placeholder="director@sunscrap.com, plant.head@sunscrap.com" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Attachment Format</label>
+                    <select name="export_format" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                        <option value="xlsx">Excel (.xlsx)</option>
+                        <option value="pdf">PDF Document (.pdf)</option>
+                        <option value="csv">CSV (.csv)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="export-btn" onclick="document.getElementById('new-schedule-modal').classList.remove('active')">Cancel</button>
+                <button type="submit" class="export-btn export-btn-primary">Save Schedule</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

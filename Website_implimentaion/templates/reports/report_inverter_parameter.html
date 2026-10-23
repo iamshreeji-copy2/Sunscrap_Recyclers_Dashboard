@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}{{ report_title }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">{{ report_title }}</h1>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Comprehensive 69-parameter electrical history: 19 base metrics + 12 MPPT Vdc + 12 MPPT Idc + 25 String currents.
+    </div>
+</div>
+
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; background: var(--surface); padding: 12px 18px; border-radius: var(--radius-md); border: 1px solid var(--border);">
+    <form method="GET" style="display: flex; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Inverter:</label>
+            <select name="device" onchange="this.form.submit()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; color: var(--text-main); background: var(--surface);">
+                {% for inv in inverters %}
+                    <option value="{{ inv.device_id }}" {% if inv.device_id == selected_device.device_id %}selected{% endif %}>
+                        {{ inv.device_id }}: {{ inv.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Period:</label>
+            <div style="display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden;">
+                <button type="submit" name="period" value="daily" class="export-btn {% if period == 'daily' or not period %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Daily</button>
+                <button type="submit" name="period" value="weekly" class="export-btn {% if period == 'weekly' %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Weekly</button>
+                <button type="submit" name="period" value="monthly" class="export-btn {% if period == 'monthly' %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Monthly</button>
+            </div>
+        </div>
+    </form>
+
+    <div>
+        {% include 'components/export_toolbar.html' with table_id='inv-param-table' report_title=report_title snapshot=snapshot %}
+    </div>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div style="padding: 8px 16px; background: var(--surface-alt); border-bottom: 1px solid var(--border); font-size: 0.78rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+        <span>Horizontal scroll enabled across all 69 columns • Filtered Rows: <b>{{ rows|length }}</b></span>
+        <span>Sticky Timestamp & Inverter ID column</span>
+    </div>
+    <div class="table-container" style="max-height: 520px; overflow-y: auto;">
+        <table class="scada-table" id="inv-param-table">
+            <thead>
+                <tr>
+                    {% for col in columns %}
+                        <th style="{% if forloop.first %}position:sticky; left:0; z-index:20; background-color: var(--nav-bg);{% endif %}">
+                            {{ col.label }}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        {% for col in columns %}
+                            <td style="{% if forloop.first %}position:sticky; left:0; z-index:10; background-color: var(--surface); font-weight:600; border-right: 2px solid var(--border);{% endif %}">
+                                {% for k, val in row.items %}
+                                    {% if k == col.key %}
+                                        {{ val }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="{{ columns|length }}" style="text-align:center; padding: 24px; color: var(--text-muted);">
+                            No parameter observations recorded.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

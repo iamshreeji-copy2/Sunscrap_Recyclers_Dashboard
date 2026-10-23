@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Device Topology{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Device Topology & Hardware Mappings</h1>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+        All 16 monitored field instruments: 13 Inverters, 2 Multi-Function Meters, and 1 Weather Station.
+    </div>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div class="table-container">
+        <table class="scada-table" id="devices-config-table">
+            <thead>
+                <tr>
+                    <th>Device ID</th>
+                    <th>Device Name</th>
+                    <th>Category</th>
+                    <th>Manufacturer / Model</th>
+                    <th>Zone</th>
+                    <th>AC / DC Rating</th>
+                    <th>Poll Cadence</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in devices %}
+                    <tr>
+                        <td><b>{{ d.device_id }}</b></td>
+                        <td>{{ d.name }}</td>
+                        <td>{{ d.get_device_type_display }}</td>
+                        <td>{{ d.manufacturer }} {{ d.model }}</td>
+                        <td>{{ d.zone }}</td>
+                        <td>
+                            {% if d.ac_capacity_kw > 0 %}
+                                {{ d.ac_capacity_kw|floatformat:0 }} kW AC / {{ d.dc_capacity_kwp|floatformat:0 }} kWp DC
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>{{ d.poll_interval_seconds }}s</td>
+                        <td>
+                            <span class="status-badge {% if d.is_enabled %}online{% else %}offline{% endif %}">
+                                {% if d.is_enabled %}Enabled{% else %}Disabled{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

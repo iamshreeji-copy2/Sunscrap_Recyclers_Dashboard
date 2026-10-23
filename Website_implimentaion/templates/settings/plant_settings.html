@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Plant Configuration{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="margin-bottom: 20px;">
+        <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Plant Configuration & Capacities</h1>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+            Core organization parameters, AC/DC nominal ratings, timezone, and geographical benchmarks.
+        </div>
+    </div>
+
+    <div class="card">
+        <form method="POST">
+            {% csrf_token %}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Plant Name</label>
+                    <input type="text" name="name" value="{{ plant.name }}" required style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Organization Entity</label>
+                    <input type="text" name="organization" value="{{ plant.organization }}" required style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Configured AC Capacity (kW)</label>
+                    <input type="number" step="0.1" name="ac_capacity_kw" value="{{ plant.ac_capacity_kw }}" required style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Configured DC Capacity (kWp)</label>
+                    <input type="number" step="0.1" name="dc_capacity_kwp" value="{{ plant.dc_capacity_kwp }}" required style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Expected Daily Yield (kWh)</label>
+                    <input type="number" step="0.1" name="expected_daily_yield_kwh" value="{{ plant.expected_daily_yield_kwh }}" required style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Plant Timezone</label>
+                    <input type="text" name="timezone" value="{{ plant.timezone }}" required style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button type="submit" class="export-btn export-btn-primary">Save Plant Parameters</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

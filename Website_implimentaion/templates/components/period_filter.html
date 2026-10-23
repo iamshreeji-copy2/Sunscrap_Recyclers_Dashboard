@@ -1,0 +1,35 @@
+<!-- Period & Resolution Filter Bar -->
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; background: var(--surface); padding: 12px 18px; border-radius: var(--radius-md); border: 1px solid var(--border);">
+    <form method="GET" style="display: flex; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <!-- Preserve extra query parameters -->
+        {% if selected_device %}<input type="hidden" name="device" value="{{ selected_device.device_id }}">{% endif %}
+        {% if zone %}<input type="hidden" name="zone" value="{{ zone }}">{% endif %}
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Period:</label>
+            <div style="display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden;">
+                <button type="submit" name="period" value="daily" class="export-btn {% if period == 'daily' or not period %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Daily</button>
+                <button type="submit" name="period" value="weekly" class="export-btn {% if period == 'weekly' %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Weekly</button>
+                <button type="submit" name="period" value="monthly" class="export-btn {% if period == 'monthly' %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Monthly</button>
+                <button type="submit" name="period" value="custom" class="export-btn {% if period == 'custom' %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Custom</button>
+                <button type="submit" name="period" value="yearly" class="export-btn {% if period == 'yearly' %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Yearly</button>
+            </div>
+        </div>
+
+        {% if show_interval|default:True %}
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Resolution:</label>
+            <select name="interval" onchange="this.form.submit()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; color: var(--text-main); background: var(--surface);">
+                <option value="raw" {% if interval == 'raw' %}selected{% endif %}>Raw Observations</option>
+                <option value="15min" {% if interval == '15min' or not interval %}selected{% endif %}>15 Minutes</option>
+                <option value="hourly" {% if interval == 'hourly' %}selected{% endif %}>1 Hour Rollup</option>
+                <option value="daily" {% if interval == 'daily' %}selected{% endif %}>Daily Rollup</option>
+            </select>
+        </div>
+        {% endif %}
+    </form>
+
+    <div>
+        {% include 'components/export_toolbar.html' with table_id=table_id|default:'report-data-table' report_title=report_title snapshot=snapshot %}
+    </div>
+</div>

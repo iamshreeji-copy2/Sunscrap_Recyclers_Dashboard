@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Security Audit Logs{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Security & Configuration Audit Trail</h1>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Append-only operational audit records: logins, OTP challenges, password resets, email updates, and plant mutations.
+    </div>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div class="table-container">
+        <table class="scada-table" id="audit-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Operator User</th>
+                    <th>Action</th>
+                    <th>Audit Details</th>
+                    <th>Source IP Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                    <tr>
+                        <td>{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td><b>{{ log.user.username|default:"System / Anonymous" }}</b></td>
+                        <td><span class="status-badge" style="background:#E2E8F0; color:#0F172A; font-family:monospace;">{{ log.action }}</span></td>
+                        <td>{{ log.details }}</td>
+                        <td><span style="font-family: monospace; font-size: 0.8rem; color: var(--text-muted);">{{ log.ip_address|default:"127.0.0.1" }}</span></td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                            No audit log events recorded yet.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

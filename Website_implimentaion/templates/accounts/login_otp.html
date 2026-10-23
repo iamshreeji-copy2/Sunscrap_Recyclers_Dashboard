@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email OTP Verification — Sunscrap Solar SCADA</title>
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <style>
+        body {
+            background-color: var(--nav-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 440px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+        }
+        .form-input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1.1rem;
+            text-align: center;
+            letter-spacing: 0.25em;
+            outline: none;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div style="text-align: center; margin-bottom: 24px;">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">One-Time Password (OTP)</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">Six-digit cryptographic code sent to verified email</p>
+    </div>
+
+    {% if messages %}
+        <div style="margin-bottom: 18px;">
+            {% for msg in messages %}
+                <div style="padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 500;
+                    {% if msg.tags == 'error' %}background: var(--error-bg); color: var(--error); border-left: 3px solid var(--error);
+                    {% elif msg.tags == 'warning' %}background: var(--warning-bg); color: var(--warning);
+                    {% else %}background: var(--success-bg); color: var(--success);{% endif %}">
+                    {{ msg }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if demo_hint %}
+        <div style="background: #ECFDF5; border: 1px dashed #10B981; padding: 10px; border-radius: var(--radius-sm); font-size: 0.82rem; color: #065F46; margin-bottom: 16px; text-align: center;">
+            <b>Captured Local Mailbox Code:</b> <span style="font-family: monospace; font-size: 1.1rem; letter-spacing: 0.15em; font-weight: 700;">{{ demo_hint }}</span>
+        </div>
+    {% endif %}
+
+    {% if step == 'verify' %}
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="verify_otp">
+            <div style="margin-bottom: 16px;">
+                <label style="display:block; font-size:0.82rem; font-weight:600; color:var(--text-main); margin-bottom:6px; text-align:center;">Enter 6-Digit Code</label>
+                <input type="text" name="code" maxlength="6" pattern="[0-9]{6}" required autofocus class="form-input" placeholder="000000">
+            </div>
+            <button type="submit" class="btn-submit">Verify & Login</button>
+        </form>
+
+        <form method="POST" style="margin-top: 14px; text-align: center;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="back">
+            <button type="submit" style="background: none; border: none; color: var(--text-muted); font-size: 0.82rem; cursor: pointer;">← Change email address</button>
+        </form>
+    {% else %}
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="request_otp">
+            <div style="margin-bottom: 16px;">
+                <label style="display:block; font-size:0.82rem; font-weight:600; color:var(--text-main); margin-bottom:6px;">Registered Operator Email</label>
+                <input type="email" name="email" required autofocus placeholder="operator@sunscrap.com" style="width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.92rem;">
+            </div>
+            <button type="submit" class="btn-submit">Dispatch Verification Code</button>
+        </form>
+    {% endif %}
+
+    <div style="margin-top: 24px; text-align: center;">
+        <a href="{% url 'login' %}" style="font-size: 0.82rem; color: var(--primary); text-decoration: none; font-weight: 600;">← Back to Password Login</a>
+    </div>
+</div>
+
+</body>
+</html>

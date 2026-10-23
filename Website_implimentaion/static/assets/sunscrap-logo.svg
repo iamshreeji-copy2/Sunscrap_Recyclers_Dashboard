@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 70" width="340" height="70">
+  <defs>
+    <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#EF4444" />
+    </linearGradient>
+    <linearGradient id="solarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#1D5BF1" />
+    </linearGradient>
+  </defs>
+  <!-- Solar Icon / Energy Emblem -->
+  <g transform="translate(10, 5)">
+    <circle cx="30" cy="30" r="16" fill="url(#sunGrad)" />
+    <!-- Radiating Ray petals -->
+    <path d="M 30 6 L 33 11 L 27 11 Z" fill="#FBBF24" />
+    <path d="M 30 54 L 33 49 L 27 49 Z" fill="#FBBF24" />
+    <path d="M 6 30 L 11 33 L 11 27 Z" fill="#FBBF24" />
+    <path d="M 54 30 L 49 33 L 49 27 Z" fill="#FBBF24" />
+    <path d="M 13 13 L 18 16 L 15 20 Z" fill="#FBBF24" />
+    <path d="M 47 47 L 42 44 L 45 40 Z" fill="#FBBF24" />
+    <path d="M 13 47 L 18 44 L 15 40 Z" fill="#FBBF24" />
+    <path d="M 47 13 L 42 16 L 45 20 Z" fill="#FBBF24" />
+    <!-- PV Grid Cells Inside Sun -->
+    <rect x="22" y="22" width="7" height="7" rx="1" fill="#0D1A36" opacity="0.85"/>
+    <rect x="31" y="22" width="7" height="7" rx="1" fill="#0D1A36" opacity="0.85"/>
+    <rect x="22" y="31" width="7" height="7" rx="1" fill="#0D1A36" opacity="0.85"/>
+    <rect x="31" y="31" width="7" height="7" rx="1" fill="#0D1A36" opacity="0.85"/>
+  </g>
+  <!-- Brand Text -->
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <text x="75" y="28" font-size="20" font-weight="800" fill="#FFFFFF" letter-spacing="1">SUNSCRAP</text>
+    <text x="75" y="44" font-size="12" font-weight="700" fill="#38BDF8" letter-spacing="2">SOLAR SCADA</text>
+    <text x="75" y="58" font-size="9" font-weight="500" fill="#94A3B8" letter-spacing="1">RECYCLERS PVT LTD • 4,640 kWp</text>
+  </g>
+</svg>

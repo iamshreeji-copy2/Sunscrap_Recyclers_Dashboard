@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Notification Policies{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="margin-bottom: 20px;">
+        <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Notification & SMTP Configuration</h1>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+            Alarm email dispatch policies, cooldown rate limits, and local development mailbox integration.
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">SMTP Mailer Backend Status</h2>
+            <span class="status-badge {% if smtp_configured %}online{% else %}stale{% endif %}">
+                {% if smtp_configured %}Production SMTP Active{% else %}Local Captured Mailbox Active{% endif %}
+            </span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+            Current Backend: <code>{{ email_backend }}</code>. All test OTPs, reset tokens, and report dispatches are captured locally into <code>data/captured_emails/</code> without transmitting to external mail servers.
+        </p>
+
+        <div style="background: var(--surface-alt); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+            <h3 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 8px;">Active Alarm Notification Rules:</h3>
+            <ul style="font-size: 0.82rem; color: var(--text-muted); margin-left: 20px; line-height: 1.8;">
+                <li>Critical severity alarms dispatch immediate alert with a 30-minute deduplication cooldown.</li>
+                <li>Device communication outages send alert upon transition to Offline state (> 300 seconds without observation).</li>
+                <li>Daily and Weekly automated reports dispatch via Celery / Cron outbox spooler.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
