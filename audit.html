@@ -315,6 +315,24 @@
             <tbody id="audit-tbody">
                 
                     <tr>
+                        <td class="font-mono">2026-10-23 14:47:32 IST</td>
+                        <td>
+                            <b>admin</b>
+                            <span class="status-badge" style="font-size:0.7rem; margin-left:4px;">administrator</span>
+                        </td>
+                        <td>
+                            <span class="status-badge online" style="font-family:monospace;">
+                                USER_LOGIN_SUCCESS
+                            </span>
+                        </td>
+                        <td>SCADA Operator Console</td>
+                        <td>Python-urllib/3.13</td>
+                        <td>Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)</td>
+                        <td><span style="color:var(--primary); font-weight:600;">Jio Fiber / Enterprise WAN</span></td>
+                        <td class="font-mono" style="font-size:0.8rem; color:var(--text-muted);">127.0.0.1</td>
+                    </tr>
+                
+                    <tr>
                         <td class="font-mono">2026-10-23 14:43:03 IST</td>
                         <td>
                             <b>admin</b>
@@ -757,10 +775,10 @@ function initAuditLogsViewer() {
 </aside>
 
 <!-- Red Blinking Screen Strobe Overlay -->
-<div id="alert-strobe-overlay" class="alert-strobe-overlay hidden"></div>
+<div id="alert-strobe-overlay" class="alert-strobe-overlay hidden" style="display: none;"></div>
 
 <!-- Emergency Critical Alarm Modal Backdrop & Pop-up (Closable & Exact Specs) -->
-<div id="emergency-modal-backdrop" class="emergency-modal-backdrop hidden">
+<div id="emergency-modal-backdrop" class="emergency-modal-backdrop hidden" style="display: none;">
     <div class="emergency-modal" id="emergency-alert-modal">
         <div class="emergency-modal-header" style="display:flex; justify-content:space-between; align-items:center;">
             <div style="display:flex; align-items:center; gap:8px;">

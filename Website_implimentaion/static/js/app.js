@@ -615,6 +615,12 @@ function initEmergencyAlarmSystem() {
         });
     }
 
+    // Ensure alert strobe and emergency modal are strictly hidden on page initialization
+    const strobeInit = document.getElementById('alert-strobe-overlay');
+    const modalInit = document.getElementById('emergency-modal-backdrop');
+    if (strobeInit) { strobeInit.classList.add('hidden'); strobeInit.style.display = 'none'; }
+    if (modalInit) { modalInit.classList.add('hidden'); modalInit.style.display = 'none'; }
+
     // Modal Cancel, Close (✕), Backdrop and Go buttons
     const btnCloseX = document.getElementById('btn-emergency-close-x');
     const btnCancel = document.getElementById('btn-emergency-cancel');
@@ -622,15 +628,19 @@ function initEmergencyAlarmSystem() {
     const modalEmergency = document.getElementById('emergency-modal-backdrop');
 
     if (btnCloseX) {
-        btnCloseX.addEventListener('click', () => {
+        btnCloseX.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             window.dismissEmergencyAlarm();
-        });
+        };
     }
 
     if (btnCancel) {
-        btnCancel.addEventListener('click', () => {
+        btnCancel.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             window.dismissEmergencyAlarm();
-        });
+        };
     }
 
     if (modalEmergency) {
@@ -642,9 +652,11 @@ function initEmergencyAlarmSystem() {
     }
 
     if (btnGo) {
-        btnGo.addEventListener('click', () => {
+        btnGo.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             window.goToTargetDevice();
-        });
+        };
     }
 }
 
@@ -663,8 +675,14 @@ window.triggerEmergencyAlarm = function(customData) {
 
     const strobe = document.getElementById('alert-strobe-overlay');
     const modalBackdrop = document.getElementById('emergency-modal-backdrop');
-    if (strobe) strobe.classList.remove('hidden');
-    if (modalBackdrop) modalBackdrop.classList.remove('hidden');
+    if (strobe) {
+        strobe.classList.remove('hidden');
+        strobe.style.display = 'block';
+    }
+    if (modalBackdrop) {
+        modalBackdrop.classList.remove('hidden');
+        modalBackdrop.style.display = 'flex';
+    }
 
     const devEl = document.getElementById('alarm-modal-device');
     const codeEl = document.getElementById('alarm-modal-code');
@@ -691,17 +709,29 @@ window.dismissEmergencyAlarm = function() {
     stopSirenSound();
     const strobe = document.getElementById('alert-strobe-overlay');
     const modalBackdrop = document.getElementById('emergency-modal-backdrop');
-    if (strobe) strobe.classList.add('hidden');
-    if (modalBackdrop) modalBackdrop.classList.add('hidden');
-    showToast('Emergency alert dismissed & siren silenced.');
+    if (strobe) {
+        strobe.classList.add('hidden');
+        strobe.style.display = 'none';
+    }
+    if (modalBackdrop) {
+        modalBackdrop.classList.add('hidden');
+        modalBackdrop.style.display = 'none';
+    }
+    showToast('Emergency alert cancelled & siren silenced.');
 };
 
 window.goToTargetDevice = function() {
     stopSirenSound();
     const strobe = document.getElementById('alert-strobe-overlay');
     const modalBackdrop = document.getElementById('emergency-modal-backdrop');
-    if (strobe) strobe.classList.add('hidden');
-    if (modalBackdrop) modalBackdrop.classList.add('hidden');
+    if (strobe) {
+        strobe.classList.add('hidden');
+        strobe.style.display = 'none';
+    }
+    if (modalBackdrop) {
+        modalBackdrop.classList.add('hidden');
+        modalBackdrop.style.display = 'none';
+    }
 
     const isStatic = window.location.pathname.endsWith('.html') || 
                      window.location.hostname.includes('github.io') || 
