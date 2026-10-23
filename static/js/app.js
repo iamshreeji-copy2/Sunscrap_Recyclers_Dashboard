@@ -1,4 +1,42 @@
 // Sunscrap Solar SCADA Application UI Controller & Financial Engine
+
+// Global Modal Helper Utilities
+window.openModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.classList.remove('hidden');
+        el.classList.add('active');
+        el.style.display = 'flex';
+    }
+};
+
+window.closeModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.classList.add('hidden');
+        el.classList.remove('active');
+        el.style.display = 'none';
+    }
+};
+
+window.openShareModal = function() {
+    window.openModal('modal-expiring-share-backdrop');
+    if (typeof generateExpiringShareUrl === 'function') {
+        generateExpiringShareUrl();
+    }
+};
+
+window.openPlantMetadataModal = function() {
+    window.openModal('modal-plant-metadata-backdrop');
+    if (typeof loadSavedPlantMetadataToForm === 'function') {
+        loadSavedPlantMetadataToForm();
+    }
+};
+
+window.openPlantPhotoModal = function() {
+    window.openModal('modal-plant-photo-viewer');
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     initUserSessionController();
     initAccessibilityDrawer();
@@ -19,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initInverterOverviewHelper();
     initPlantPhotoManager();
     initDashboardNavFilter();
+    initProfileManager();
 });
 
 // =========================================================================
@@ -1187,15 +1226,15 @@ function initExpiringShareSystem() {
     const btnCopy = document.getElementById('btn-copy-share-url');
     const btnWhatsAppDirect = document.getElementById('btn-share-whatsapp-direct');
 
-    if (btnOpen && modalBackdrop) {
-        btnOpen.addEventListener('click', () => {
-            modalBackdrop.classList.remove('hidden');
-            generateExpiringShareUrl();
+    if (btnOpen) {
+        btnOpen.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.openShareModal();
         });
     }
 
     const closeModal = () => {
-        if (modalBackdrop) modalBackdrop.classList.add('hidden');
+        window.closeModal('modal-expiring-share-backdrop');
     };
 
     if (btnClose) btnClose.addEventListener('click', closeModal);
@@ -1316,15 +1355,15 @@ function initPlantMetadataManager() {
     const modalBackdrop = document.getElementById('modal-plant-metadata-backdrop');
     const btnClose = document.getElementById('btn-close-plant-metadata');
 
-    if (btnOpen && modalBackdrop) {
-        btnOpen.addEventListener('click', () => {
-            modalBackdrop.classList.remove('hidden');
-            loadSavedPlantMetadataToForm();
+    if (btnOpen) {
+        btnOpen.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.openPlantMetadataModal();
         });
     }
 
     const closeModal = () => {
-        if (modalBackdrop) modalBackdrop.classList.add('hidden');
+        window.closeModal('modal-plant-metadata-backdrop');
     };
 
     if (btnClose) btnClose.addEventListener('click', closeModal);
@@ -1610,9 +1649,9 @@ function initPlantCommentsSystem() {
         localStorage.setItem('sunscrap_plant_comments', JSON.stringify(defaultComments));
     }
 
-    if (btnOpen && modal) {
+    if (btnOpen) {
         btnOpen.addEventListener('click', () => {
-            modal.classList.remove('hidden');
+            window.openModal('modal-plant-comments-backdrop');
             renderPlantCommentsFeed();
             if (authorBadge) {
                 const u = localStorage.getItem('scada_session_user') || 'operator';
@@ -1622,7 +1661,7 @@ function initPlantCommentsSystem() {
         });
     }
 
-    const closeModal = () => { if (modal) modal.classList.add('hidden'); };
+    const closeModal = () => { window.closeModal('modal-plant-comments-backdrop'); };
     if (btnClose) btnClose.addEventListener('click', closeModal);
     if (modal) {
         modal.addEventListener('click', (e) => {
@@ -1763,22 +1802,23 @@ function initPlantPhotoManager() {
     const closeBtn = document.getElementById('btn-close-plant-photo-modal');
     const modal = document.getElementById('modal-plant-photo-viewer');
 
-    if (openBtn && modal) {
-        openBtn.addEventListener('click', () => {
-            modal.classList.remove('hidden');
+    if (openBtn) {
+        openBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.openPlantPhotoModal();
         });
     }
 
-    if (closeBtn && modal) {
+    if (closeBtn) {
         closeBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
+            window.closeModal('modal-plant-photo-viewer');
         });
     }
 
     if (modal) {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
-                modal.classList.add('hidden');
+                window.closeModal('modal-plant-photo-viewer');
             }
         });
     }
@@ -1854,4 +1894,118 @@ function loadSavedPlantPhoto() {
         applyPlantPhotoToDOM(saved, savedTitle || 'Sanand GIDC Solar Plant');
     }
 }
+
+// =========================================================================
+// 20. Operator Profile Persistence & Database Synchronization (GitHub Pages & Live)
+// =========================================================================
+function initProfileManager() {
+    const profileForm = document.getElementById('profile-details-form');
+    if (!profileForm) return;
+
+    const currentUser = localStorage.getItem('scada_session_user') || 'admin';
+    const currentRole = localStorage.getItem('scada_session_role') || 'administrator';
+
+    const fnInput = document.getElementById('profile-first-name');
+    const lnInput = document.getElementById('profile-last-name');
+    const phInput = document.getElementById('profile-phone');
+    const unInput = document.getElementById('profile-username');
+    const roInput = document.getElementById('profile-role');
+    const emInput = document.getElementById('profile-email');
+
+    if (unInput && (!unInput.value || unInput.value === 'None')) {
+        unInput.value = currentUser;
+    }
+
+    if (roInput && (!roInput.value || roInput.value === 'None')) {
+        let rDisplay = 'Administrator';
+        if (currentRole === 'developer') rDisplay = 'Developer';
+        else if (currentRole === 'plant_owner') rDisplay = 'Plant Owner';
+        else if (currentRole === 'third_party' || currentRole === 'viewer') rDisplay = 'Third-Party Viewer';
+        roInput.value = rDisplay;
+    }
+
+    // Load from browser database
+    const saved = localStorage.getItem('scada_user_profile_' + currentUser) || 
+                  localStorage.getItem('scada_user_profile_default');
+
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            if (fnInput && data.first_name) fnInput.value = data.first_name;
+            if (lnInput && data.last_name) lnInput.value = data.last_name;
+            if (phInput && data.phone) phInput.value = data.phone;
+            if (emInput && data.email) emInput.value = data.email;
+        } catch(e) {}
+    } else {
+        // Set default values for admin user
+        if (currentUser === 'admin') {
+            if (fnInput && !fnInput.value) fnInput.value = 'System Administrator';
+            if (lnInput && !lnInput.value) lnInput.value = 'Administrator';
+            if (emInput && !emInput.value) emInput.value = 'admin@sunscrap.local';
+            if (phInput && (!phInput.value || phInput.value === 'None')) phInput.value = '9425655845';
+        }
+        // Save initial entry into client-side database
+        const initialData = {
+            username: currentUser,
+            first_name: fnInput ? fnInput.value : 'System Administrator',
+            last_name: lnInput ? lnInput.value : 'Administrator',
+            phone: phInput ? (phInput.value || '9425655845') : '9425655845',
+            email: emInput ? (emInput.value || 'admin@sunscrap.local') : 'admin@sunscrap.local',
+            updated_at: new Date().toISOString()
+        };
+        localStorage.setItem('scada_user_profile_' + currentUser, JSON.stringify(initialData));
+        localStorage.setItem('scada_user_profile_default', JSON.stringify(initialData));
+    }
+}
+
+window.handleProfileUpdate = function(event) {
+    const isStatic = window.location.protocol === 'file:' || 
+                     window.location.hostname.includes('github.io') || 
+                     window.location.pathname.endsWith('.html');
+
+    const currentUser = localStorage.getItem('scada_session_user') || 'admin';
+    const fnInput = document.getElementById('profile-first-name');
+    const lnInput = document.getElementById('profile-last-name');
+    const phInput = document.getElementById('profile-phone');
+    const emInput = document.getElementById('profile-email');
+
+    const firstName = fnInput ? fnInput.value.trim() : '';
+    const lastName = lnInput ? lnInput.value.trim() : '';
+    const phone = phInput ? phInput.value.trim() : '';
+    const email = emInput ? emInput.value.trim() : 'admin@sunscrap.local';
+
+    const profileData = {
+        username: currentUser,
+        first_name: firstName,
+        last_name: lastName,
+        phone: phone,
+        email: email,
+        updated_at: new Date().toISOString()
+    };
+
+    // Save to client-side database
+    localStorage.setItem('scada_user_profile_' + currentUser, JSON.stringify(profileData));
+    localStorage.setItem('scada_user_profile_default', JSON.stringify(profileData));
+
+    // Update display name in header
+    if (firstName) {
+        localStorage.setItem('scada_session_name', firstName + (lastName ? ' ' + lastName : ''));
+        const headerName = document.getElementById('header-username-display');
+        if (headerName) headerName.innerText = currentUser;
+    }
+
+    // Feedback notifications
+    showToast(`Profile details & phone (${phone || 'updated'}) saved successfully!`);
+    const statusEl = document.getElementById('profile-update-status');
+    if (statusEl) {
+        statusEl.innerText = `✓ Saved: Phone ${phone} updated in database!`;
+        statusEl.style.display = 'inline-block';
+        setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
+    }
+
+    if (isStatic) {
+        if (event) event.preventDefault();
+        return false;
+    }
+};
 

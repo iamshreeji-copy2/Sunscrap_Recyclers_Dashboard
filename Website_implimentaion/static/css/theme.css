@@ -793,14 +793,18 @@ body {
   bottom: 0;
   background-color: rgba(13, 26, 54, 0.6);
   backdrop-filter: blur(4px);
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
 }
 
+.modal-overlay.hidden {
+  display: none !important;
+}
+
 .modal-overlay.active {
-  display: flex;
+  display: flex !important;
 }
 
 .modal-dialog {

@@ -17,36 +17,39 @@
             <h2 class="card-title">Operator Credentials & Organization</h2>
             <a href="{% url 'profile_email' %}" class="export-btn">Change Email (Verified)</a>
         </div>
-        <form method="POST">
+        <form method="POST" id="profile-details-form" onsubmit="handleProfileUpdate(event)">
             {% csrf_token %}
             <input type="hidden" name="action" value="update_details">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Username</label>
-                    <input type="text" value="{{ user.username }}" disabled style="width:100%; padding:9px 12px; background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-muted);">
+                    <input type="text" id="profile-username" value="{{ user.username }}" disabled style="width:100%; padding:9px 12px; background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-muted);">
                 </div>
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Assigned Role</label>
-                    <input type="text" value="{{ user.get_role_display }}" disabled style="width:100%; padding:9px 12px; background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-muted);">
+                    <input type="text" id="profile-role" value="{{ user.get_role_display }}" disabled style="width:100%; padding:9px 12px; background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-muted);">
                 </div>
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">First Name</label>
-                    <input type="text" name="first_name" value="{{ user.first_name }}" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                    <input type="text" id="profile-first-name" name="first_name" value="{{ user.first_name }}" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
                 </div>
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Last Name</label>
-                    <input type="text" name="last_name" value="{{ user.last_name }}" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                    <input type="text" id="profile-last-name" name="last_name" value="{{ user.last_name }}" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
                 </div>
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Registered Email</label>
-                    <input type="email" value="{{ user.email }}" disabled style="width:100%; padding:9px 12px; background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-muted);">
+                    <input type="email" id="profile-email" value="{{ user.email }}" disabled style="width:100%; padding:9px 12px; background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-muted);">
                 </div>
                 <div>
                     <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Phone Number</label>
-                    <input type="text" name="phone" value="{{ user.phone|default:'' }}" placeholder="+91 98765 43210" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
+                    <input type="text" id="profile-phone" name="phone" value="{{ user.phone|default:'9425655845' }}" placeholder="9425655845" style="width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem; font-weight:600;">
                 </div>
             </div>
-            <button type="submit" class="export-btn export-btn-primary">Update Profile Details</button>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <button type="submit" class="export-btn export-btn-primary" id="btn-save-profile">Update Profile Details</button>
+                <span id="profile-update-status" style="font-size:0.84rem; font-weight:700; color:var(--success); display:none;">✓ Profile saved to database!</span>
+            </div>
         </form>
     </div>
 
@@ -71,7 +74,7 @@
                         Sanand GIDC Phase II, Ahmedabad &bull; 22.9868° N, 72.3787° E &bull; 3,900 kW AC
                     </div>
                 </div>
-                <button type="button" class="export-btn export-btn-primary" onclick="document.getElementById('modal-plant-metadata-backdrop').classList.remove('hidden');" style="margin-top:14px; font-size:0.82rem; width:100%; justify-content:center;">
+                <button type="button" class="export-btn export-btn-primary" onclick="if(window.openPlantMetadataModal){ window.openPlantMetadataModal(); } else if(window.openModal){ window.openModal('modal-plant-metadata-backdrop'); } else { document.getElementById('modal-plant-metadata-backdrop').classList.remove('hidden'); document.getElementById('modal-plant-metadata-backdrop').style.display='flex'; }" style="margin-top:14px; font-size:0.82rem; width:100%; justify-content:center;">
                     Manage Plant & GPS Details ➔
                 </button>
             </div>
@@ -85,7 +88,7 @@
                         Upload drone array aerials, 13x inverter yard photos, and 11kV substation feeder imagery.
                     </div>
                 </div>
-                <button type="button" class="export-btn export-btn-primary" onclick="document.getElementById('modal-plant-photo-viewer').classList.remove('hidden');" style="margin-top:14px; font-size:0.82rem; width:100%; justify-content:center;">
+                <button type="button" class="export-btn export-btn-primary" onclick="if(window.openPlantPhotoModal){ window.openPlantPhotoModal(); } else if(window.openModal){ window.openModal('modal-plant-photo-viewer'); } else { document.getElementById('modal-plant-photo-viewer').classList.remove('hidden'); document.getElementById('modal-plant-photo-viewer').style.display='flex'; }" style="margin-top:14px; font-size:0.82rem; width:100%; justify-content:center;">
                     Open Photo Gallery & Uploader ➔
                 </button>
             </div>

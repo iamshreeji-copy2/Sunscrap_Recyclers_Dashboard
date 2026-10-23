@@ -173,12 +173,12 @@
 
             <div class="header-right" style="display:flex; align-items:center; gap:8px;">
                 <!-- 1. Plant Discussion / Comments: Message Thumbnail Icon (No text spelling) -->
-                <button type="button" class="header-icon-btn" id="btn-open-plant-notes" title="Plant Telemetry Discussion & Engineering Remarks">
+                <button type="button" class="header-icon-btn" id="btn-open-plant-notes" title="Plant Telemetry Discussion & Engineering Remarks" onclick="if(window.openModal){ window.openModal('modal-plant-comments-backdrop'); } else { const m = document.getElementById('modal-plant-comments-backdrop'); if(m){ m.classList.remove('hidden'); m.style.display='flex'; } }">
                     <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
                 </button>
 
                 <!-- 2. Expiring Share Portal: Share Thumbnail Icon (No text spelling) -->
-                <button type="button" class="header-icon-btn" id="btn-open-share-modal" title="Generate Time-Limited Expiring Share Link" style="border-color: rgba(59, 130, 246, 0.4); color: #3B82F6;">
+                <button type="button" class="header-icon-btn" id="btn-open-share-modal" title="Generate Time-Limited Expiring Share Link" style="border-color: rgba(59, 130, 246, 0.4); color: #3B82F6;" onclick="if(window.openShareModal){ window.openShareModal(); } else if(window.openModal){ window.openModal('modal-expiring-share-backdrop'); } else { const m = document.getElementById('modal-expiring-share-backdrop'); if(m){ m.classList.remove('hidden'); m.style.display='flex'; } }">
                     <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
                 </button>
 
@@ -188,7 +188,7 @@
                 </button>
 
                 <!-- 4. Critical Alert Center: Bell Thumbnail Icon (No text spelling) -->
-                <button type="button" class="header-icon-btn" id="btn-open-alerts" title="Alarm & Alert History Center: View previous logs and trigger emergency siren" style="border-color: rgba(220, 38, 38, 0.4); color: #DC2626;">
+                <button type="button" class="header-icon-btn" id="btn-open-alerts" title="Alarm & Alert History Center: View previous logs and trigger emergency siren" style="border-color: rgba(220, 38, 38, 0.4); color: #DC2626;" onclick="if(window.openModal){ window.openModal('emergency-alarm-history-modal'); } else { const m = document.getElementById('emergency-alarm-history-modal'); if(m){ m.classList.remove('hidden'); m.style.display='flex'; } }">
                     <svg width="18" height="18" fill="#DC2626" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
                     <span id="alert-counter-badge" class="header-icon-badge">1</span>
                 </button>
@@ -218,13 +218,13 @@
 
                         <div style="padding:4px 0;">
                             <!-- Plant Details & GPS Settings (Moved under Profile Button) -->
-                            <button type="button" class="profile-menu-item" id="btn-open-plant-details" title="Plant Location, Owner Details & GPS Coordinates">
+                            <button type="button" class="profile-menu-item" id="btn-open-plant-details" title="Plant Location, Owner Details & GPS Coordinates" onclick="if(window.openPlantMetadataModal){ window.openPlantMetadataModal(); } else if(window.openModal){ window.openModal('modal-plant-metadata-backdrop'); } else { const m = document.getElementById('modal-plant-metadata-backdrop'); if(m){ m.classList.remove('hidden'); m.style.display='flex'; } }">
                                 <svg width="16" height="16" fill="#3B82F6" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                                 <span>Plant & GPS Location</span>
                             </button>
 
                             <!-- Plant Facility Photo (Moved under Profile Button) -->
-                            <button type="button" class="profile-menu-item" id="btn-open-plant-photo-modal" title="View & Manage Solar Facility Photography">
+                            <button type="button" class="profile-menu-item" id="btn-open-plant-photo-modal" title="View & Manage Solar Facility Photography" onclick="if(window.openPlantPhotoModal){ window.openPlantPhotoModal(); } else if(window.openModal){ window.openModal('modal-plant-photo-viewer'); } else { const m = document.getElementById('modal-plant-photo-viewer'); if(m){ m.classList.remove('hidden'); m.style.display='flex'; } }">
                                 <svg width="16" height="16" fill="#10B981" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
                                 <span>Plant Photo & Gallery</span>
                             </button>
@@ -255,19 +255,6 @@
 
         <!-- Dynamic Content Body -->
         <div class="app-content">
-            <!-- Universal Breadcrumb & Go Back Bar (Hidden on Main Dashboards via block override) -->
-            
-            <div id="universal-page-nav-bar" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
-                <button type="button" id="btn-universal-back" onclick="window.history.length > 1 ? window.history.back() : (window.location.href='index.html')" class="export-btn" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; font-weight: 700; font-size: 0.82rem; background: var(--surface);">
-                    <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                    <span>← Go Back to Previous Page</span>
-                </button>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <a href="./index.html" class="export-btn" style="font-size: 0.75rem; padding: 5px 10px;">⚡ Technical SCADA</a>
-                    <a href="./dashboard_analytical.html" class="export-btn" style="font-size: 0.75rem; padding: 5px 10px;">📊 Analytical AI/ML</a>
-                    <a href="./alert_logs.html" class="export-btn" style="font-size: 0.75rem; padding: 5px 10px; color: #DC2626; border-color: rgba(220,38,38,0.3); font-weight: 700;">🚨 Alert Logs</a>
-                </div>
-            </div>
             
 
             
@@ -332,7 +319,7 @@
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
         Print
     </button>
-    <button type="button" class="export-btn export-btn-primary btn-open-email-modal" data-snapshot-id="30bf2776-a402-4ab9-894f-d1621d788260" data-report-name="Inverter Generation Yield Report" title="Email snapshot to authorized recipients">
+    <button type="button" class="export-btn export-btn-primary btn-open-email-modal" data-snapshot-id="ad11b7dd-bca1-43fc-a53b-220112a9c325" data-report-name="Inverter Generation Yield Report" title="Email snapshot to authorized recipients">
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
         Email
     </button>
@@ -386,7 +373,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 09:49
+                                        2026-10-23 10:03
                                     
                                 
                                     
@@ -930,7 +917,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 09:34
+                                        2026-10-23 09:48
                                     
                                 
                                     
@@ -1474,7 +1461,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 09:19
+                                        2026-10-23 09:33
                                     
                                 
                                     
@@ -2018,7 +2005,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 09:04
+                                        2026-10-23 09:18
                                     
                                 
                                     
@@ -2562,7 +2549,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 08:49
+                                        2026-10-23 09:03
                                     
                                 
                                     
@@ -3106,7 +3093,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 08:34
+                                        2026-10-23 08:48
                                     
                                 
                                     
@@ -3650,7 +3637,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 08:19
+                                        2026-10-23 08:33
                                     
                                 
                                     
@@ -4194,7 +4181,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 08:04
+                                        2026-10-23 08:18
                                     
                                 
                                     
@@ -4738,7 +4725,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 07:49
+                                        2026-10-23 08:03
                                     
                                 
                                     
@@ -5282,7 +5269,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 07:34
+                                        2026-10-23 07:48
                                     
                                 
                                     
@@ -5826,7 +5813,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 07:19
+                                        2026-10-23 07:33
                                     
                                 
                                     
@@ -6370,7 +6357,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 07:04
+                                        2026-10-23 07:18
                                     
                                 
                                     
@@ -6914,7 +6901,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 06:49
+                                        2026-10-23 07:03
                                     
                                 
                                     
@@ -7458,7 +7445,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 06:34
+                                        2026-10-23 06:48
                                     
                                 
                                     
@@ -8002,7 +7989,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 06:19
+                                        2026-10-23 06:33
                                     
                                 
                                     
@@ -8546,7 +8533,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 06:04
+                                        2026-10-23 06:18
                                     
                                 
                                     
@@ -9090,7 +9077,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 05:49
+                                        2026-10-23 06:03
                                     
                                 
                                     
@@ -9634,7 +9621,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 05:34
+                                        2026-10-23 05:48
                                     
                                 
                                     
@@ -10178,7 +10165,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 05:19
+                                        2026-10-23 05:33
                                     
                                 
                                     
@@ -10722,7 +10709,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 05:04
+                                        2026-10-23 05:18
                                     
                                 
                                     
@@ -11521,7 +11508,7 @@
             </div>
         </div>
         <div class="modal-footer" style="padding: 12px 20px; background:var(--surface-alt); border-top:1px solid var(--border); display:flex; justify-content:flex-end;">
-            <button type="button" class="export-btn" onclick="document.getElementById('modal-plant-photo-viewer').classList.add('hidden');">Close</button>
+            <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('modal-plant-photo-viewer'); } else { document.getElementById('modal-plant-photo-viewer').classList.add('hidden'); document.getElementById('modal-plant-photo-viewer').style.display='none'; }">Close</button>
         </div>
     </div>
 </div>
@@ -11562,7 +11549,7 @@
             </form>
         </div>
         <div class="modal-footer" style="padding: 12px 20px; background:var(--surface-alt); border-top:1px solid var(--border); display:flex; justify-content:flex-end;">
-            <button type="button" class="export-btn" onclick="document.getElementById('modal-plant-comments-backdrop').classList.add('hidden');">Done</button>
+            <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('modal-plant-comments-backdrop'); } else { document.getElementById('modal-plant-comments-backdrop').classList.add('hidden'); document.getElementById('modal-plant-comments-backdrop').style.display='none'; }">Done</button>
         </div>
     </div>
 </div>
@@ -11639,7 +11626,7 @@
             <button type="button" class="export-btn btn-whatsapp" id="btn-share-whatsapp-direct" style="padding: 6px 14px; font-size: 0.8rem;">
                 Share via WhatsApp
             </button>
-            <button type="button" class="export-btn export-btn-primary" onclick="document.getElementById('modal-expiring-share-backdrop').classList.add('hidden');">Done</button>
+            <button type="button" class="export-btn export-btn-primary" onclick="if(window.closeModal){ window.closeModal('modal-expiring-share-backdrop'); } else { document.getElementById('modal-expiring-share-backdrop').classList.add('hidden'); document.getElementById('modal-expiring-share-backdrop').style.display='none'; }">Done</button>
         </div>
     </div>
 </div>
@@ -11744,7 +11731,7 @@
                 </div>
 
                 <div class="modal-footer" style="padding: 16px 0 0; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
-                    <button type="button" class="export-btn" onclick="document.getElementById('modal-plant-metadata-backdrop').classList.add('hidden');">Cancel</button>
+                    <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('modal-plant-metadata-backdrop'); } else { document.getElementById('modal-plant-metadata-backdrop').classList.add('hidden'); document.getElementById('modal-plant-metadata-backdrop').style.display='none'; }">Cancel</button>
                     <button type="submit" class="export-btn export-btn-primary">Save Changes to Database & Profile</button>
                 </div>
             </form>
