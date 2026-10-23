@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+{% block title %}SCADA Alert Logs & Fault History{% endblock %}
+
+{% block content %}
+<!-- Top Breadcrumb & Go Back Bar -->
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <button type="button" onclick="window.history.length > 1 ? window.history.back() : window.location.href='index.html'" class="export-btn" style="display: flex; align-items: center; gap: 6px; padding: 8px 16px; font-weight: 700; background: var(--surface);">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            <span>← Go Back to Previous Page</span>
+        </button>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">SCADA Station &bull; Incident Logs Trail</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <button type="button" class="export-btn" id="btn-trigger-page-siren" style="background: #DC2626; color: #FFF; font-weight: 700; border: none; padding: 8px 16px; display: flex; align-items: center; gap: 6px;">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            <span>⚡ Test Emergency Siren & Strobe</span>
+        </button>
+        <button type="button" class="export-btn btn-whatsapp" data-report-name="SCADA Alert Logs">Share on WhatsApp</button>
+        <button type="button" class="export-btn btn-zip" data-report-name="Alert_Logs_Report">Download ZIP</button>
+    </div>
+</div>
+
+<!-- Page Title Header -->
+<div style="margin-bottom: 22px;">
+    <h1 style="font-size: 1.45rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px;">
+        SCADA Alarm & Alert Incident History Log
+    </h1>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Comprehensive real-time telemetry fault register for Sunscrap Recyclers PVT LTD (3,900 kW AC / 4,640 kWp DC facility).
+    </div>
+</div>
+
+<!-- Active Critical Incident Spotlight Card -->
+<div style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.12) 0%, rgba(185, 28, 28, 0.05) 100%); border: 1.5px solid #DC2626; border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.15);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px;">
+        <div style="display: flex; align-items: flex-start; gap: 14px;">
+            <div style="background: #DC2626; color: #FFF; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 900; flex-shrink: 0;">
+                !
+            </div>
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                    <span style="background: #DC2626; color: #FFF; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;">CRITICAL ACTIVE FAULT</span>
+                    <strong style="font-size: 1.1rem; color: #DC2626;">Grid Under-voltage Trip — AC active power dropped to 0.00 kW.</strong>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-main); line-height: 1.4;">
+                    Inverter output disconnect triggered. Immediate operator acknowledgment and grid feeder inspection required.
+                </div>
+                <div style="display: flex; gap: 18px; margin-top: 10px; font-size: 0.82rem; flex-wrap: wrap;">
+                    <div><strong>Target Device:</strong> <span class="font-mono">Inverter 08 (Inv-08 / 320 kWp)</span></div>
+                    <div><strong>Status Code:</strong> <span class="font-mono" style="color: #DC2626; font-weight: 700;">ERR-402 (Grid Under-voltage)</span></div>
+                    <div><strong>Timestamp:</strong> <span class="font-mono">01:32:05 PM IST</span></div>
+                    <div><strong>Alarm State:</strong> <span style="color: #DC2626; font-weight: 800;">ACTIVE / UNACKNOWLEDGED</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <a href="inverter_overview.html?inverter=INV-08" class="export-btn export-btn-primary" style="padding: 10px 18px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                <span>Inspect Inverter 08 Plots & Tables ➔</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Metrics Grid -->
+<div class="kpi-grid" style="margin-bottom: 24px;">
+    <div class="kpi-card">
+        <span class="kpi-label">Total Alarms Recorded</span>
+        <div class="kpi-value font-mono" id="kpi-total-alarms">{{ stats.total|default:"12" }}</div>
+        <span class="kpi-sub">Lifetime station log records</span>
+    </div>
+    <div class="kpi-card" style="border-left: 4px solid #DC2626;">
+        <span class="kpi-label">Active Critical Alarms</span>
+        <div class="kpi-value font-mono" id="kpi-active-alarms" style="color: #DC2626;">{{ stats.active|default:"1" }}</div>
+        <span class="kpi-sub">Target: Inverter 08 (ERR-402)</span>
+    </div>
+    <div class="kpi-card kpi-gold">
+        <span class="kpi-label">Acknowledged Events</span>
+        <div class="kpi-value font-mono" id="kpi-ack-alarms">{{ stats.acknowledged|default:"7" }}</div>
+        <span class="kpi-sub">Operator confirmed</span>
+    </div>
+    <div class="kpi-card kpi-green">
+        <span class="kpi-label">Cleared / Normal Events</span>
+        <div class="kpi-value font-mono" id="kpi-cleared-alarms">{{ stats.cleared|default:"4" }}</div>
+        <span class="kpi-sub">Resolved automatically</span>
+    </div>
+</div>
+
+<!-- Alarm Logs Table Card -->
+<div class="card" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            <h2 class="card-title" style="margin: 0;">Alarm Event Log Register</h2>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" class="export-btn btn-copy-table" data-target-table="alert-logs-table">Copy Table</button>
+            <button type="button" class="export-btn btn-client-csv">Export CSV</button>
+            <button type="button" class="export-btn" id="btn-ack-all-table" style="font-weight: 700; color: var(--primary);">✓ Acknowledge All</button>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div style="padding: 12px 20px; background: var(--surface-alt); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Filter State:</label>
+            <select id="filter-alarm-state" onchange="filterAlarms()" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; background: var(--surface); color: var(--text-main);">
+                <option value="all">All States</option>
+                <option value="active" selected>Active & Unacknowledged</option>
+                <option value="acknowledged">Acknowledged</option>
+                <option value="cleared">Cleared</option>
+            </select>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Target Device:</label>
+            <select id="filter-alarm-device" onchange="filterAlarms()" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; background: var(--surface); color: var(--text-main);">
+                <option value="all">All Plant Devices (13 Inverters, 2 MFMs, WMS)</option>
+                <option value="Inverter 08" selected>Inverter 08 (Inv-08 / 320 kWp)</option>
+                <option value="Inverter 01">Inverter 01 (Inv-01 / 300 kW)</option>
+                <option value="MFM-OUT">MFM-OUT (Outgoing HT Meter)</option>
+                <option value="WMS">WMS Environmental Station</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Tabular Register -->
+    <div class="table-container">
+        <table class="scada-table sortable" id="alert-logs-table">
+            <thead>
+                <tr>
+                    <th>Timestamp (IST)</th>
+                    <th>Target Device</th>
+                    <th>Status Code</th>
+                    <th>Fault Description</th>
+                    <th>Category</th>
+                    <th>Duration</th>
+                    <th>Alarm State</th>
+                    <th class="no-sort" style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="alert-logs-tbody">
+                <!-- Dynamically loaded from DB / LocalStorage -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    initAlertLogsPage();
+
+    const sirenBtn = document.getElementById('btn-trigger-page-siren');
+    if (sirenBtn) {
+        sirenBtn.addEventListener('click', () => {
+            window.triggerEmergencyAlarm();
+        });
+    }
+
+    const ackAllBtn = document.getElementById('btn-ack-all-table');
+    if (ackAllBtn) {
+        ackAllBtn.addEventListener('click', () => {
+            try {
+                let logs = JSON.parse(localStorage.getItem('sunscrap_alarm_logs') || '[]');
+                logs.forEach(l => { l.state = 'Acknowledged'; });
+                localStorage.setItem('sunscrap_alarm_logs', JSON.stringify(logs));
+                renderAlertLogsTable();
+                showToast('All active alarms marked as Acknowledged.');
+            } catch(e) {}
+        });
+    }
+});
+
+function initAlertLogsPage() {
+    const defaultAlarms = [
+        {
+            id: 'ALM-20261023-01',
+            dateTime: '2026-10-23 01:32:05 PM IST',
+            device: 'Inverter 08 (Inv-08 / 320 kWp)',
+            code: 'ERR-402',
+            description: 'Grid Under-voltage Trip — AC active power dropped to 0.00 kW.',
+            category: 'Grid Frequency / Voltage Fault',
+            duration: '0h 42m (Active)',
+            state: 'Active / Unacknowledged',
+            deviceParam: 'INV-08'
+        },
+        {
+            id: 'ALM-20261023-02',
+            dateTime: '2026-10-23 09:14:02 AM IST',
+            device: 'Inverter 08 (Inv-08 / 320 kWp)',
+            code: 'ERR-402',
+            description: 'Grid Under-voltage Trip (Grid side phase voltage dipped below 370V)',
+            category: 'Grid Fault',
+            duration: '0h 14m',
+            state: 'Acknowledged',
+            deviceParam: 'INV-08'
+        },
+        {
+            id: 'ALM-20261023-03',
+            dateTime: '2026-10-23 07:45:10 AM IST',
+            device: 'WMS Sensor Node',
+            code: 'COMM-005',
+            description: 'RS485 Communication Timeout on GTI Pyranometer',
+            category: 'Communication Outage',
+            duration: '0h 03m',
+            state: 'Cleared',
+            deviceParam: 'WMS'
+        },
+        {
+            id: 'ALM-20261022-04',
+            dateTime: '2026-10-22 03:15:20 PM IST',
+            device: 'Inverter 03 (Inv-03 / 300 kW)',
+            code: 'WARN-108',
+            description: 'High Internal Heat-sink Temperature (Over 65.2 °C)',
+            category: 'Thermal Warning',
+            duration: '0h 25m',
+            state: 'Cleared',
+            deviceParam: 'INV-03'
+        },
+        {
+            id: 'ALM-20261021-05',
+            dateTime: '2026-10-21 12:40:00 PM IST',
+            device: 'MFM-OUT (Outgoing HT Meter)',
+            code: 'GRID-204',
+            description: 'Transient Voltage Sag detected on 11 kV Feeder Bus',
+            category: 'Feeder Power Quality',
+            duration: '0h 02m',
+            state: 'Cleared',
+            deviceParam: 'MFM-OUT'
+        }
+    ];
+
+    let stored = localStorage.getItem('sunscrap_alarm_logs');
+    if (!stored) {
+        localStorage.setItem('sunscrap_alarm_logs', JSON.stringify(defaultAlarms));
+    }
+    renderAlertLogsTable();
+}
+
+function renderAlertLogsTable() {
+    const tbody = document.getElementById('alert-logs-tbody');
+    if (!tbody) return;
+
+    let logs = JSON.parse(localStorage.getItem('sunscrap_alarm_logs') || '[]');
+    if (logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">No historical alarm records found.</td></tr>';
+        return;
+    }
+
+    const stateFilter = document.getElementById('filter-alarm-state')?.value || 'all';
+    const deviceFilter = document.getElementById('filter-alarm-device')?.value || 'all';
+
+    let filtered = logs.filter(item => {
+        if (stateFilter === 'active' && !(item.state || '').includes('Active')) return false;
+        if (stateFilter === 'acknowledged' && !(item.state || '').includes('Ack')) return false;
+        if (stateFilter === 'cleared' && !(item.state || '').includes('Clear')) return false;
+        if (deviceFilter !== 'all' && !(item.device || '').toLowerCase().includes(deviceFilter.toLowerCase())) return false;
+        return true;
+    });
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">No alarms matching the selected filters.</td></tr>';
+        return;
+    }
+
+    const isStatic = window.location.protocol === 'file:' || window.location.hostname.includes('github.io');
+
+    tbody.innerHTML = filtered.map(item => {
+        const invTarget = item.deviceParam || (item.device.includes('08') ? 'INV-08' : 'INV-01');
+        const invUrl = isStatic ? `inverter_overview.html?inverter=${invTarget}` : `/inverters?device=${invTarget}`;
+        const isActive = (item.state || '').includes('Active');
+        const isAck = (item.state || '').includes('Ack');
+
+        return `
+            <tr style="${isActive ? 'background: rgba(220, 38, 38, 0.04);' : ''}">
+                <td class="font-mono" style="font-size: 0.8rem;">${item.dateTime || item.startTime}</td>
+                <td>
+                    <strong>${item.device}</strong>
+                </td>
+                <td>
+                    <span class="badge ${item.code.startsWith('ERR') ? 'badge-danger' : (item.code.startsWith('WARN') ? 'badge-warning' : 'badge-demo')} font-mono">
+                        ${item.code}
+                    </span>
+                </td>
+                <td style="font-size: 0.84rem; max-width: 320px;">
+                    ${item.description}
+                </td>
+                <td style="font-size: 0.8rem; color: var(--text-muted);">${item.category || item.fault || 'System'}</td>
+                <td class="font-mono" style="font-size: 0.8rem;">${item.duration || '--'}</td>
+                <td>
+                    <span class="status-badge ${isActive ? 'offline' : (isAck ? 'stale' : 'online')}">
+                        ${item.state || 'Active'}
+                    </span>
+                </td>
+                <td style="text-align: right;">
+                    <div style="display: flex; justify-content: flex-end; gap: 6px;">
+                        <a href="${invUrl}" class="export-btn export-btn-primary" style="padding: 4px 10px; font-size: 0.75rem;">
+                            Inspect ➔
+                        </a>
+                        ${isActive ? `
+                            <button type="button" class="export-btn" onclick="acknowledgeAlarm('${item.id || item.code}')" style="padding: 4px 8px; font-size: 0.75rem;">
+                                Ack
+                            </button>
+                        ` : ''}
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function filterAlarms() {
+    renderAlertLogsTable();
+}
+
+function acknowledgeAlarm(id) {
+    try {
+        let logs = JSON.parse(localStorage.getItem('sunscrap_alarm_logs') || '[]');
+        const target = logs.find(l => (l.id === id || l.code === id));
+        if (target) {
+            target.state = 'Acknowledged';
+            localStorage.setItem('sunscrap_alarm_logs', JSON.stringify(logs));
+            renderAlertLogsTable();
+            showToast(`Alarm ${id} acknowledged by operator.`);
+        }
+    } catch(e) {}
+}
+</script>
+{% endblock %}

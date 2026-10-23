@@ -95,6 +95,7 @@ class ScadaCoreTestSuite(TestCase):
             'report_mfm_parameter',
             'report_wms_parameter',
             'report_communication',
+            'alert_logs',
             'downloads',
             'schedules',
             'profile',

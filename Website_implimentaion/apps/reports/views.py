@@ -399,6 +399,50 @@ def report_alarm_view(request):
 
 
 @login_required
+def report_alert_logs_view(request):
+    state_filter = request.GET.get('state', 'all')
+    device_filter = request.GET.get('device', 'all')
+    
+    alarms = AlarmEvent.objects.all().order_by('-start_time')
+    if state_filter == 'active':
+        alarms = alarms.filter(is_active=True)
+    elif state_filter == 'cleared':
+        alarms = alarms.filter(is_active=False)
+        
+    if device_filter != 'all':
+        alarms = alarms.filter(device__device_id=device_filter)
+        
+    if request.method == 'POST' and request.POST.get('action') == 'acknowledge':
+        alarm_id = request.POST.get('alarm_id')
+        alm = get_object_or_404(AlarmEvent, id=alarm_id)
+        alm.is_acknowledged = True
+        alm.acknowledged_by = request.user
+        alm.acknowledged_at = timezone.now()
+        alm.save()
+        return redirect('alert_logs')
+        
+    devices = Device.objects.all().order_by('device_id')
+    
+    total_count = AlarmEvent.objects.count()
+    active_count = AlarmEvent.objects.filter(is_active=True).count()
+    cleared_count = AlarmEvent.objects.filter(is_active=False).count()
+    ack_count = AlarmEvent.objects.filter(is_acknowledged=True).count()
+    
+    return render(request, 'reports/alert_logs.html', {
+        'alarms': alarms,
+        'devices': devices,
+        'state_filter': state_filter,
+        'device_filter': device_filter,
+        'stats': {
+            'total': total_count,
+            'active': active_count or 1,
+            'cleared': cleared_count,
+            'acknowledged': ack_count,
+        }
+    })
+
+
+@login_required
 def report_trends_view(request):
     panels = TrendConfiguration.objects.all().order_by('panel_index')
     if not panels.exists():

@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initRoleSwitcher();
     initPlantCommentsSystem();
     initInverterOverviewHelper();
+    initPlantPhotoManager();
 });
 
 // =========================================================================
@@ -614,17 +615,32 @@ function initEmergencyAlarmSystem() {
         });
     }
 
-    // Modal Cancel and Go buttons
+    // Modal Cancel, Close (✕), Backdrop and Go buttons
+    const btnCloseX = document.getElementById('btn-emergency-close-x');
     const btnCancel = document.getElementById('btn-emergency-cancel');
     const btnGo = document.getElementById('btn-emergency-go');
+    const modalEmergency = document.getElementById('emergency-modal-backdrop');
+
+    if (btnCloseX) {
+        btnCloseX.addEventListener('click', () => {
+            window.dismissEmergencyAlarm();
+        });
+    }
 
     if (btnCancel) {
         btnCancel.addEventListener('click', () => {
             window.dismissEmergencyAlarm();
-            // Automatically open previous alert history as requested
-            openAlertHistory();
         });
     }
+
+    if (modalEmergency) {
+        modalEmergency.addEventListener('click', (e) => {
+            if (e.target === modalEmergency) {
+                window.dismissEmergencyAlarm();
+            }
+        });
+    }
+
     if (btnGo) {
         btnGo.addEventListener('click', () => {
             window.goToTargetDevice();
@@ -677,7 +693,7 @@ window.dismissEmergencyAlarm = function() {
     const modalBackdrop = document.getElementById('emergency-modal-backdrop');
     if (strobe) strobe.classList.add('hidden');
     if (modalBackdrop) modalBackdrop.classList.add('hidden');
-    showToast('Emergency alarm siren silenced. Opening Alarm History Log...');
+    showToast('Emergency alert dismissed & siren silenced.');
 };
 
 window.goToTargetDevice = function() {
@@ -1623,3 +1639,124 @@ function initInverterOverviewHelper() {
         }
     }
 }
+
+// =========================================================================
+// 18. Universal Navigation ("← Go Back to Previous Page")
+// =========================================================================
+window.goBackUniversal = function() {
+    if (window.history.length > 1 && document.referrer && document.referrer.includes(window.location.host)) {
+        window.history.back();
+    } else {
+        const isStatic = window.location.pathname.endsWith('.html') || 
+                         window.location.hostname.includes('github.io') || 
+                         window.location.pathname.includes('/Sunscrap_Recyclers_Dashboard/');
+        if (isStatic) {
+            window.location.href = './index.html';
+        } else {
+            window.location.href = '/dashboard';
+        }
+    }
+};
+
+// =========================================================================
+// 19. Plant Facility Photo Management (Upload, Presets, LocalStorage & Viewer)
+// =========================================================================
+function initPlantPhotoManager() {
+    loadSavedPlantPhoto();
+
+    const openBtn = document.getElementById('btn-open-plant-photo-modal');
+    const closeBtn = document.getElementById('btn-close-plant-photo-modal');
+    const modal = document.getElementById('modal-plant-photo-viewer');
+
+    if (openBtn && modal) {
+        openBtn.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+        });
+    }
+
+    if (closeBtn && modal) {
+        closeBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+    }
+
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    }
+}
+
+function resolveAssetPath(filename) {
+    const isStatic = window.location.pathname.endsWith('.html') || 
+                     window.location.hostname.includes('github.io') || 
+                     window.location.pathname.includes('/Sunscrap_Recyclers_Dashboard/');
+    if (isStatic) {
+        return './static/assets/' + filename;
+    }
+    return '/static/assets/' + filename;
+}
+
+window.handlePlantPhotoUpload = function(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file (PNG, JPG, SVG, WebP).');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        try {
+            localStorage.setItem('sunscrap_plant_photo', dataUrl);
+            applyPlantPhotoToDOM(dataUrl, file.name);
+            showToast('Custom plant facility photograph uploaded and saved successfully.');
+        } catch(err) {
+            console.error('Storage quota exceeded:', err);
+            applyPlantPhotoToDOM(dataUrl, file.name);
+            showToast('Photograph loaded in current session.');
+        }
+    };
+    reader.readAsDataURL(file);
+};
+
+window.selectPresetPlantPhoto = function(presetKey) {
+    const presetMap = {
+        'aerial': { file: 'plant-aerial.svg', title: 'Sanand GIDC Solar Array — Aerial Overview' },
+        'inverter_yard': { file: 'plant-inverter-yard.svg', title: '13x 320 kW Inverter Yard & MV Transformers' },
+        'switchyard': { file: 'plant-switchyard.svg', title: '11kV Grid Feeder & Main Switchyard Substation' }
+    };
+
+    const preset = presetMap[presetKey] || presetMap['aerial'];
+    const path = resolveAssetPath(preset.file);
+
+    localStorage.setItem('sunscrap_plant_photo', path);
+    localStorage.setItem('sunscrap_plant_photo_title', preset.title);
+    applyPlantPhotoToDOM(path, preset.title);
+    showToast(`Plant photo set to: ${preset.title}`);
+};
+
+function applyPlantPhotoToDOM(src, title) {
+    const images = document.querySelectorAll('.plant-facility-photo');
+    images.forEach(img => {
+        img.src = src;
+    });
+
+    const titleEl = document.getElementById('plant-photo-title');
+    if (titleEl && title) {
+        titleEl.innerText = title;
+    }
+}
+
+function loadSavedPlantPhoto() {
+    const saved = localStorage.getItem('sunscrap_plant_photo');
+    const savedTitle = localStorage.getItem('sunscrap_plant_photo_title');
+    if (saved) {
+        applyPlantPhotoToDOM(saved, savedTitle || 'Sanand GIDC Solar Plant');
+    }
+}
+
