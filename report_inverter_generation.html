@@ -170,6 +170,10 @@
         <!-- Sticky Header (70px) -->
         <header class="app-header">
             <div class="header-left">
+                <!-- Sidebar Collapse & Full Mode Toggle Button -->
+                <button type="button" id="btn-toggle-sidebar" class="btn-menu-toggle" onclick="toggleSidebarFullMode()" title="Toggle Menu / View in Full Mode (Hide/Unhide Sidebar)" aria-label="Toggle Full Mode">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
                 <div class="plant-title">
                     SATs Solar Plant
                     
@@ -182,6 +186,11 @@
             </div>
 
             <div class="header-right" style="display:flex; align-items:center; gap:8px;">
+                <!-- 0. Fullscreen Control Room Mode Toggle Button -->
+                <button type="button" class="header-icon-btn" id="btn-toggle-fullscreen" onclick="toggleFullscreenDisplay()" title="Toggle Fullscreen Control Room Mode" style="border-color: rgba(14, 165, 233, 0.4); color: #0EA5E9;">
+                    <svg id="icon-fs-enter" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                    <svg id="icon-fs-exit" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="display:none;"><path d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M14 4v6m0 0h6m-6 0L21 3M10 4v6m0 0H4m6 0L3 3"/></svg>
+                </button>
                 <!-- 1. Plant Discussion / Comments: Message Thumbnail Icon (No text spelling) -->
                 <button type="button" class="header-icon-btn" id="btn-open-plant-notes" title="Plant Telemetry Discussion & Engineering Remarks" onclick="if(window.openModal){ window.openModal('modal-plant-comments-backdrop'); } else { const m = document.getElementById('modal-plant-comments-backdrop'); if(m){ m.classList.remove('hidden'); m.style.display='flex'; } }">
                     <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
@@ -329,7 +338,7 @@
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
         Print
     </button>
-    <button type="button" class="export-btn export-btn-primary btn-open-email-modal" data-snapshot-id="d48f4723-6b36-4100-9b8a-f97d43f9077b" data-report-name="Inverter Generation Yield Report" title="Email snapshot to authorized recipients">
+    <button type="button" class="export-btn export-btn-primary btn-open-email-modal" data-snapshot-id="ea2560c9-f9a7-49e5-a951-8a8cc195ff08" data-report-name="Inverter Generation Yield Report" title="Email snapshot to authorized recipients">
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
         Email
     </button>
@@ -383,7 +392,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 10:17
+                                        2026-10-23 10:25
                                     
                                 
                                     
@@ -927,7 +936,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 10:02
+                                        2026-10-23 10:10
                                     
                                 
                                     
@@ -1471,7 +1480,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 09:47
+                                        2026-10-23 09:55
                                     
                                 
                                     
@@ -2015,7 +2024,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 09:32
+                                        2026-10-23 09:40
                                     
                                 
                                     
@@ -2559,7 +2568,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 09:17
+                                        2026-10-23 09:25
                                     
                                 
                                     
@@ -3103,7 +3112,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 09:02
+                                        2026-10-23 09:10
                                     
                                 
                                     
@@ -3647,7 +3656,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 08:47
+                                        2026-10-23 08:55
                                     
                                 
                                     
@@ -4191,7 +4200,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 08:32
+                                        2026-10-23 08:40
                                     
                                 
                                     
@@ -4735,7 +4744,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 08:17
+                                        2026-10-23 08:25
                                     
                                 
                                     
@@ -5279,7 +5288,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 08:02
+                                        2026-10-23 08:10
                                     
                                 
                                     
@@ -5823,7 +5832,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 07:47
+                                        2026-10-23 07:55
                                     
                                 
                                     
@@ -6367,7 +6376,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 07:32
+                                        2026-10-23 07:40
                                     
                                 
                                     
@@ -6911,7 +6920,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 07:17
+                                        2026-10-23 07:25
                                     
                                 
                                     
@@ -7455,7 +7464,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 07:02
+                                        2026-10-23 07:10
                                     
                                 
                                     
@@ -7999,7 +8008,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 06:47
+                                        2026-10-23 06:55
                                     
                                 
                                     
@@ -8543,7 +8552,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 06:32
+                                        2026-10-23 06:40
                                     
                                 
                                     
@@ -9087,7 +9096,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 06:17
+                                        2026-10-23 06:25
                                     
                                 
                                     
@@ -9631,7 +9640,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 06:02
+                                        2026-10-23 06:10
                                     
                                 
                                     
@@ -10175,7 +10184,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 05:47
+                                        2026-10-23 05:55
                                     
                                 
                                     
@@ -10719,7 +10728,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 05:32
+                                        2026-10-23 05:40
                                     
                                 
                                     

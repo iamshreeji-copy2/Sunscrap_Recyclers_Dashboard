@@ -189,3 +189,10 @@ Target Device: Inverter 08 (Inv-08 / 320 kWp)
 Status Code: ERR-402 (Grid Under-voltage)
 Timestamp: 01:32:05 PM IST
 Alarm State: ACTIVE / UNACKNOWLEDGED, in this, SCADA Alarm & Alert Incident History Log, why that is not going abcna adn no dismiss button..check and repair it..
+
+--------------------------------------------------------------------------------
+PROMPT #14
+Date & Time (IST): 2026-10-23 03:51:00 PM IST
+Date & Time (UTC): 2026-10-23 10:21:00 UTC
+--------------------------------------------------------------------------------
+why the scroll bar is too simple make it more beatuful and more aestatic, amd it should be hide and unhide option i mean teh menu button which can make this system dahbaord possible to virw in teh full mode.

@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initDashboardNavFilter();
     initProfileManager();
     initWebsiteTracking();
+    initFullModeController();
 });
 
 // =========================================================================
@@ -2064,4 +2065,82 @@ function initWebsiteTracking() {
         console.warn('Website tracking init bypassed:', err);
     }
 }
+
+// =========================================================================
+// 22. Full Mode & Aesthetic Layout Engine (Sidebar Collapse & Fullscreen)
+// =========================================================================
+window.toggleSidebarFullMode = function() {
+    const isCollapsed = document.body.classList.toggle('full-mode');
+    document.body.classList.toggle('sidebar-collapsed', isCollapsed);
+    try {
+        localStorage.setItem('sats_full_mode', isCollapsed ? 'true' : 'false');
+    } catch (e) {}
+
+    // Dispatch resize for Apache ECharts and dynamic responsive layouts
+    setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+    }, 150);
+    setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+    }, 320);
+
+    const toggleBtn = document.getElementById('btn-toggle-sidebar');
+    if (toggleBtn) {
+        toggleBtn.setAttribute('title', isCollapsed ? 'Exit Full Mode / Show Sidebar Menu' : 'Toggle Menu / View in Full Mode (Hide Sidebar)');
+        toggleBtn.setAttribute('aria-pressed', isCollapsed ? 'true' : 'false');
+    }
+
+    if (typeof showToast === 'function') {
+        showToast(isCollapsed ? '🖥️ Full Mode Activated: Sidebar Hidden' : '📋 Standard Mode: Sidebar Visible');
+    }
+};
+
+window.toggleFullscreenDisplay = function() {
+    if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.warn('Fullscreen request failed:', err);
+            });
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+};
+
+function initFullModeController() {
+    // 1. Restore saved Full Mode preference
+    try {
+        const savedFullMode = localStorage.getItem('sats_full_mode');
+        if (savedFullMode === 'true') {
+            document.body.classList.add('full-mode');
+            document.body.classList.add('sidebar-collapsed');
+            const toggleBtn = document.getElementById('btn-toggle-sidebar');
+            if (toggleBtn) {
+                toggleBtn.setAttribute('title', 'Exit Full Mode / Show Sidebar Menu');
+                toggleBtn.setAttribute('aria-pressed', 'true');
+            }
+        }
+    } catch (e) {}
+
+    // 2. Fullscreen API state tracking for icon switcher
+    const updateFsIcon = () => {
+        const isFs = !!document.fullscreenElement;
+        const iconEnter = document.getElementById('icon-fs-enter');
+        const iconExit = document.getElementById('icon-fs-exit');
+        if (iconEnter && iconExit) {
+            iconEnter.style.display = isFs ? 'none' : 'block';
+            iconExit.style.display = isFs ? 'block' : 'none';
+        }
+        const fsBtn = document.getElementById('btn-toggle-fullscreen');
+        if (fsBtn) {
+            fsBtn.setAttribute('title', isFs ? 'Exit Fullscreen Mode' : 'Toggle Fullscreen Control Room Mode');
+        }
+    };
+
+    document.addEventListener('fullscreenchange', updateFsIcon);
+    document.addEventListener('webkitfullscreenchange', updateFsIcon);
+}
+
 
