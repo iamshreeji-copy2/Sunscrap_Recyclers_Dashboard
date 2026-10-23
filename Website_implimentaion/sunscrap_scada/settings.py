@@ -1,8 +1,15 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
+load_dotenv('/home/linux/.env')
+
+# MongoDB Atlas Configuration
+MONGODB_URI = os.environ.get('MONGODB_URI', '')
+MONGODB_DB_NAME = os.environ.get('MONGODB_DB_NAME', 'sats_scada_db')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-sunscrap-scada-production-key-2026-october')

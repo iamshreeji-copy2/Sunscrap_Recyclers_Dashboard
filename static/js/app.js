@@ -1971,7 +1971,7 @@ function initProfileManager() {
         if (currentUser === 'admin') {
             if (fnInput && !fnInput.value) fnInput.value = 'System Administrator';
             if (lnInput && !lnInput.value) lnInput.value = 'Administrator';
-            if (emInput && !emInput.value) emInput.value = 'admin@sunscrap.local';
+            if (emInput && !emInput.value) emInput.value = 'admin@satsolutions.in';
             if (phInput && (!phInput.value || phInput.value === 'None')) phInput.value = '9425655845';
         }
         // Save initial entry into client-side database
@@ -1980,7 +1980,7 @@ function initProfileManager() {
             first_name: fnInput ? fnInput.value : 'System Administrator',
             last_name: lnInput ? lnInput.value : 'Administrator',
             phone: phInput ? (phInput.value || '9425655845') : '9425655845',
-            email: emInput ? (emInput.value || 'admin@sunscrap.local') : 'admin@sunscrap.local',
+            email: emInput ? (emInput.value || 'admin@satsolutions.in') : 'admin@satsolutions.in',
             updated_at: new Date().toISOString()
         };
         localStorage.setItem('scada_user_profile_' + currentUser, JSON.stringify(initialData));
@@ -2002,7 +2002,7 @@ window.handleProfileUpdate = function(event) {
     const firstName = fnInput ? fnInput.value.trim() : '';
     const lastName = lnInput ? lnInput.value.trim() : '';
     const phone = phInput ? phInput.value.trim() : '';
-    const email = emInput ? emInput.value.trim() : 'admin@sunscrap.local';
+    const email = emInput ? emInput.value.trim() : 'admin@satsolutions.in';
 
     const profileData = {
         username: currentUser,

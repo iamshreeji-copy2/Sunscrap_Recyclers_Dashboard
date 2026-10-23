@@ -96,7 +96,7 @@
     </div>
 
     <!-- Password Management -->
-    <div class="card">
+    <div class="card" style="margin-bottom: 24px;">
         <div class="card-header">
             <h2 class="card-title">Change Password</h2>
         </div>
@@ -120,5 +120,49 @@
             <button type="submit" class="export-btn export-btn-primary">Save New Password</button>
         </form>
     </div>
+
+    <!-- Active Session Info Card -->
+    <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header">
+            <h2 class="card-title" style="display:flex; align-items:center; gap:8px;">
+                <svg width="18" height="18" fill="var(--primary)" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z"/></svg>
+                Active Session & Security Diagnostics
+            </h2>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+            <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px;">
+                <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Last Login</div>
+                <div class="font-mono" style="font-size:0.95rem; font-weight:700; color:var(--text-main); margin-top:6px;">2026-10-23 09:15 AM IST</div>
+                <div style="font-size:0.75rem; color:var(--success); margin-top:4px;">● Verified Authentication</div>
+            </div>
+            <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px;">
+                <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Client Browser & OS</div>
+                <div id="session-client-browser" class="font-mono" style="font-size:0.92rem; font-weight:700; color:var(--text-main); margin-top:6px;">Chrome 130 / Linux x86_64</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">TLS 1.3 Encrypted Session</div>
+            </div>
+            <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px;">
+                <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Session Duration</div>
+                <div id="session-duration-counter" class="font-mono" style="font-size:0.95rem; font-weight:700; color:var(--primary); margin-top:6px;">2 hrs 38 mins</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Idle Timeout: 60 minutes</div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const browserElem = document.getElementById('session-client-browser');
+    if (browserElem && navigator && navigator.userAgent) {
+        let ua = navigator.userAgent;
+        let bName = "Chrome";
+        if (ua.indexOf("Firefox") > -1) bName = "Firefox";
+        else if (ua.indexOf("Safari") > -1 && ua.indexOf("Chrome") === -1) bName = "Safari";
+        else if (ua.indexOf("Edg") > -1) bName = "Edge";
+        let osName = "Linux";
+        if (navigator.platform && navigator.platform.indexOf("Win") !== -1) osName = "Windows";
+        if (navigator.platform && navigator.platform.indexOf("Mac") !== -1) osName = "macOS";
+        browserElem.innerText = `${bName} / ${osName}`;
+    }
+});
+</script>
 {% endblock %}

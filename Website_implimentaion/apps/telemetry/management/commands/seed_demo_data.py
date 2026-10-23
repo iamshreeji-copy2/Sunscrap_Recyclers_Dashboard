@@ -9,7 +9,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--admin-user', default='admin', help='Admin username')
         parser.add_argument('--admin-pass', default='Sunscrap@2026', help='Admin password')
-        parser.add_argument('--admin-email', default='admin@sunscrap.local', help='Admin email')
+        parser.add_argument('--admin-email', default='admin@satsolutions.in', help='Admin email')
 
     def handle(self, *args, **options):
         User = get_user_model()

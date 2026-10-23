@@ -138,7 +138,12 @@ def main():
     shutil.copytree(src_static, dst_static)
     print("✓ Copied all static assets, CSS, JS, brand assets, and vendored ECharts")
 
-    # 4. Copy README, CHECKPOINT & previous_coding_prompt.txt
+    # 4. Copy README, CHECKPOINT, .gitignore & previous_coding_prompt.txt
+    if os.path.exists("/home/linux/Documents/Darshan_SCADA_Software_October_2026/Website_implimentaion/.gitignore"):
+        shutil.copy(
+            "/home/linux/Documents/Darshan_SCADA_Software_October_2026/Website_implimentaion/.gitignore",
+            os.path.join(OUTPUT_DIR, ".gitignore")
+        )
     shutil.copy(
         "/home/linux/Documents/Darshan_SCADA_Software_October_2026/Website_implimentaion/README.md",
         os.path.join(OUTPUT_DIR, "README.md")

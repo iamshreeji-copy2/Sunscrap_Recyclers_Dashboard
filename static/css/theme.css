@@ -412,30 +412,10 @@ body {
 }
 
 /* WebKit-based browsers (Chrome, Edge, Safari, Opera, Brave) */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(59, 130, 246, 0.4) 0%, rgba(30, 64, 175, 0.55) 100%);
-  border-radius: 9999px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-  transition: all 0.25s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(59, 130, 246, 0.85) 0%, rgba(37, 99, 235, 0.95) 100%);
-  border: 1px solid transparent;
-  background-clip: content-box;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface-alt); }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary-dark, #0369a1); }
 
 ::-webkit-scrollbar-corner {
   background: transparent;
@@ -735,15 +715,7 @@ body.sidebar-collapsed .btn-menu-toggle {
 }
 
 .badge-demo {
-  background: linear-gradient(135deg, #F59E0B, #D97706);
-  color: #FFFFFF;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 20px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  animation: pulse-gentle 3s infinite;
+  display: none !important;
 }
 
 @keyframes pulse-gentle {
@@ -1627,4 +1599,221 @@ th.sort-desc .sort-indicator {
   color: #FFFFFF;
 }
 
+/* ==========================================================================
+   Plant Performance Health Score Gauge (Pure CSS)
+   ========================================================================== */
+.health-score-gauge {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(#10B981 0% 87.4%, var(--surface-alt) 87.4% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+  flex-shrink: 0;
+}
 
+.health-score-inner {
+  width: 92px;
+  height: 92px;
+  background: var(--surface);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+
+
+/* ==========================================================================
+   SATs SCADA — MOBILE & TABLET RESPONSIVE SYSTEM
+   Breakpoints:
+     Tablet  : max-width 1024px
+     Mobile-L: max-width  768px
+     Mobile-S: max-width  480px
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 200px;
+  }
+  .app-content { padding: 16px; }
+  .kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .plant-title span:first-child { font-size: 0.95rem; }
+  .header-right { gap: 5px; }
+  .header-icon-btn { width: 30px; height: 30px; }
+  .card-header { flex-wrap: wrap; gap: 8px; }
+  .emergency-grid { grid-template-columns: 1fr 1fr; }
+  .table-wrap, .table-responsive-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table { min-width: 640px; }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 0px;
+    --header-height: 56px;
+  }
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 260px !important;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.35);
+    overflow-y: auto;
+  }
+  .app-sidebar .sidebar-brand span,
+  .app-sidebar .nav-section-title,
+  .app-sidebar .nav-item span,
+  .app-sidebar .sidebar-footer {
+    display: block !important;
+  }
+  .app-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  .mobile-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 199;
+    backdrop-filter: blur(2px);
+  }
+  .mobile-sidebar-overlay.active { display: block; }
+  .app-main {
+    margin-left: 0 !important;
+    width: 100%;
+  }
+  .app-header { padding: 0 12px; gap: 8px; }
+  .plant-title span:nth-child(2) { display: none; }
+  .plant-title span:first-child { font-size: 0.9rem; font-weight: 800; }
+  #btn-toggle-fullscreen { display: none; }
+  .app-content { padding: 12px; }
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .kpi-card { padding: 12px; }
+  .kpi-value { font-size: 1.4rem !important; }
+  .kpi-label { font-size: 0.72rem; }
+  .card { padding: 14px; margin-bottom: 14px; border-radius: 10px; }
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .card-title { font-size: 0.95rem !important; }
+  .emergency-grid { grid-template-columns: 1fr; gap: 8px; }
+  .dashboard-segmented-toggle { width: 100%; flex-wrap: wrap; }
+  .dashboard-segmented-btn { flex: 1; justify-content: center; font-size: 0.8rem; padding: 8px 10px; }
+  .inverter-table-wrap, table { min-width: 500px; }
+  [id*="chart"] { height: 280px !important; }
+  .card-header > div:last-child {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+  .accessibility-options-grid { grid-template-columns: 1fr 1fr; }
+  .modal-content, .emergency-modal, .modal-panel {
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 12px 12px 0 0 !important;
+  }
+  .emergency-modal-backdrop, .modal-backdrop-base {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  #scroll-to-top-btn {
+    width: 44px !important;
+    height: 44px !important;
+    right: 12px !important;
+    bottom: 12px !important;
+  }
+  .alert-log-card { flex-direction: column; gap: 8px; }
+  .profile-grid-2col { grid-template-columns: 1fr !important; }
+  .export-btn { padding: 10px 14px; font-size: 0.85rem; }
+  .date-range-row, .filter-row { flex-direction: column; gap: 8px; align-items: stretch; }
+  .login-card { padding: 24px 18px !important; margin: 16px !important; max-width: 100% !important; }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi-value { font-size: 1.2rem !important; }
+  .plant-overview-bar { flex-direction: column; align-items: flex-start; gap: 6px; }
+  [style*="grid-template-columns: repeat(auto-fit, minmax(240px"] { grid-template-columns: 1fr !important; }
+  [id*="chart"] { height: 220px !important; }
+  .app-sidebar { width: 240px !important; }
+  .app-content { padding: 8px; }
+  .card { padding: 10px; border-radius: 8px; }
+  .export-btn-row { flex-direction: column; gap: 6px; }
+  .app-footer {
+    font-size: 0.72rem;
+    padding: 8px 12px;
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+  }
+  .header-icon-btn { width: 28px; height: 28px; }
+  table th, table td { padding: 6px 8px; font-size: 0.78rem; }
+}
+
+@media (max-width: 768px) {
+  button, a.nav-item, .export-btn, input[type="checkbox"] + label,
+  input[type="radio"] + label, select { min-height: 40px; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  .app-sidebar, .app-content, .modal-content { -webkit-overflow-scrolling: touch; }
+  .nav-item:hover { background-color: transparent; }
+  .nav-item:active { background-color: var(--primary-light); }
+}
+
+.mobile-bottom-nav { display: none; }
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    z-index: 150;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.12);
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 4px;
+  }
+  .mobile-bottom-nav a {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 0.62rem; font-weight: 600; color: var(--text-muted);
+    text-decoration: none; padding: 6px 8px; border-radius: 8px;
+    min-width: 52px; text-align: center;
+  }
+  .mobile-bottom-nav a:active, .mobile-bottom-nav a.active {
+    color: var(--primary); background: var(--primary-light);
+  }
+  .mobile-bottom-nav svg { width: 22px; height: 22px; }
+  .app-content { padding-bottom: 72px !important; }
+}
+
+@media print {
+  .app-sidebar, .app-header, .mobile-bottom-nav, #scroll-to-top-btn,
+  .export-btn, .alert-strobe-overlay, .emergency-modal-backdrop { display: none !important; }
+  .app-main { margin-left: 0 !important; }
+  .app-content { padding: 0 !important; }
+  .card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+}

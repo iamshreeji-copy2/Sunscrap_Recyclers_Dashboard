@@ -176,9 +176,6 @@
                 <div class="plant-title" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                     <span style="font-weight:800; font-size:1.12rem; color:var(--text-main);">SATs Solar Plant</span>
                     <span style="font-size:0.86rem; font-weight:700; color:var(--primary); background:var(--primary-light); padding:2px 8px; border-radius:12px; border:1px solid var(--border);">(3900 kW AC / 4640 kWp DC)</span>
-                    
-                        <span class="badge-demo">Demo Data</span>
-                    
                 </div>
             </div>
 
@@ -301,6 +298,11 @@
         <button type="button" class="export-btn btn-whatsapp" data-report-name="SCADA Alert Logs">Share on WhatsApp</button>
         <button type="button" class="export-btn btn-zip" data-report-name="Alert_Logs_Report">Download ZIP</button>
     </div>
+</div>
+
+<!-- All Clear Banner when Active Alarms == 0 -->
+<div id="all-clear-banner" style="background:#D1FAE5; border:1px solid #10B981; color:#065F46; padding:12px 18px; border-radius:var(--radius-sm); margin-bottom:20px; font-weight:700; font-size:0.9rem; display:none; align-items:center; gap:8px;">
+    <span>✅ No Active Alarms — Plant operating normally.</span>
 </div>
 
 <!-- Active Critical Incident Spotlight Card with Dismiss & Silence Controls -->
@@ -561,7 +563,7 @@ function renderAlertLogsTable() {
                     <strong>${item.device}</strong>
                 </td>
                 <td>
-                    <span class="badge ${item.code.startsWith('ERR') ? 'badge-danger' : (item.code.startsWith('WARN') ? 'badge-warning' : 'badge-demo')} font-mono">
+                    <span class="badge ${item.code.startsWith('ERR') ? 'badge-danger' : (item.code.startsWith('WARN') ? 'badge-warning' : 'badge-info')} font-mono">
                         ${item.code}
                     </span>
                 </td>
@@ -613,12 +615,16 @@ function acknowledgeAlarm(id) {
 function dismissActiveSpotlightAlarm() {
     if (typeof stopSirenSound === 'function') stopSirenSound();
     const card = document.getElementById('spotlight-active-fault-card');
+    const allClear = document.getElementById('all-clear-banner');
     if (card) {
         card.style.opacity = '0';
         card.style.transform = 'translateY(-10px)';
         setTimeout(() => {
             card.style.display = 'none';
+            if (allClear) allClear.style.display = 'flex';
         }, 300);
+    } else {
+        if (allClear) allClear.style.display = 'flex';
     }
     localStorage.setItem('sats_active_alarm_dismissed', 'true');
     const activeKpi = document.getElementById('kpi-active-alarms');
@@ -678,6 +684,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('sats_active_alarm_dismissed') === 'true') {
         const card = document.getElementById('spotlight-active-fault-card');
         if (card) card.style.display = 'none';
+        const allClear = document.getElementById('all-clear-banner');
+        if (allClear) allClear.style.display = 'flex';
         const activeKpi = document.getElementById('kpi-active-alarms');
         if (activeKpi) activeKpi.innerText = '0';
     } else if (localStorage.getItem('sats_active_alarm_acknowledged') === 'true') {

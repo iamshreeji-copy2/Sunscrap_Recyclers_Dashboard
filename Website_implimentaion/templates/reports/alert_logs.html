@@ -29,8 +29,13 @@
     </div>
 </div>
 
+<!-- All Clear Banner when Active Alarms == 0 -->
+<div id="all-clear-banner" style="background:#D1FAE5; border:1px solid #10B981; color:#065F46; padding:12px 18px; border-radius:var(--radius-sm); margin-bottom:20px; font-weight:700; font-size:0.9rem; display:{% if stats.active == 0 %}flex{% else %}none{% endif %}; align-items:center; gap:8px;">
+    <span>✅ No Active Alarms — Plant operating normally.</span>
+</div>
+
 <!-- Active Critical Incident Spotlight Card with Dismiss & Silence Controls -->
-<div id="spotlight-active-fault-card" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.12) 0%, rgba(185, 28, 28, 0.05) 100%); border: 1.5px solid #DC2626; border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.15); position: relative; transition: all 0.3s ease;">
+<div id="spotlight-active-fault-card" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.12) 0%, rgba(185, 28, 28, 0.05) 100%); border: 1.5px solid #DC2626; border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.15); position: relative; transition: all 0.3s ease;{% if stats.active == 0 %} display: none;{% endif %}">
     <!-- Close / Dismiss Top-Right Button -->
     <button type="button" onclick="dismissActiveSpotlightAlarm()" title="Dismiss / Close Alarm Card" style="position: absolute; top: 12px; right: 14px; background: none; border: none; font-size: 1.4rem; color: #DC2626; cursor: pointer; padding: 2px 6px; line-height: 1; font-weight: 700;">&times;</button>
 
@@ -287,7 +292,7 @@ function renderAlertLogsTable() {
                     <strong>${item.device}</strong>
                 </td>
                 <td>
-                    <span class="badge ${item.code.startsWith('ERR') ? 'badge-danger' : (item.code.startsWith('WARN') ? 'badge-warning' : 'badge-demo')} font-mono">
+                    <span class="badge ${item.code.startsWith('ERR') ? 'badge-danger' : (item.code.startsWith('WARN') ? 'badge-warning' : 'badge-info')} font-mono">
                         ${item.code}
                     </span>
                 </td>
@@ -339,12 +344,16 @@ function acknowledgeAlarm(id) {
 function dismissActiveSpotlightAlarm() {
     if (typeof stopSirenSound === 'function') stopSirenSound();
     const card = document.getElementById('spotlight-active-fault-card');
+    const allClear = document.getElementById('all-clear-banner');
     if (card) {
         card.style.opacity = '0';
         card.style.transform = 'translateY(-10px)';
         setTimeout(() => {
             card.style.display = 'none';
+            if (allClear) allClear.style.display = 'flex';
         }, 300);
+    } else {
+        if (allClear) allClear.style.display = 'flex';
     }
     localStorage.setItem('sats_active_alarm_dismissed', 'true');
     const activeKpi = document.getElementById('kpi-active-alarms');
@@ -404,6 +413,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('sats_active_alarm_dismissed') === 'true') {
         const card = document.getElementById('spotlight-active-fault-card');
         if (card) card.style.display = 'none';
+        const allClear = document.getElementById('all-clear-banner');
+        if (allClear) allClear.style.display = 'flex';
         const activeKpi = document.getElementById('kpi-active-alarms');
         if (activeKpi) activeKpi.innerText = '0';
     } else if (localStorage.getItem('sats_active_alarm_acknowledged') === 'true') {

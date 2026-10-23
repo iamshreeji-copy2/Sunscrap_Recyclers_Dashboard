@@ -83,7 +83,7 @@
                             </div>
                         </div>
                     </td>
-                    <td class="font-mono" style="font-size:0.82rem;">{{ u.email|default:"operator@sunscrap.local" }}</td>
+                    <td class="font-mono" style="font-size:0.82rem;">{{ u.email|default:"operator@satsolutions.in" }}</td>
                     <td>
                         <span class="status-badge" style="{% if u.role == 'developer' %}background:#EEF2FF; color:#4F46E5; border:1px solid #C7D2FE;
                         {% elif u.role == 'administrator' %}background:#DBEAFE; color:#1D4ED8; border:1px solid #93C5FD;
@@ -213,10 +213,10 @@ function initUserManagementModal() {
 // Seed and sync user storage
 function syncUsersWithLocalStorage() {
     const defaultUsers = [
-        { id: '1', username: 'developer', name: 'Lead Developer', email: 'dev@sunscrap.com', role: 'developer', status: 'Active', dateJoined: '2026-10-20 10:00' },
-        { id: '2', username: 'admin', name: 'System Administrator', email: 'admin@sunscrap.local', role: 'administrator', status: 'Active', dateJoined: '2026-10-20 10:00' },
-        { id: '3', username: 'darshan_owner', name: 'Darshan Patel', email: 'darshan@sunscrap.local', role: 'plant_owner', status: 'Active', dateJoined: '2026-10-20 10:00' },
-        { id: '4', username: 'viewer', name: 'Third Party Auditor', email: 'viewer@sunscrap.local', role: 'third_party', status: 'Active', dateJoined: '2026-10-20 10:00' }
+        { id: '1', username: 'developer', name: 'Lead Developer', email: 'dev@satsolutions.in', role: 'developer', status: 'Active', dateJoined: '2026-10-20 10:00' },
+        { id: '2', username: 'admin', name: 'System Administrator', email: 'admin@satsolutions.in', role: 'administrator', status: 'Active', dateJoined: '2026-10-20 10:00' },
+        { id: '3', username: 'darshan_owner', name: 'Darshan Patel', email: 'darshan@satsolutions.in', role: 'plant_owner', status: 'Active', dateJoined: '2026-10-20 10:00' },
+        { id: '4', username: 'viewer', name: 'Third Party Auditor', email: 'viewer@satsolutions.in', role: 'third_party', status: 'Active', dateJoined: '2026-10-20 10:00' }
     ];
 
     let stored = localStorage.getItem('scada_users_list');
