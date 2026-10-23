@@ -138,7 +138,7 @@ def main():
     shutil.copytree(src_static, dst_static)
     print("✓ Copied all static assets, CSS, JS, brand assets, and vendored ECharts")
 
-    # 4. Copy README & CHECKPOINT
+    # 4. Copy README, CHECKPOINT & previous_coding_prompt.txt
     shutil.copy(
         "/home/linux/Documents/Darshan_SCADA_Software_October_2026/Website_implimentaion/README.md",
         os.path.join(OUTPUT_DIR, "README.md")
@@ -147,6 +147,11 @@ def main():
         "/home/linux/Documents/Darshan_SCADA_Software_October_2026/Website_implimentaion/CHECKPOINT.md",
         os.path.join(OUTPUT_DIR, "CHECKPOINT.md")
     )
+    if os.path.exists("/home/linux/Documents/Darshan_SCADA_Software_October_2026/previous_coding_prompt.txt"):
+        shutil.copy(
+            "/home/linux/Documents/Darshan_SCADA_Software_October_2026/previous_coding_prompt.txt",
+            os.path.join(OUTPUT_DIR, "previous_coding_prompt.txt")
+        )
 
     # 5. Add .nojekyll for GitHub Pages
     with open(os.path.join(OUTPUT_DIR, ".nojekyll"), "w") as f:

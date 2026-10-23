@@ -1469,11 +1469,14 @@ function initUserSessionController() {
     const avatarEl = document.getElementById('header-user-avatar');
     const nameEl = document.getElementById('header-username-display');
     const roleBadge = document.getElementById('role-display-badge');
+    const dropNameEl = document.getElementById('dropdown-username');
+    const dropRoleBadge = document.getElementById('dropdown-role-badge');
 
     if (currentUser) {
         if (avatarEl) avatarEl.innerText = currentUser.charAt(0).toUpperCase();
         if (nameEl) nameEl.innerText = currentUser;
-        if (roleBadge) {
+        if (dropNameEl) dropNameEl.innerText = currentUser;
+        if (roleBadge || dropRoleBadge) {
             let roleLabel = 'Administrator';
             let roleBg = '#1D5BF1';
             if (currentRole === 'developer') {
@@ -1487,46 +1490,89 @@ function initUserSessionController() {
                 roleBg = '#10B981';
                 document.body.classList.add('viewer-mode');
             }
-            roleBadge.innerText = roleLabel;
-            roleBadge.style.background = roleBg;
+            if (roleBadge) {
+                roleBadge.innerText = roleLabel;
+                roleBadge.style.background = roleBg;
+            }
+            if (dropRoleBadge) {
+                dropRoleBadge.innerText = roleLabel;
+                dropRoleBadge.style.background = roleBg;
+            }
         }
     }
 
-    // Workstation Logout action
-    const btnLogout = document.getElementById('btn-workstation-logout');
-    if (btnLogout) {
-        btnLogout.addEventListener('click', (e) => {
-            // Record developer audit telemetry
-            try {
-                const auditLog = {
-                    action: 'USER_LOGOUT',
-                    user: currentUser || 'operator',
-                    role: currentRole || 'administrator',
-                    details: `Operator workstation session cleanly logged out (${currentRole})`,
-                    timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB') + ' IST',
-                    device: navigator.platform + ' Terminal',
-                    browser: navigator.userAgent.split(' ')[0],
-                    approx_location: 'Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)',
-                    network_provider: 'Jio Fiber High-Speed Gateway',
-                    ip: '192.168.1.100'
-                };
-                let logs = JSON.parse(localStorage.getItem('scada_developer_audit_logs') || '[]');
-                logs.unshift(auditLog);
-                localStorage.setItem('scada_developer_audit_logs', JSON.stringify(logs.slice(0, 100)));
-            } catch(err) {}
+    // Profile Dropdown Menu Controller
+    const btnToggleMenu = document.getElementById('btn-toggle-profile-menu');
+    const profileMenu = document.getElementById('profile-dropdown-menu');
+    if (btnToggleMenu && profileMenu) {
+        btnToggleMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileMenu.classList.toggle('hidden');
+            profileMenu.style.display = profileMenu.classList.contains('hidden') ? 'none' : 'block';
+        });
 
-            localStorage.removeItem('scada_session_user');
-            localStorage.removeItem('scada_session_role');
-            localStorage.removeItem('scada_session_name');
-
-            if (isStatic) {
-                e.preventDefault();
-                const prefix = window.location.pathname.includes('Sunscrap_Recyclers_Dashboard') ? 
-                               '/Sunscrap_Recyclers_Dashboard/' : './';
-                window.location.replace(prefix + 'login.html');
+        document.addEventListener('click', (e) => {
+            const container = document.querySelector('.profile-dropdown-container');
+            if (container && !container.contains(e.target)) {
+                profileMenu.classList.add('hidden');
+                profileMenu.style.display = 'none';
             }
         });
     }
+
+    // Auto-close dropdown when selecting Plant Details or Plant Photo
+    const plantDetailsBtn = document.getElementById('btn-open-plant-details');
+    const plantPhotoBtn = document.getElementById('btn-open-plant-photo-modal');
+    if (plantDetailsBtn && profileMenu) {
+        plantDetailsBtn.addEventListener('click', () => {
+            profileMenu.classList.add('hidden');
+            profileMenu.style.display = 'none';
+        });
+    }
+    if (plantPhotoBtn && profileMenu) {
+        plantPhotoBtn.addEventListener('click', () => {
+            profileMenu.classList.add('hidden');
+            profileMenu.style.display = 'none';
+        });
+    }
+
+    // Workstation Logout actions (Header button and dropdown menu)
+    const logoutHandler = (e) => {
+        // Record developer audit telemetry
+        try {
+            const auditLog = {
+                action: 'USER_LOGOUT',
+                user: currentUser || 'operator',
+                role: currentRole || 'administrator',
+                details: `Operator workstation session cleanly logged out (${currentRole})`,
+                timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB') + ' IST',
+                device: navigator.platform + ' Terminal',
+                browser: navigator.userAgent.split(' ')[0],
+                approx_location: 'Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)',
+                network_provider: 'Jio Fiber High-Speed Gateway',
+                ip: '192.168.1.100'
+            };
+            let logs = JSON.parse(localStorage.getItem('scada_developer_audit_logs') || '[]');
+            logs.unshift(auditLog);
+            localStorage.setItem('scada_developer_audit_logs', JSON.stringify(logs.slice(0, 100)));
+        } catch(err) {}
+
+        localStorage.removeItem('scada_session_user');
+        localStorage.removeItem('scada_session_role');
+        localStorage.removeItem('scada_session_name');
+
+        if (isStatic) {
+            e.preventDefault();
+            const prefix = window.location.pathname.includes('Sunscrap_Recyclers_Dashboard') ? 
+                           '/Sunscrap_Recyclers_Dashboard/' : './';
+            window.location.replace(prefix + 'login.html');
+        }
+    };
+
+    const btnLogout = document.getElementById('btn-workstation-logout');
+    const btnLogoutDrop = document.getElementById('btn-workstation-logout-drop');
+    if (btnLogout) btnLogout.addEventListener('click', logoutHandler);
+    if (btnLogoutDrop) btnLogoutDrop.addEventListener('click', logoutHandler);
 }
 
 // =========================================================================

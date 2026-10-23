@@ -12,7 +12,7 @@
     </div>
 
     <!-- Account Details -->
-    <div class="card">
+    <div class="card" style="margin-bottom: 24px;">
         <div class="card-header">
             <h2 class="card-title">Operator Credentials & Organization</h2>
             <a href="{% url 'profile_email' %}" class="export-btn">Change Email (Verified)</a>
@@ -48,6 +48,48 @@
             </div>
             <button type="submit" class="export-btn export-btn-primary">Update Profile Details</button>
         </form>
+    </div>
+
+    <!-- Facility Location & Plant Photography Card (Managed under Profile) -->
+    <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="card-title" style="margin:0; display:flex; align-items:center; gap:8px;">
+                <svg width="18" height="18" fill="#3B82F6" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                Facility Location, GPS & Plant Photography
+            </h2>
+        </div>
+        <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:16px;">
+            Configure geographical plant coordinates, physical plot location, facility contact information, and upload official site photography.
+        </p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px; display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                    <strong style="font-size:0.92rem; color:var(--text-main); display:flex; align-items:center; gap:6px;">
+                        <span>📍 Plant & GPS Coordinates</span>
+                    </strong>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:6px; line-height:1.4;">
+                        Sanand GIDC Phase II, Ahmedabad &bull; 22.9868° N, 72.3787° E &bull; 3,900 kW AC
+                    </div>
+                </div>
+                <button type="button" class="export-btn export-btn-primary" onclick="document.getElementById('modal-plant-metadata-backdrop').classList.remove('hidden');" style="margin-top:14px; font-size:0.82rem; width:100%; justify-content:center;">
+                    Manage Plant & GPS Details ➔
+                </button>
+            </div>
+
+            <div style="background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px; display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                    <strong style="font-size:0.92rem; color:var(--text-main); display:flex; align-items:center; gap:6px;">
+                        <span>📷 Site Photography & Gallery</span>
+                    </strong>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:6px; line-height:1.4;">
+                        Upload drone array aerials, 13x inverter yard photos, and 11kV substation feeder imagery.
+                    </div>
+                </div>
+                <button type="button" class="export-btn export-btn-primary" onclick="document.getElementById('modal-plant-photo-viewer').classList.remove('hidden');" style="margin-top:14px; font-size:0.82rem; width:100%; justify-content:center;">
+                    Open Photo Gallery & Uploader ➔
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Password Management -->
