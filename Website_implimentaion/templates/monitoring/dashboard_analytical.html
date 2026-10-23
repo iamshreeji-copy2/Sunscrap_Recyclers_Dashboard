@@ -392,9 +392,6 @@ function initForecastChart(chartType) {
     const dom = document.getElementById('chart-ml-forecast');
     if (!dom) return;
 
-    if (forecastChart) forecastChart.dispose();
-    forecastChart = echarts.init(dom);
-
     const isArea = chartType === 'area';
     const isBar = chartType === 'bar';
 
@@ -419,9 +416,9 @@ function initForecastChart(chartType) {
             name: 'Forecast Timeline (Day +1 to Day +7)',
             nameLocation: 'middle',
             nameGap: 32,
-            nameTextStyle: { fontWeight: 700, fontSize: 12, color: 'var(--text-muted)' },
+            nameTextStyle: { fontWeight: 700, fontSize: 12 },
             data: dates,
-            axisLabel: { margin: 10, color: 'var(--text-muted)' },
+            axisLabel: { margin: 10 },
             boundaryGap: isBar
         },
         yAxis: {
@@ -431,7 +428,7 @@ function initForecastChart(chartType) {
             nameRotate: 90,
             nameGap: 62,
             nameTextStyle: { fontWeight: 700, fontSize: 12, color: '#008374' },
-            axisLabel: { formatter: '{value} kWh', color: 'var(--text-muted)' }
+            axisLabel: { formatter: '{value} kWh' }
         },
         series: [
             {
@@ -467,8 +464,7 @@ function initForecastChart(chartType) {
         ]
     };
 
-    forecastChart.setOption(option);
-    window.addEventListener('resize', () => forecastChart.resize());
+    forecastChart = ChartRegistry.init('chart-ml-forecast', option);
 }
 
 function switchForecastChartType(type, btn) {
@@ -494,8 +490,8 @@ function initRegressionChart() {
             name: 'Solar Irradiance GTI (W/m²)',
             nameLocation: 'middle',
             nameGap: 32,
-            nameTextStyle: { fontWeight: 700, fontSize: 12, color: 'var(--text-muted)' },
-            axisLabel: { formatter: '{value} W/m²', margin: 10, color: 'var(--text-muted)' }
+            nameTextStyle: { fontWeight: 700, fontSize: 12 },
+            axisLabel: { formatter: '{value} W/m²', margin: 10 }
         },
         yAxis: {
             type: 'value',
@@ -504,7 +500,7 @@ function initRegressionChart() {
             nameRotate: 90,
             nameGap: 62,
             nameTextStyle: { fontWeight: 700, fontSize: 12, color: '#008374' },
-            axisLabel: { formatter: '{value} kW', color: 'var(--text-muted)' }
+            axisLabel: { formatter: '{value} kW' }
         },
         series: [
             {

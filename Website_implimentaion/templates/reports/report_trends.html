@@ -18,7 +18,7 @@
                     <h2 class="card-title">{{ p.title }}</h2>
                     <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>{{ p.device_id }}</b> • Metric: <b>{{ p.metric_id }}</b></span>
                 </div>
-                <button type="button" class="export-btn" onclick="document.getElementById('config-modal-{{ p.panel_index }}').classList.add('active')">
+                <button type="button" class="export-btn" onclick="if(window.openModal){ window.openModal('config-modal-{{ p.panel_index }}'); } else { const m = document.getElementById('config-modal-{{ p.panel_index }}'); m.classList.remove('hidden'); m.classList.add('active'); m.style.display='flex'; }">
                     Configure
                 </button>
             </div>
@@ -26,11 +26,11 @@
         </div>
 
         <!-- Configuration Modal for each panel -->
-        <div class="modal-overlay" id="config-modal-{{ p.panel_index }}">
+        <div class="modal-overlay hidden" id="config-modal-{{ p.panel_index }}" style="display: none;">
             <div class="modal-dialog">
                 <div class="modal-header">
-                    <h3 style="font-size: 1rem; font-weight: 700;">Configure Trend Panel {{ p.panel_index }}</h3>
-                    <button type="button" class="btn-close-modal" onclick="document.getElementById('config-modal-{{ p.panel_index }}').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #FFF;">Configure Trend Panel {{ p.panel_index }}</h3>
+                    <button type="button" class="btn-close-modal" onclick="if(window.closeModal){ window.closeModal('config-modal-{{ p.panel_index }}'); } else { const m = document.getElementById('config-modal-{{ p.panel_index }}'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }" style="background:none; border:none; color:#FFF; font-size:1.4rem; cursor:pointer;" aria-label="Close modal">&times;</button>
                 </div>
                 <form method="POST">
                     {% csrf_token %}
@@ -60,8 +60,8 @@
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="export-btn" onclick="document.getElementById('config-modal-{{ p.panel_index }}').classList.remove('active')">Cancel</button>
+                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('config-modal-{{ p.panel_index }}'); } else { const m = document.getElementById('config-modal-{{ p.panel_index }}'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }">Cancel</button>
                         <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
                     </div>
                 </form>
@@ -109,6 +109,24 @@ document.addEventListener('DOMContentLoaded', () => {
         xAxis: { type: 'category', data: timeSlots },
         yAxis: { type: 'value' },
         series: [{ type: 'bar', data: p4, itemStyle: { color: '#10B981' } }]
+    });
+
+    // Close modal on backdrop click or Escape key
+    document.querySelectorAll('[id^="config-modal-"]').forEach(m => {
+        m.addEventListener('click', (e) => {
+            if (e.target === m) {
+                if (window.closeModal) window.closeModal(m.id);
+                else { m.classList.add('hidden'); m.classList.remove('active'); m.style.display = 'none'; }
+            }
+        });
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('[id^="config-modal-"]').forEach(m => {
+                if (window.closeModal) window.closeModal(m.id);
+                else { m.classList.add('hidden'); m.classList.remove('active'); m.style.display = 'none'; }
+            });
+        }
     });
 });
 </script>

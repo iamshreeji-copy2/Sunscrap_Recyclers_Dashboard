@@ -638,3 +638,25 @@ CHANGES MADE:
 - plant_settings.html: Cleaned photo caption text (removed redundant bracketed capacity)
 - app.js: Added initLocationAutocomplete() IIFE (Nominatim OSM, debounced 350ms, keyboard nav, auto-fills GPS fields)
 - app.js: Fixed initRoleSwitcher() to not require btn+badge both — applies role class even on pages without the button
+
+---
+PROMPT #28 — Sidebar Logo Only, Chart Mode Font Visibility, Modal Close Fix
+DATE: 2026-10-23
+
+REQUESTS:
+1. Draw ONLY the logo of SATs on the left side menu top (do NOT write "⚡ SATs SCADA")
+2. Make font color of graph legends and labels visible in each mode: in white/light mode it must NOT be white, in dark mode it must NOT be dark; ensure all fonts across the website are visible
+3. Fix the close (&times;) and Cancel button not working in "Create Custom Report Configuration" modal
+
+CHANGES MADE:
+- base.html: Replaced sidebar-brand text "⚡ SATs SCADA" with official SATs logo image (sats-official-logo.png with sats-logo.svg fallback).
+- theme.css: Fixed .modal-overlay to default to display: none; instead of display: flex;. Now removing .active or adding .hidden reliably closes modals.
+- charts.js: Completely revamped ChartRegistry with getChartThemeColors() and enhanceChartOptions():
+  * Light Mode: Legend color is #1E293B (dark slate, never white), axis labels #475569, titles #1E293B.
+  * Dark Mode: Legend color is #F1F5F9 (crisp white, never dark), axis labels #94A3B8, titles #CBD5E1.
+  * Added updateAllThemeColors() to dynamically recolor all rendered charts on the fly whenever dark/light mode is toggled.
+- app.js: Hooked applyThemeMode() to trigger window.ChartRegistry.updateAllThemeColors() immediately upon mode toggle.
+- dashboard_analytical.html: Updated forecastChart and regressionChart to use ChartRegistry.init() and clean hex color styles.
+- dashboard.html, inverter_overview.html: Cleaned canvas-incompatible var(--text-muted) from chart axes.
+- report_custom.html: Fixed modal markup with class "modal-overlay hidden" and display: none; converted Open, Close, and Cancel buttons to use window.openModal / window.closeModal with inline fallbacks; added backdrop click and Escape key listeners.
+- schedules.html, report_trends.html: Applied identical modal fix and backdrop/Esc handlers to guarantee 100% modal reliability.

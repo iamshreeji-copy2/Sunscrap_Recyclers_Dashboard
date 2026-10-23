@@ -1013,7 +1013,7 @@ body.sidebar-collapsed .btn-menu-toggle {
   bottom: 0;
   background-color: rgba(13, 26, 54, 0.6);
   backdrop-filter: blur(4px);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 1000;

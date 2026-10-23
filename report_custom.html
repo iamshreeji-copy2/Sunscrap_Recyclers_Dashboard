@@ -50,9 +50,8 @@
     <!-- Desktop 248px Sidebar & Mobile Off-canvas Drawer -->
     <aside class="app-sidebar" id="app-sidebar">
         <div class="sidebar-brand">
-            <a href="./index.html" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #FFFFFF; font-weight: 800; font-size: 1.08rem; letter-spacing: 0.5px;">
-                <span style="color: var(--secondary);">⚡</span>
-                <span>SATs SCADA</span>
+            <a href="./index.html" style="display: flex; align-items: center; text-decoration: none; max-width: 100%;" title="SAT Solutions">
+                <img src="./static/assets/sats-official-logo.png" alt="SAT Solutions" style="height: 38px; max-width: 175px; width: auto; object-fit: contain; border-radius: 4px;" onerror="this.src='/static/assets/sats-logo.svg';">
             </a>
             <!-- Dedicated Mobile & Tablet Close Button -->
             <button type="button" class="btn-close-mobile-sidebar" onclick="closeMobileSidebar()" aria-label="Close navigation">&times;</button>
@@ -298,7 +297,7 @@
             Persisted parameterized custom report builder with allowlisted metrics and six export actions.
         </div>
     </div>
-    <button type="button" class="export-btn export-btn-primary" onclick="document.getElementById('new-custom-report-modal').classList.add('active')">
+    <button type="button" class="export-btn export-btn-primary" onclick="if(window.openModal){ window.openModal('new-custom-report-modal'); } else { const m = document.getElementById('new-custom-report-modal'); m.classList.remove('hidden'); m.classList.add('active'); m.style.display='flex'; }">
         + Create New Custom Report
     </button>
 </div>
@@ -310,7 +309,7 @@
             <div class="card-header">
                 <h2 class="card-title">None</h2>
                 <form method="POST" style="margin: 0;">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="oYNzQuzTXqD06blAega6yWK4FqD0QSYxupB4h02Vd79pkuYbqHPdkDtYa1by2y5M">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="H4bVOgCZLJZ1OYzFmc8C4FGY8xcw3xq8lyD2THdQP5jTIvCXiugFu5bwZ2ggaRHd">
                     <input type="hidden" name="action" value="delete">
                     <input type="hidden" name="config_id" value="2">
                     <button type="submit" class="export-btn" style="color: var(--error); border-color: var(--error); padding: 2px 8px; font-size: 0.72rem;">Delete</button>
@@ -329,7 +328,7 @@
             <div class="card-header">
                 <h2 class="card-title">None</h2>
                 <form method="POST" style="margin: 0;">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="oYNzQuzTXqD06blAega6yWK4FqD0QSYxupB4h02Vd79pkuYbqHPdkDtYa1by2y5M">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="H4bVOgCZLJZ1OYzFmc8C4FGY8xcw3xq8lyD2THdQP5jTIvCXiugFu5bwZ2ggaRHd">
                     <input type="hidden" name="action" value="delete">
                     <input type="hidden" name="config_id" value="1">
                     <button type="submit" class="export-btn" style="color: var(--error); border-color: var(--error); padding: 2px 8px; font-size: 0.72rem;">Delete</button>
@@ -347,14 +346,14 @@
 </div>
 
 <!-- Create Custom Report Modal -->
-<div class="modal-overlay" id="new-custom-report-modal">
+<div class="modal-overlay hidden" id="new-custom-report-modal" style="display: none;">
     <div class="modal-dialog">
         <div class="modal-header">
-            <h3 style="font-size: 1rem; font-weight: 700;">Create Custom Report Configuration</h3>
-            <button type="button" class="btn-close-modal" onclick="document.getElementById('new-custom-report-modal').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+            <h3 style="font-size: 1rem; font-weight: 700; color: #FFF;">Create Custom Report Configuration</h3>
+            <button type="button" class="btn-close-modal" onclick="if(window.closeModal){ window.closeModal('new-custom-report-modal'); } else { const m = document.getElementById('new-custom-report-modal'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }" style="background:none; border:none; color:#FFF; font-size:1.4rem; cursor:pointer;" aria-label="Close modal">&times;</button>
         </div>
         <form method="POST">
-            <input type="hidden" name="csrfmiddlewaretoken" value="oYNzQuzTXqD06blAega6yWK4FqD0QSYxupB4h02Vd79pkuYbqHPdkDtYa1by2y5M">
+            <input type="hidden" name="csrfmiddlewaretoken" value="H4bVOgCZLJZ1OYzFmc8C4FGY8xcw3xq8lyD2THdQP5jTIvCXiugFu5bwZ2ggaRHd">
             <input type="hidden" name="action" value="create">
             <div class="modal-body">
                 <div style="margin-bottom: 12px;">
@@ -387,13 +386,33 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="export-btn" onclick="document.getElementById('new-custom-report-modal').classList.remove('active')">Cancel</button>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('new-custom-report-modal'); } else { const m = document.getElementById('new-custom-report-modal'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }">Cancel</button>
                 <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('new-custom-report-modal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                if (window.closeModal) window.closeModal('new-custom-report-modal');
+                else { modal.classList.add('hidden'); modal.classList.remove('active'); modal.style.display = 'none'; }
+            }
+        });
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal) {
+            if (window.closeModal) window.closeModal('new-custom-report-modal');
+            else { modal.classList.add('hidden'); modal.classList.remove('active'); modal.style.display = 'none'; }
+        }
+    });
+});
+</script>
 
 
             <!-- Global SATs Professional Workstation Footer -->

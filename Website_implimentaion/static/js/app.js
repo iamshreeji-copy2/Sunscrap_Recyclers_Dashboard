@@ -192,6 +192,10 @@ function applyThemeMode(mode) {
     document.querySelectorAll('.btn-theme-mode').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-theme') === mode);
     });
+    // Dynamically update all chart legends and labels font colors for current theme
+    if (window.ChartRegistry && typeof window.ChartRegistry.updateAllThemeColors === 'function') {
+        window.ChartRegistry.updateAllThemeColors();
+    }
 }
 
 function applyColorMode(mode) {

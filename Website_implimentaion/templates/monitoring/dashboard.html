@@ -393,14 +393,12 @@ document.addEventListener('DOMContentLoaded', () => {
             nameGap: 34,
             nameTextStyle: {
                 fontWeight: 700,
-                fontSize: 12,
-                color: 'var(--text-muted)'
+                fontSize: 12
             },
             data: times,
             boundaryGap: false,
             axisLabel: {
-                margin: 12,
-                color: 'var(--text-muted)'
+                margin: 12
             }
         },
         yAxis: [
@@ -418,7 +416,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 position: 'left',
                 axisLabel: {
                     formatter: '{value} kW',
-                    color: 'var(--text-muted)',
                     margin: 8
                 }
             },
@@ -436,7 +433,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 position: 'right',
                 axisLabel: {
                     formatter: '{value} W/m²',
-                    color: 'var(--text-muted)',
                     margin: 8
                 },
                 splitLine: { show: false }
@@ -532,9 +528,9 @@ document.addEventListener('DOMContentLoaded', () => {
             name: 'Observation Intervals (15-Minute Timeline)',
             nameLocation: 'middle',
             nameGap: 32,
-            nameTextStyle: { fontWeight: 700, fontSize: 12, color: 'var(--text-muted)' },
+            nameTextStyle: { fontWeight: 700, fontSize: 12 },
             data: times,
-            axisLabel: { margin: 10, color: 'var(--text-muted)' }
+            axisLabel: { margin: 10 }
         },
         yAxis: { 
             type: 'value', 
@@ -543,7 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
             nameRotate: 90,
             nameGap: 62,
             nameTextStyle: { fontWeight: 700, fontSize: 12, color: '#008374' },
-            axisLabel: { formatter: '{value} kWh', color: 'var(--text-muted)' }
+            axisLabel: { formatter: '{value} kWh' }
         },
         series: [
             {

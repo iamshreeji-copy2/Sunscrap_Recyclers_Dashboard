@@ -50,9 +50,8 @@
     <!-- Desktop 248px Sidebar & Mobile Off-canvas Drawer -->
     <aside class="app-sidebar" id="app-sidebar">
         <div class="sidebar-brand">
-            <a href="./index.html" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #FFFFFF; font-weight: 800; font-size: 1.08rem; letter-spacing: 0.5px;">
-                <span style="color: var(--secondary);">⚡</span>
-                <span>SATs SCADA</span>
+            <a href="./index.html" style="display: flex; align-items: center; text-decoration: none; max-width: 100%;" title="SAT Solutions">
+                <img src="./static/assets/sats-official-logo.png" alt="SAT Solutions" style="height: 38px; max-width: 175px; width: auto; object-fit: contain; border-radius: 4px;" onerror="this.src='/static/assets/sats-logo.svg';">
             </a>
             <!-- Dedicated Mobile & Tablet Close Button -->
             <button type="button" class="btn-close-mobile-sidebar" onclick="closeMobileSidebar()" aria-label="Close navigation">&times;</button>
@@ -307,7 +306,7 @@
                     <h2 class="card-title">Active Power Trend</h2>
                     <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>INV-01</b> • Metric: <b>active_power</b></span>
                 </div>
-                <button type="button" class="export-btn" onclick="document.getElementById('config-modal-1').classList.add('active')">
+                <button type="button" class="export-btn" onclick="if(window.openModal){ window.openModal('config-modal-1'); } else { const m = document.getElementById('config-modal-1'); m.classList.remove('hidden'); m.classList.add('active'); m.style.display='flex'; }">
                     Configure
                 </button>
             </div>
@@ -315,14 +314,14 @@
         </div>
 
         <!-- Configuration Modal for each panel -->
-        <div class="modal-overlay" id="config-modal-1">
+        <div class="modal-overlay hidden" id="config-modal-1" style="display: none;">
             <div class="modal-dialog">
                 <div class="modal-header">
-                    <h3 style="font-size: 1rem; font-weight: 700;">Configure Trend Panel 1</h3>
-                    <button type="button" class="btn-close-modal" onclick="document.getElementById('config-modal-1').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #FFF;">Configure Trend Panel 1</h3>
+                    <button type="button" class="btn-close-modal" onclick="if(window.closeModal){ window.closeModal('config-modal-1'); } else { const m = document.getElementById('config-modal-1'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }" style="background:none; border:none; color:#FFF; font-size:1.4rem; cursor:pointer;" aria-label="Close modal">&times;</button>
                 </div>
                 <form method="POST">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="6lU62oDbpbrmjN1ZxINprHtyqebCrkc7cMIBtU6dFSXLx6EAJ9swdocsVPJaD0jm">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="xEJZuO7psTWKi1liL7pBhG9HGH831d2ab8b6zfIgwfgCcyoAHpxEH6EfxccN8xjf">
                     <input type="hidden" name="panel_index" value="1">
                     <div class="modal-body">
                         <div style="margin-bottom: 14px;">
@@ -379,8 +378,8 @@
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="export-btn" onclick="document.getElementById('config-modal-1').classList.remove('active')">Cancel</button>
+                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('config-modal-1'); } else { const m = document.getElementById('config-modal-1'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }">Cancel</button>
                         <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
                     </div>
                 </form>
@@ -393,7 +392,7 @@
                     <h2 class="card-title">Irradiance GHI / GTI</h2>
                     <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>WMS-01</b> • Metric: <b>gti</b></span>
                 </div>
-                <button type="button" class="export-btn" onclick="document.getElementById('config-modal-2').classList.add('active')">
+                <button type="button" class="export-btn" onclick="if(window.openModal){ window.openModal('config-modal-2'); } else { const m = document.getElementById('config-modal-2'); m.classList.remove('hidden'); m.classList.add('active'); m.style.display='flex'; }">
                     Configure
                 </button>
             </div>
@@ -401,14 +400,14 @@
         </div>
 
         <!-- Configuration Modal for each panel -->
-        <div class="modal-overlay" id="config-modal-2">
+        <div class="modal-overlay hidden" id="config-modal-2" style="display: none;">
             <div class="modal-dialog">
                 <div class="modal-header">
-                    <h3 style="font-size: 1rem; font-weight: 700;">Configure Trend Panel 2</h3>
-                    <button type="button" class="btn-close-modal" onclick="document.getElementById('config-modal-2').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #FFF;">Configure Trend Panel 2</h3>
+                    <button type="button" class="btn-close-modal" onclick="if(window.closeModal){ window.closeModal('config-modal-2'); } else { const m = document.getElementById('config-modal-2'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }" style="background:none; border:none; color:#FFF; font-size:1.4rem; cursor:pointer;" aria-label="Close modal">&times;</button>
                 </div>
                 <form method="POST">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="6lU62oDbpbrmjN1ZxINprHtyqebCrkc7cMIBtU6dFSXLx6EAJ9swdocsVPJaD0jm">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="xEJZuO7psTWKi1liL7pBhG9HGH831d2ab8b6zfIgwfgCcyoAHpxEH6EfxccN8xjf">
                     <input type="hidden" name="panel_index" value="2">
                     <div class="modal-body">
                         <div style="margin-bottom: 14px;">
@@ -465,8 +464,8 @@
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="export-btn" onclick="document.getElementById('config-modal-2').classList.remove('active')">Cancel</button>
+                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('config-modal-2'); } else { const m = document.getElementById('config-modal-2'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }">Cancel</button>
                         <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
                     </div>
                 </form>
@@ -479,7 +478,7 @@
                     <h2 class="card-title">Inverter Temperature</h2>
                     <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>INV-01</b> • Metric: <b>temperature</b></span>
                 </div>
-                <button type="button" class="export-btn" onclick="document.getElementById('config-modal-3').classList.add('active')">
+                <button type="button" class="export-btn" onclick="if(window.openModal){ window.openModal('config-modal-3'); } else { const m = document.getElementById('config-modal-3'); m.classList.remove('hidden'); m.classList.add('active'); m.style.display='flex'; }">
                     Configure
                 </button>
             </div>
@@ -487,14 +486,14 @@
         </div>
 
         <!-- Configuration Modal for each panel -->
-        <div class="modal-overlay" id="config-modal-3">
+        <div class="modal-overlay hidden" id="config-modal-3" style="display: none;">
             <div class="modal-dialog">
                 <div class="modal-header">
-                    <h3 style="font-size: 1rem; font-weight: 700;">Configure Trend Panel 3</h3>
-                    <button type="button" class="btn-close-modal" onclick="document.getElementById('config-modal-3').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #FFF;">Configure Trend Panel 3</h3>
+                    <button type="button" class="btn-close-modal" onclick="if(window.closeModal){ window.closeModal('config-modal-3'); } else { const m = document.getElementById('config-modal-3'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }" style="background:none; border:none; color:#FFF; font-size:1.4rem; cursor:pointer;" aria-label="Close modal">&times;</button>
                 </div>
                 <form method="POST">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="6lU62oDbpbrmjN1ZxINprHtyqebCrkc7cMIBtU6dFSXLx6EAJ9swdocsVPJaD0jm">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="xEJZuO7psTWKi1liL7pBhG9HGH831d2ab8b6zfIgwfgCcyoAHpxEH6EfxccN8xjf">
                     <input type="hidden" name="panel_index" value="3">
                     <div class="modal-body">
                         <div style="margin-bottom: 14px;">
@@ -551,8 +550,8 @@
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="export-btn" onclick="document.getElementById('config-modal-3').classList.remove('active')">Cancel</button>
+                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('config-modal-3'); } else { const m = document.getElementById('config-modal-3'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }">Cancel</button>
                         <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
                     </div>
                 </form>
@@ -563,9 +562,9 @@
             <div class="card-header">
                 <div>
                     <h2 class="card-title">Grid Export Power</h2>
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>MFM-OUT</b> • Metric: <b>active_power</b></span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Device: <b>INV-05</b> • Metric: <b>gti</b></span>
                 </div>
-                <button type="button" class="export-btn" onclick="document.getElementById('config-modal-4').classList.add('active')">
+                <button type="button" class="export-btn" onclick="if(window.openModal){ window.openModal('config-modal-4'); } else { const m = document.getElementById('config-modal-4'); m.classList.remove('hidden'); m.classList.add('active'); m.style.display='flex'; }">
                     Configure
                 </button>
             </div>
@@ -573,14 +572,14 @@
         </div>
 
         <!-- Configuration Modal for each panel -->
-        <div class="modal-overlay" id="config-modal-4">
+        <div class="modal-overlay hidden" id="config-modal-4" style="display: none;">
             <div class="modal-dialog">
                 <div class="modal-header">
-                    <h3 style="font-size: 1rem; font-weight: 700;">Configure Trend Panel 4</h3>
-                    <button type="button" class="btn-close-modal" onclick="document.getElementById('config-modal-4').classList.remove('active')" style="background:none; border:none; color:#FFF; font-size:1.2rem; cursor:pointer;">&times;</button>
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #FFF;">Configure Trend Panel 4</h3>
+                    <button type="button" class="btn-close-modal" onclick="if(window.closeModal){ window.closeModal('config-modal-4'); } else { const m = document.getElementById('config-modal-4'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }" style="background:none; border:none; color:#FFF; font-size:1.4rem; cursor:pointer;" aria-label="Close modal">&times;</button>
                 </div>
                 <form method="POST">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="6lU62oDbpbrmjN1ZxINprHtyqebCrkc7cMIBtU6dFSXLx6EAJ9swdocsVPJaD0jm">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="xEJZuO7psTWKi1liL7pBhG9HGH831d2ab8b6zfIgwfgCcyoAHpxEH6EfxccN8xjf">
                     <input type="hidden" name="panel_index" value="4">
                     <div class="modal-body">
                         <div style="margin-bottom: 14px;">
@@ -599,7 +598,7 @@
                                 
                                     <option value="INV-04" >INV-04: Inverter 04</option>
                                 
-                                    <option value="INV-05" >INV-05: Inverter 05</option>
+                                    <option value="INV-05" selected>INV-05: Inverter 05</option>
                                 
                                     <option value="INV-06" >INV-06: Inverter 06</option>
                                 
@@ -619,7 +618,7 @@
                                 
                                     <option value="MFM-LT" >MFM-LT: LT Meter</option>
                                 
-                                    <option value="MFM-OUT" selected>MFM-OUT: Outgoing MFM (Main Export/Import)</option>
+                                    <option value="MFM-OUT" >MFM-OUT: Outgoing MFM (Main Export/Import)</option>
                                 
                                     <option value="WMS-01" >WMS-01: Weather Monitoring Station</option>
                                 
@@ -628,17 +627,17 @@
                         <div style="margin-bottom: 14px;">
                             <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Metric</label>
                             <select name="metric_id" style="width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.88rem;">
-                                <option value="active_power" selected>Active Power (kW)</option>
+                                <option value="active_power" >Active Power (kW)</option>
                                 <option value="temperature" >Temperature (°C)</option>
                                 <option value="daily_yield" >Daily Yield (kWh)</option>
-                                <option value="gti" >GTI Irradiance (W/m²)</option>
+                                <option value="gti" selected>GTI Irradiance (W/m²)</option>
                                 <option value="ghi" >GHI Irradiance (W/m²)</option>
                                 <option value="power_factor" >Power Factor</option>
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="export-btn" onclick="document.getElementById('config-modal-4').classList.remove('active')">Cancel</button>
+                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="export-btn" onclick="if(window.closeModal){ window.closeModal('config-modal-4'); } else { const m = document.getElementById('config-modal-4'); m.classList.add('hidden'); m.classList.remove('active'); m.style.display='none'; }">Cancel</button>
                         <button type="submit" class="export-btn export-btn-primary">Save Configuration</button>
                     </div>
                 </form>
@@ -686,6 +685,24 @@ document.addEventListener('DOMContentLoaded', () => {
         xAxis: { type: 'category', data: timeSlots },
         yAxis: { type: 'value' },
         series: [{ type: 'bar', data: p4, itemStyle: { color: '#10B981' } }]
+    });
+
+    // Close modal on backdrop click or Escape key
+    document.querySelectorAll('[id^="config-modal-"]').forEach(m => {
+        m.addEventListener('click', (e) => {
+            if (e.target === m) {
+                if (window.closeModal) window.closeModal(m.id);
+                else { m.classList.add('hidden'); m.classList.remove('active'); m.style.display = 'none'; }
+            }
+        });
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('[id^="config-modal-"]').forEach(m => {
+                if (window.closeModal) window.closeModal(m.id);
+                else { m.classList.add('hidden'); m.classList.remove('active'); m.style.display = 'none'; }
+            });
+        }
     });
 });
 </script>
