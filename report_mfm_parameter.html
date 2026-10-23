@@ -137,6 +137,13 @@
             </div>
 
             <div class="header-right">
+                <!-- Alert Center / Set Alert Trigger -->
+                <button type="button" class="accessibility-btn-trigger" id="btn-open-alerts" title="Alarm & Alert Center: Configure Thresholds & Test Emergency Siren" style="border-color: rgba(220, 38, 38, 0.4); color: var(--text-main);">
+                    <svg width="16" height="16" fill="#DC2626" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                    <span>Alert Center</span>
+                    <span style="background-color:#DC2626; color:#FFF; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:10px; margin-left:4px;">1</span>
+                </button>
+
                 <!-- Dedicated Universal Accessibility Button -->
                 <button type="button" class="accessibility-btn-trigger" id="btn-open-accessibility" title="Accessibility Hub: Colors, Font Size, Light & Dark Mode">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
@@ -147,6 +154,12 @@
                 <a href="./profile.html" class="user-profile-badge">
                     <div class="user-avatar">A</div>
                     <span>admin</span>
+                </a>
+
+                <!-- Quick Login / Lock Button -->
+                <a href="./login.html" class="export-btn" title="Sign out or switch operator workstation account" style="padding: 6px 10px; font-size: 0.8rem; display:flex; align-items:center; gap:4px;">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+                    <span>Login</span>
                 </a>
             </div>
         </header>
@@ -191,7 +204,7 @@
     </form>
 
     <div>
-        <!-- Complete 6-Output Contract Toolbar: Copy | Excel | CSV | PDF | Print | Email -->
+        <!-- Complete 8-Output Contract Toolbar: Copy | Excel | CSV | PDF | Print | Email | WhatsApp | ZIP -->
 <div class="export-toolbar">
     <button type="button" class="export-btn btn-copy-table" data-target-table="mfm-param-table" title="Copy table to clipboard as TSV">
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
@@ -209,11 +222,19 @@
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>
         PDF
     </a>
+    <button type="button" class="export-btn btn-zip" onclick="downloadReportAsZip('Multi-Function Meter (MFM) Parameter History')" title="Download complete package as ZIP archive (.zip)">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 10v2h-4v-2h4zm0-4v2h-4v-2h4zm0-4v2h-4V8h4z"/></svg>
+        ZIP (.zip)
+    </button>
+    <button type="button" class="export-btn btn-whatsapp" onclick="shareOnWhatsApp('Multi-Function Meter (MFM) Parameter History')" title="Share report metrics directly on WhatsApp">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c4.54 0 8.24 3.7 8.24 8.24 0 2.2-.86 4.28-2.42 5.84a8.19 8.19 0 0 1-5.82 2.41c-1.47 0-2.91-.4-4.17-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.195 8.195 0 0 1-1.26-4.39c0-4.54 3.7-8.24 8.24-8.24m4.52 11.64c-.25-.13-1.47-.72-1.7-.81-.23-.08-.4-.13-.57.13-.17.25-.65.81-.8 1-.15.19-.3.21-.55.08-.25-.13-1.04-.38-1.99-1.22-.73-.65-1.23-1.46-1.37-1.71-.14-.25-.01-.39.11-.51.11-.11.25-.29.38-.44.12-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.57-1.37-.78-1.88-.2-.49-.41-.43-.57-.44h-.48c-.17 0-.44.06-.67.31-.23.25-.89.87-.89 2.12s.91 2.46 1.04 2.63c.13.17 1.79 2.74 4.34 3.84.61.26 1.08.42 1.45.54.61.19 1.17.17 1.61.1.49-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.07-.12-.25-.19-.5-.31z"/></svg>
+        WhatsApp
+    </button>
     <button type="button" class="export-btn" onclick="window.print()" title="Open dedicated printable layout">
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
         Print
     </button>
-    <button type="button" class="export-btn export-btn-primary btn-open-email-modal" data-snapshot-id="b571a7f8-dbef-4c07-9e2d-0975acff3421" data-report-name="Multi-Function Meter (MFM) Parameter History" title="Email snapshot to authorized recipients">
+    <button type="button" class="export-btn export-btn-primary btn-open-email-modal" data-snapshot-id="b7947eae-a5c0-4518-9f33-d86b3abbd22f" data-report-name="Multi-Function Meter (MFM) Parameter History" title="Email snapshot to authorized recipients">
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
         Email
     </button>
@@ -7233,6 +7254,106 @@
                 <button type="submit" class="export-btn export-btn-primary">Send Report</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Red Blinking Screen Strobe Overlay -->
+<div id="alert-strobe-overlay" class="alert-strobe-overlay hidden"></div>
+
+<!-- Emergency Critical Alarm Modal Backdrop & Pop-up -->
+<div id="emergency-modal-backdrop" class="emergency-modal-backdrop hidden">
+    <div class="emergency-modal" id="emergency-alert-modal">
+        <div class="emergency-modal-header">
+            <h3>
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm1 14h-2v-2h2v2zm0-4h-2V8h2v4z"/></svg>
+                CRITICAL PLANT ALARM DETECTED
+            </h3>
+            <span style="background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:800; letter-spacing:1px;">PRIORITY 1</span>
+        </div>
+        <div class="emergency-modal-body">
+            <div class="emergency-alarm-banner">
+                <strong id="alarm-modal-desc">Grid Under-voltage Trip — AC active power dropped to 0.00 kW.</strong>
+                <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">Inverter output disconnect triggered. Immediate operator acknowledgment required.</div>
+            </div>
+            <div class="emergency-grid">
+                <div class="emergency-kv">
+                    <div class="label">Target Device</div>
+                    <div class="val" id="alarm-modal-device">Inverter 08 (Inv-08 / 320 kWp)</div>
+                </div>
+                <div class="emergency-kv">
+                    <div class="label">Status Code</div>
+                    <div class="val" style="color:#DC2626;" id="alarm-modal-code">ERR-402 (Grid Under-voltage)</div>
+                </div>
+                <div class="emergency-kv">
+                    <div class="label">Event Timestamp</div>
+                    <div class="val font-mono" id="alarm-modal-time">01:32:05 PM IST</div>
+                </div>
+                <div class="emergency-kv">
+                    <div class="label">Alarm State</div>
+                    <div class="val" style="color:#DC2626;">ACTIVE / UNACKNOWLEDGED</div>
+                </div>
+            </div>
+        </div>
+        <div class="emergency-modal-footer">
+            <button type="button" class="btn-alert-cancel" id="btn-emergency-cancel">
+                ✕ Cancel & Silence Siren
+            </button>
+            <button type="button" class="btn-alert-go" id="btn-emergency-go">
+                Go to Alert Logs ➔
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Configuration & Threshold Setting Modal -->
+<div id="alert-config-backdrop" class="modal-overlay hidden" style="z-index: 1200;">
+    <div class="modal-dialog" id="alert-config-modal" style="max-width: 540px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFF; display:flex; align-items:center; gap:8px;">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                SCADA Alert Center & Threshold Settings
+            </h3>
+            <button type="button" id="btn-close-alert-config" style="background:none; border:none; color:#FFF; font-size:1.3rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 20px;">
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+                Configure real-time monitoring alarm trip thresholds for inverters, MFM meters, and WMS environmental sensors.
+            </p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                <div>
+                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px; text-transform:uppercase; color:var(--text-muted);">Inverter Power Drop Limit</label>
+                    <input type="text" value="< 100 kW (Daytime)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px; text-transform:uppercase; color:var(--text-muted);">High Module Temp Limit</label>
+                    <input type="text" value="> 65.0 °C" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px; text-transform:uppercase; color:var(--text-muted);">Grid Voltage Lower Limit</label>
+                    <input type="text" value="< 380 V (3-Phase)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px; text-transform:uppercase; color:var(--text-muted);">Communication Timeout</label>
+                    <input type="text" value="> 120 seconds" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:0.85rem;">
+                </div>
+            </div>
+
+            <div style="background-color: var(--surface-alt); border: 1px dashed #DC2626; border-radius: var(--radius-sm); padding: 14px; margin-top: 10px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                        <strong style="color:#DC2626; font-size:0.9rem;">Test Emergency Alert Simulation</strong>
+                        <div style="font-size:0.78rem; color:var(--text-muted);">Triggers the dual-tone audio siren and blinking red screen popup.</div>
+                    </div>
+                    <button type="button" id="btn-test-alert-trigger" class="btn" style="background:#DC2626; color:#FFF; font-weight:700; padding:8px 14px; border-radius:var(--radius-sm); border:none; cursor:pointer;">
+                        ⚡ Test Live Alert
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="padding: 14px 20px; background:var(--surface-alt); border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" class="export-btn" onclick="document.getElementById('alert-config-backdrop').classList.add('hidden');">Cancel</button>
+            <button type="button" class="export-btn export-btn-primary" id="btn-save-alert-rule">Save Threshold Rules</button>
+        </div>
     </div>
 </div>
 

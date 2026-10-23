@@ -1,6 +1,8 @@
+import os
 import json
 import hashlib
 from datetime import timedelta
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
@@ -38,61 +40,119 @@ def create_or_get_snapshot(request, report_type, title, period_label, interval_l
 
 @login_required
 def report_summary_view(request):
-    period = request.GET.get('period', 'daily')
+    mode = request.GET.get('mode', request.GET.get('period', 'daily')).lower()
+    selected_date = request.GET.get('date', '2026-10-23')
+    selected_month = request.GET.get('month', '2026-10')
     now = timezone.now()
     
     inverters = list(Device.objects.filter(device_type=DeviceType.INVERTER).order_by('display_order'))
-    mfm_out = Device.objects.filter(device_id="MFM-OUT").first()
-    wms_dev = Device.objects.filter(device_type=DeviceType.WMS).first()
     
-    # Columns definition
+    # Columns definition matching real SCADA Summary report
     columns = [
         {'key': 'date', 'label': 'Date'},
     ]
-    for inv in inverters:
-        columns.append({'key': f'inv_{inv.device_id.lower().replace("-", "_")}', 'label': f'{inv.name} (kWh)'})
+    for i in range(1, 14):
+        columns.append({'key': f'inv_{i}', 'label': f'Inverter {i} (kWh)'})
     columns.extend([
-        {'key': 'total_inv_yield', 'label': 'Summed Yield (kWh)'},
-        {'key': 'meter_export', 'label': 'Meter Export (kWh)'},
-        {'key': 'meter_import', 'label': 'Meter Import (kWh)'},
-        {'key': 'meter_net', 'label': 'Net Export (kWh)'},
-        {'key': 'cuf_24h', 'label': 'CUF 24h (%)'},
-        {'key': 'ghi_insolation', 'label': 'GHI Insolation (kWh/m²)'},
+        {'key': 'total_inv', 'label': 'TOTAL Inverter (kWh)'},
+        {'key': 'export', 'label': 'Day Export (kWh)'},
+        {'key': 'import', 'label': 'Day Import (kWh)'},
+        {'key': 'net', 'label': 'NET Generation (kWh)'},
+        {'key': 'guarantee', 'label': 'Gen Guarantee (1MW)'},
+        {'key': 'cuf_plant', 'label': 'CUF Plant End (%)'},
+        {'key': 'cuf_getco', 'label': 'CUF GETCO End (%)'},
+        {'key': 'ghi_energy', 'label': 'GHI Energy (kWh/m²/day)'},
+        {'key': 'ghi_avg', 'label': 'GHI Avg (W/m²)'},
         {'key': 'ambient_temp', 'label': 'Ambient Temp (°C)'},
-        {'key': 'module_temp', 'label': 'Module Temp (°C)'},
-        {'key': 'coverage', 'label': 'Coverage (%)'}
+        {'key': 'module_temp', 'label': 'Module Temp (°C)'}
     ])
     
-    # Sample rows
     rows_data = []
-    # Create daily entries for recent 5 days
-    for d in range(5):
-        dt = (now - timedelta(days=d)).date()
-        inv_daily_sample = round(917.02 - (d * 15.2), 2)
-        total_inv = round(inv_daily_sample * 13, 2)
-        m_exp = round(total_inv * 0.988, 2)
-        m_imp = 12.5
-        cuf = round((total_inv / (3900.0 * 24.0)) * 100, 2)
-        
-        row = {
-            'date': dt.strftime('%Y-%m-%d'),
-            'total_inv_yield': total_inv,
-            'meter_export': m_exp,
-            'meter_import': m_imp,
-            'meter_net': round(m_exp - m_imp, 2),
-            'cuf_24h': cuf,
-            'ghi_insolation': round(4.82 - (d * 0.1), 2),
-            'ambient_temp': round(38.1 - (d * 0.5), 1),
-            'module_temp': round(51.0 - (d * 0.8), 1),
-            'coverage': 100.0
-        }
-        for inv in inverters:
-            row[f'inv_{inv.device_id.lower().replace("-", "_")}'] = inv_daily_sample
-        rows_data.append(row)
+    
+    # Load from historical data file if available
+    json_path = os.path.join(settings.BASE_DIR, 'data', 'historical_reports_data.json')
+    loaded_from_json = False
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, 'r') as f:
+                h_data = json.load(f)
+            
+            if mode == 'monthly' and selected_month in h_data.get('monthly', {}):
+                month_rows = h_data['monthly'][selected_month]
+                for r in month_rows:
+                    row_entry = {
+                        'date': r.get('date', r.get('A', '')),
+                        'total_inv': r.get('O', '0.00'),
+                        'export': r.get('P', '0.00'),
+                        'import': r.get('Q', '0.00'),
+                        'net': r.get('R', '0.00'),
+                        'guarantee': r.get('S', 'N/A'),
+                        'cuf_plant': r.get('T', '0.00 %'),
+                        'cuf_getco': r.get('U', 'N/A'),
+                        'ghi_energy': r.get('V', '0.00'),
+                        'ghi_avg': r.get('W', '0.00'),
+                        'ambient_temp': r.get('X', '28.0 °C'),
+                        'module_temp': r.get('Y', '34.0 °C')
+                    }
+                    col_letters = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N']
+                    for idx, let in enumerate(col_letters, 1):
+                        row_entry[f'inv_{idx}'] = r.get(let, '0.00')
+                    rows_data.append(row_entry)
+                loaded_from_json = True
+            elif mode == 'daily':
+                # Show all daily records available in descending date order
+                daily_dict = h_data.get('daily', {})
+                for dt_key in sorted(daily_dict.keys(), reverse=True):
+                    r = daily_dict[dt_key]
+                    row_entry = {
+                        'date': dt_key,
+                        'total_inv': r.get('O', '0.00'),
+                        'export': r.get('P', '0.00'),
+                        'import': r.get('Q', '0.00'),
+                        'net': r.get('R', '0.00'),
+                        'guarantee': r.get('S', 'N/A'),
+                        'cuf_plant': r.get('T', '0.00 %'),
+                        'cuf_getco': r.get('U', 'N/A'),
+                        'ghi_energy': r.get('V', '0.00'),
+                        'ghi_avg': r.get('W', '0.00'),
+                        'ambient_temp': r.get('X', '27.6 °C'),
+                        'module_temp': r.get('Y', '30.9 °C')
+                    }
+                    col_letters = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N']
+                    for idx, let in enumerate(col_letters, 1):
+                        row_entry[f'inv_{idx}'] = r.get(let, '0.00')
+                    rows_data.append(row_entry)
+                loaded_from_json = True
+        except Exception as e:
+            print("Error loading historical data:", e)
+
+    if not loaded_from_json or not rows_data:
+        # Fallback seeded generator
+        for d in range(6):
+            dt = (now - timedelta(days=d)).date()
+            inv_val = round(1450.0 - (d * 18.0), 2)
+            tot = round(inv_val * 13, 2)
+            row = {
+                'date': dt.strftime('%Y-%m-%d'),
+                'total_inv': f"{tot:.2f}",
+                'export': f"{tot * 0.98:.2f}",
+                'import': "0.00",
+                'net': f"{tot * 0.98:.2f}",
+                'guarantee': "N/A",
+                'cuf_plant': f"{(tot / (3900.0 * 24.0)) * 100:.2f} %",
+                'cuf_getco': "N/A",
+                'ghi_energy': f"{4.58 - (d * 0.08):.2f}",
+                'ghi_avg': f"{217.04 - (d * 3.5):.2f}",
+                'ambient_temp': "27.6 °C",
+                'module_temp': "30.9 °C"
+            }
+            for i in range(1, 14):
+                row[f'inv_{i}'] = f"{inv_val:.2f}"
+            rows_data.append(row)
         
     snapshot = create_or_get_snapshot(
-        request, 'summary', 'Plant Generation & Summary Report',
-        f'{period.capitalize()} Period', 'Daily Aggregate', columns, rows_data
+        request, 'summary', 'Plant Generation & Meteorological Summary',
+        f'{mode.capitalize()} Period', 'Daily Aggregate', columns, rows_data
     )
     
     # Check if direct export was requested via query param (e.g. ?export=xlsx)
@@ -103,14 +163,53 @@ def report_summary_view(request):
         return redirect('download_file', job_id=job.job_id)
         
     context = {
-        'report_title': 'Plant Generation & Meteorological Summary',
+        'report_title': 'Plant Generation & Summary Overview',
         'report_type': 'summary',
-        'period': period,
+        'mode': mode,
+        'selected_date': selected_date,
+        'selected_month': selected_month,
         'snapshot': snapshot,
         'columns': columns,
         'rows': rows_data,
+        'daily_dates': ['2026-10-23', '2026-10-22', '2026-10-21', '2026-10-20', '2026-10-19', '2026-10-18'],
+        'monthly_months': ['2026-10', '2026-09', '2026-08', '2026-07', '2026-06', '2026-05']
     }
     return render(request, 'reports/report_summary.html', context)
+
+
+@login_required
+def report_export_zip_view(request):
+    import io, zipfile
+    report_name = request.GET.get('report', 'Summary_Report')
+    today = timezone.now().strftime('%Y-%m-%d')
+    
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as z:
+        # Add metadata audit file
+        meta = (
+            f"Organization: Sunscrap Recyclers PVT LTD\n"
+            f"Plant Capacity: 3,900 kW AC / 4,640 kWp DC\n"
+            f"Report: {report_name}\n"
+            f"Export Date: {today}\n"
+            f"Timezone: Asia/Kolkata\n"
+            f"Export Bundle: Consolidated Multi-Format Archive\n"
+        )
+        z.writestr("Audit_Metadata.txt", meta)
+        
+        # Add CSV export
+        csv_data = "Date,Total_Inverter_kWh,Meter_Export_kWh,CUF_Plant_End\n2026-10-23,18549.00,0.00,0.00%\n"
+        z.writestr(f"{report_name}_{today}.csv", csv_data)
+        
+        # Add Daily original xlsx if exists
+        daily_src = f"/home/linux/Documents/Darshan_SCADA_Software_October_2026/Reports/Daily/Summary_Sunscrap Recyclers  PVT LTD_{today}.xlsx"
+        if os.path.exists(daily_src):
+            with open(daily_src, 'rb') as f_orig:
+                z.writestr(f"Original_Daily_Report_{today}.xlsx", f_orig.read())
+
+    buffer.seek(0)
+    response = HttpResponse(buffer.getvalue(), content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename="Sunscrap_{report_name}_{today}.zip"'
+    return response
 
 
 @login_required

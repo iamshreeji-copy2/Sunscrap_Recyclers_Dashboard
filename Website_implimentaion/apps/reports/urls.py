@@ -12,4 +12,5 @@ urlpatterns = [
     path('reports/mfm/parameter', views.report_mfm_parameter_view, name='report_mfm_parameter'),
     path('reports/wms/parameter', views.report_wms_parameter_view, name='report_wms_parameter'),
     path('reports/communication', views.report_communication_view, name='report_communication'),
+    path('reports/export/zip', views.report_export_zip_view, name='report_export_zip'),
 ]

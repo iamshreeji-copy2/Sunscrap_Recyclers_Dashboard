@@ -55,9 +55,17 @@ URL_REPLACEMENTS = [
 
 def main():
     print(f"Building static distribution in {OUTPUT_DIR}...")
-    if os.path.exists(OUTPUT_DIR):
-        shutil.rmtree(OUTPUT_DIR)
     os.makedirs(OUTPUT_DIR, exist_ok=True)
+    
+    # Clean output dir while preserving .git
+    for item in os.listdir(OUTPUT_DIR):
+        if item == '.git':
+            continue
+        p = os.path.join(OUTPUT_DIR, item)
+        if os.path.isdir(p):
+            shutil.rmtree(p)
+        else:
+            os.remove(p)
 
     # 1. Setup cookie jar & login
     cj = http.cookiejar.CookieJar()
@@ -122,6 +130,12 @@ def main():
     with open(os.path.join(OUTPUT_DIR, ".nojekyll"), "w") as f:
         f.write("")
     print("✓ Created .nojekyll for GitHub Pages static serving")
+
+    # 6. Mirror complete Django project source into Website_implimentaion/
+    dst_django = os.path.join(OUTPUT_DIR, "Website_implimentaion")
+    os.makedirs(dst_django, exist_ok=True)
+    os.system(f"rsync -av --exclude '__pycache__' --exclude '*.pyc' --exclude '.git' /home/linux/Documents/Darshan_SCADA_Software_October_2026/Website_implimentaion/ {dst_django}/")
+    print("✓ Bundled full Django application source into Website_implimentaion/")
 
     print("\nStatic site build complete!")
 

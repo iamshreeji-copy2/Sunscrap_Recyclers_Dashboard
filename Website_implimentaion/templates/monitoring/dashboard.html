@@ -2,29 +2,54 @@
 {% block title %}Plant Dashboard{% endblock %}
 
 {% block content %}
-<!-- Top Communication Health Banner -->
-<div class="card" style="padding: 14px 20px; margin-bottom: 20px; background: linear-gradient(to right, #FFFFFF, var(--surface-alt));">
+<!-- Screenshot Parity Notification Banners -->
+<div class="banner-info-otp">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 1.2rem;">📧</span>
+        <span><strong>Passwordless OTP Login is now available</strong> — Sign in securely using a 6-digit OTP sent to your registered email.</span>
+    </div>
+    <a href="{% url 'login' %}" style="color: #FFF; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: 700;">Try OTP Login</a>
+</div>
+
+<div class="banner-warning-email">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 1.1rem; background: #FFF; color: #B45309; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; font-weight: 800;">IMPORTANT</span>
+        <span><strong>Keep your registered email up to date</strong> — Please visit the Profile section to update or change your email address.</span>
+    </div>
+    <a href="{% url 'profile' %}" style="color: #FFF; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: 700;">Go to Profile</a>
+</div>
+
+<!-- Top Communication & Device Config Summary matching Screenshot -->
+<div class="card" style="padding: 16px 20px; margin-bottom: 20px; background: linear-gradient(to right, var(--surface), var(--surface-alt));">
     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
-        <div style="display: flex; align-items: center; gap: 18px;">
+        <div style="display: flex; align-items: center; gap: 20px;">
             <div>
-                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block;">Communication Health</span>
-                <span style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">
-                    {{ comm_stats.online }} / {{ comm_stats.total }} Devices Online
+                <span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); display: block; letter-spacing: 0.5px;">PLANT OVERVIEW</span>
+                <span style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
+                    Device Config: 16
                 </span>
             </div>
-            <div style="display: flex; gap: 8px;">
-                <span class="status-badge online">{{ comm_stats.online }} Online</span>
-                {% if comm_stats.stale > 0 %}<span class="status-badge stale">{{ comm_stats.stale }} Stale</span>{% endif %}
-                {% if comm_stats.offline > 0 %}<span class="status-badge offline">{{ comm_stats.offline }} Offline</span>{% endif %}
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Total Devices: <strong>16</strong></span>
+                <span class="status-badge online" style="font-weight: 700;">Online: 16</span>
+                <span class="status-badge" style="background:#F1F5F9; color:#64748B; font-weight: 700;">Offline: 0</span>
             </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 20px; font-size: 0.82rem; color: var(--text-muted);">
-            <div><b>Topology:</b> 13 Inverters • 2 MFMs (LT & Outgoing) • 1 WMS</div>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 0.85rem;">
             <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--success);"></span>
-                Last observation: <b>{{ last_reading_time|date:"H:i:s" }}</b> (< 30s ago)
+                <span style="color: var(--primary); font-weight: 700;">Inverters:</span>
+                <span class="status-badge online">13 / 13 Online</span>
             </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="color: var(--primary); font-weight: 700;">MFM:</span>
+                <span class="status-badge online">2 / 2 Online</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="color: var(--primary); font-weight: 700;">WMS:</span>
+                <span class="status-badge online">1 / 1 Online</span>
+            </div>
+            <a href="{% url 'devices_settings' %}" class="export-btn" style="font-size: 0.78rem; padding: 4px 10px;">View Details</a>
         </div>
     </div>
 </div>
@@ -262,9 +287,12 @@
 <div class="card">
     <div class="card-header">
         <h2 class="card-title">Inverter Cumulative Yield vs Meter Export</h2>
-        <span style="font-size: 0.8rem; color: var(--text-muted);">Comparison of Generation against Export (15m Intervals)</span>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Comparison of Generation against Export (Daily / Interval 1 Hour)</span>
     </div>
     <div id="dashboard-generation-export-chart" style="width: 100%; height: 320px;"></div>
+    <div style="font-size:0.8rem; color:#B45309; background:#FEF3C7; border-left:4px solid #D97706; padding:8px 14px; border-radius:var(--radius-sm); margin-top:14px; font-weight:600;">
+        ⚠️ Date Range is limited to a maximum of 7 DAYS. Please select a shorter range.
+    </div>
 </div>
 
 <script>

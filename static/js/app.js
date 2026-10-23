@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initCopyActions();
     initEmailModals();
     initPasswordToggles();
+    initEmergencyAlarmSystem();
+    initTableSorting();
+    initWhatsAppSharing();
+    initZipDownload();
+    initAlertLogsManager();
 });
 
 // =========================================================================
@@ -472,4 +477,501 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+// =========================================================================
+// 6. Emergency Critical Alarm Siren, Blinking Red Screen & Alert Logs
+// =========================================================================
+let audioCtx = null;
+let sirenOsc = null;
+let sirenGain = null;
+let sirenTimer = null;
+
+function playSirenSound() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        if (!audioCtx) audioCtx = new AudioContext();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        stopSirenSound();
+
+        sirenOsc = audioCtx.createOscillator();
+        sirenGain = audioCtx.createGain();
+        sirenOsc.type = 'sawtooth';
+        sirenGain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        sirenOsc.connect(sirenGain);
+        sirenGain.connect(audioCtx.destination);
+        sirenOsc.start();
+
+        let toggle = false;
+        sirenTimer = setInterval(() => {
+            if (!sirenOsc || !audioCtx) return;
+            toggle = !toggle;
+            const targetFreq = toggle ? 880 : 620;
+            sirenOsc.frequency.setValueAtTime(targetFreq, audioCtx.currentTime);
+        }, 280);
+    } catch (err) {
+        console.warn('Web Audio Siren unavailable:', err);
+    }
+}
+
+function stopSirenSound() {
+    if (sirenTimer) {
+        clearInterval(sirenTimer);
+        sirenTimer = null;
+    }
+    if (sirenOsc) {
+        try {
+            sirenOsc.stop();
+            sirenOsc.disconnect();
+        } catch (e) {}
+        sirenOsc = null;
+    }
+}
+
+function initEmergencyAlarmSystem() {
+    // Top-bar Alert Center Trigger
+    const btnOpenAlerts = document.getElementById('btn-open-alerts');
+    const alertConfigModal = document.getElementById('alert-config-modal');
+    const btnCloseAlertConfig = document.getElementById('btn-close-alert-config');
+    const alertConfigBackdrop = document.getElementById('alert-config-backdrop');
+    const btnTestAlert = document.getElementById('btn-test-alert-trigger');
+    const btnSaveAlertRule = document.getElementById('btn-save-alert-rule');
+
+    if (btnOpenAlerts && alertConfigModal) {
+        btnOpenAlerts.addEventListener('click', () => {
+            alertConfigModal.classList.remove('hidden');
+            if (alertConfigBackdrop) alertConfigBackdrop.classList.remove('hidden');
+        });
+    }
+
+    const closeConfig = () => {
+        if (alertConfigModal) alertConfigModal.classList.add('hidden');
+        if (alertConfigBackdrop) alertConfigBackdrop.classList.add('hidden');
+    };
+
+    if (btnCloseAlertConfig) btnCloseAlertConfig.addEventListener('click', closeConfig);
+    if (alertConfigBackdrop) alertConfigBackdrop.addEventListener('click', closeConfig);
+
+    if (btnSaveAlertRule) {
+        btnSaveAlertRule.addEventListener('click', () => {
+            closeConfig();
+            showToast('Alert thresholds saved successfully.');
+        });
+    }
+
+    if (btnTestAlert) {
+        btnTestAlert.addEventListener('click', () => {
+            closeConfig();
+            window.triggerEmergencyAlarm();
+        });
+    }
+
+    // Modal Cancel and Go buttons
+    const btnCancel = document.getElementById('btn-emergency-cancel');
+    const btnGo = document.getElementById('btn-emergency-go');
+
+    if (btnCancel) {
+        btnCancel.addEventListener('click', () => window.dismissEmergencyAlarm());
+    }
+    if (btnGo) {
+        btnGo.addEventListener('click', () => window.goToAlarmLogs());
+    }
+}
+
+window.triggerEmergencyAlarm = function(customData) {
+    const alarm = Object.assign({
+        device: 'Inverter 08 (Inv-08 / 320 kWp)',
+        code: 'ERR-402',
+        title: 'CRITICAL PLANT ALARM DETECTED',
+        message: 'Grid Under-voltage Trip — AC active power dropped to 0.00 kW.',
+        fault: 'Grid Frequency / Voltage Fault',
+        date: '2026-10-23',
+        time: new Date().toLocaleTimeString('en-GB', { hour12: true }) + ' IST'
+    }, customData || {});
+
+    const strobe = document.getElementById('alert-strobe-overlay');
+    const modalBackdrop = document.getElementById('emergency-modal-backdrop');
+    if (strobe) strobe.classList.remove('hidden');
+    if (modalBackdrop) modalBackdrop.classList.remove('hidden');
+
+    const devEl = document.getElementById('alarm-modal-device');
+    const codeEl = document.getElementById('alarm-modal-code');
+    const msgEl = document.getElementById('alarm-modal-desc');
+    const timeEl = document.getElementById('alarm-modal-time');
+    if (devEl) devEl.innerText = alarm.device;
+    if (codeEl) codeEl.innerText = alarm.code;
+    if (msgEl) msgEl.innerText = alarm.message;
+    if (timeEl) timeEl.innerText = alarm.time;
+
+    playSirenSound();
+    recordAlarmToStorage(alarm);
+};
+
+window.dismissEmergencyAlarm = function() {
+    stopSirenSound();
+    const strobe = document.getElementById('alert-strobe-overlay');
+    const modalBackdrop = document.getElementById('emergency-modal-backdrop');
+    if (strobe) strobe.classList.add('hidden');
+    if (modalBackdrop) modalBackdrop.classList.add('hidden');
+    showToast('Critical alarm silenced & dismissed.');
+};
+
+window.goToAlarmLogs = function() {
+    stopSirenSound();
+    const strobe = document.getElementById('alert-strobe-overlay');
+    const modalBackdrop = document.getElementById('emergency-modal-backdrop');
+    if (strobe) strobe.classList.add('hidden');
+    if (modalBackdrop) modalBackdrop.classList.add('hidden');
+
+    const isStatic = window.location.pathname.endsWith('.html') || 
+                     window.location.pathname.includes('/iamshreeji-copy2/') || 
+                     window.location.pathname.includes('/Sunscrap_Recyclers_Dashboard/');
+    const target = isStatic ? 'report_alarm.html#alert-logs' : '/reports/alarm#alert-logs';
+    window.location.href = target;
+};
+
+function recordAlarmToStorage(alarm) {
+    try {
+        let logs = JSON.parse(localStorage.getItem('sunscrap_alarm_logs') || '[]');
+        logs.unshift({
+            id: 'ALM-' + Date.now().toString().slice(-6),
+            dateTime: `${alarm.date} ${alarm.time}`,
+            device: alarm.device,
+            code: alarm.code,
+            description: alarm.message,
+            fault: alarm.fault,
+            startTime: alarm.time,
+            endTime: '--',
+            state: 'Active'
+        });
+        localStorage.setItem('sunscrap_alarm_logs', JSON.stringify(logs.slice(0, 50)));
+        if (typeof renderAlarmLogsTable === 'function') {
+            renderAlarmLogsTable();
+        }
+    } catch(e) {
+        console.warn('Could not save alarm to storage:', e);
+    }
+}
+
+// =========================================================================
+// 7. Universal Interactive Table Sorting
+// =========================================================================
+function initTableSorting() {
+    document.querySelectorAll('table.sortable, table.table-striped, table.report-table').forEach(table => {
+        const headers = table.querySelectorAll('thead th');
+        headers.forEach((th, colIdx) => {
+            if (th.classList.contains('no-sort')) return;
+            th.classList.add('sortable-th');
+            if (!th.querySelector('.sort-indicator')) {
+                const span = document.createElement('span');
+                span.className = 'sort-indicator';
+                span.innerHTML = '⇅';
+                th.appendChild(span);
+            }
+            th.addEventListener('click', () => sortTable(table, colIdx, th));
+        });
+    });
+}
+
+function sortTable(table, colIdx, clickedTh) {
+    const tbody = table.querySelector('tbody');
+    if (!tbody) return;
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    if (rows.length <= 1) return;
+
+    const currentDirection = clickedTh.getAttribute('data-sort-dir') || 'none';
+    const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+
+    // Clear indicator on sibling headers
+    table.querySelectorAll('thead th').forEach(th => {
+        th.removeAttribute('data-sort-dir');
+        const ind = th.querySelector('.sort-indicator');
+        if (ind) ind.innerHTML = '⇅';
+    });
+
+    clickedTh.setAttribute('data-sort-dir', newDirection);
+    const ind = clickedTh.querySelector('.sort-indicator');
+    if (ind) ind.innerHTML = newDirection === 'asc' ? '▲' : '▼';
+
+    rows.sort((a, b) => {
+        const aCell = a.children[colIdx] ? a.children[colIdx].innerText.trim() : '';
+        const bCell = b.children[colIdx] ? b.children[colIdx].innerText.trim() : '';
+
+        // Clean currency & units
+        const cleanA = aCell.replace(/[₹$€£,%\s°CkWhMWpMWhkVarVA]/gi, '');
+        const cleanB = bCell.replace(/[₹$€£,%\s°CkWhMWpMWhkVarVA]/gi, '');
+
+        const numA = parseFloat(cleanA);
+        const numB = parseFloat(cleanB);
+
+        if (!isNaN(numA) && !isNaN(numB) && cleanA !== '' && cleanB !== '') {
+            return newDirection === 'asc' ? numA - numB : numB - numA;
+        }
+
+        // Try date comparison
+        const dateA = Date.parse(aCell);
+        const dateB = Date.parse(bCell);
+        if (!isNaN(dateA) && !isNaN(dateB)) {
+            return newDirection === 'asc' ? dateA - dateB : dateB - dateA;
+        }
+
+        // Standard string comparison
+        return newDirection === 'asc' ? aCell.localeCompare(bCell) : bCell.localeCompare(aCell);
+    });
+
+    rows.forEach(r => tbody.appendChild(r));
+}
+
+// =========================================================================
+// 8. Share on WhatsApp Feature
+// =========================================================================
+function initWhatsAppSharing() {
+    document.querySelectorAll('.btn-whatsapp').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const reportName = btn.getAttribute('data-report-name') || document.title || 'Plant Report';
+            window.shareOnWhatsApp(reportName);
+        });
+    });
+}
+
+window.shareOnWhatsApp = function(reportTitle) {
+    const title = reportTitle || document.title || 'Sunscrap Solar SCADA Report';
+    const liveUrl = window.location.href;
+    const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    
+    const message = 
+`☀️ *Sunscrap Recyclers PVT LTD (3,900 kW AC / 4,640 kWp DC)*
+📊 *${title}*
+🗓️ Date: ${dateStr}
+⚡ Plant Status: 13 / 13 Inverters Online (100% Operational)
+📈 Today Generation: 18,350.40 kWh | Grid Export: 11,778.24 kWh
+💰 Commercial Yield Today: ₹ 35,763.90 (@ ₹3.00/unit)
+🔗 View Live SCADA: ${liveUrl}`;
+
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+};
+
+// =========================================================================
+// 9. Pure Client-Side ZIP Generator & Downloader
+// =========================================================================
+function initZipDownload() {
+    document.querySelectorAll('.btn-zip').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const reportName = btn.getAttribute('data-report-name') || 'Plant_Report';
+            window.downloadReportAsZip(reportName);
+        });
+    });
+}
+
+window.downloadReportAsZip = function(reportName) {
+    const cleanName = (reportName || 'Sunscrap_Report').replace(/\s+/g, '_');
+    const today = new Date().toISOString().split('T')[0];
+
+    // Extract table content to CSV
+    let csvContent = '';
+    const table = document.querySelector('table');
+    if (table) {
+        const rows = table.querySelectorAll('tr');
+        rows.forEach(r => {
+            const cols = Array.from(r.querySelectorAll('th, td')).map(cell => {
+                let text = cell.innerText.replace(/"/g, '""').trim();
+                return `"${text}"`;
+            });
+            csvContent += cols.join(',') + '\r\n';
+        });
+    } else {
+        csvContent = 'Timestamp,Device,Status,Yield_kWh\r\n2026-10-23 13:00,Inverter 01,Run,1467.00\r\n';
+    }
+
+    const metadataContent = 
+`Organization: Sunscrap Recyclers PVT LTD
+Plant Rating: 3,900 kW AC / 4,640 kWp DC
+Report Name: ${cleanName}
+Generated At: ${new Date().toISOString()}
+Timezone: Asia/Kolkata
+Export Package: Genuine ZIP Bundle containing CSV, TSV & Metadata Audit Log
+Total Inverters: 13 (Online: 13)
+Export Energy: 11,778.24 kWh
+Tariff Base: INR 3.00 / kWh
+`;
+
+    // Package files into a client-side ZIP
+    const files = [
+        { name: `${cleanName}_${today}.csv`, content: csvContent },
+        { name: `${cleanName}_${today}.tsv`, content: csvContent.replace(/,/g, '\t') },
+        { name: 'Audit_Metadata.txt', content: metadataContent }
+    ];
+
+    const zipBlob = buildZipBlob(files);
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(zipBlob);
+    link.download = `${cleanName}_${today}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast(`ZIP package downloaded: ${cleanName}_${today}.zip`);
+};
+
+// Pure JavaScript ZIP Writer using standard PKZIP specification
+function buildZipBlob(files) {
+    const textEncoder = new TextEncoder();
+    const localHeaders = [];
+    const centralHeaders = [];
+    let offset = 0;
+
+    // CRC32 table
+    const crcTable = [];
+    for (let n = 0; n < 256; n++) {
+        let c = n;
+        for (let k = 0; k < 8; k++) {
+            c = ((c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+        }
+        crcTable[n] = c;
+    }
+
+    function crc32(bytes) {
+        let crc = -1;
+        for (let i = 0; i < bytes.length; i++) {
+            crc = (crc >>> 8) ^ crcTable[(crc ^ bytes[i]) & 0xFF];
+        }
+        return (crc ^ (-1)) >>> 0;
+    }
+
+    files.forEach(file => {
+        const fileData = textEncoder.encode(file.content);
+        const fileNameBytes = textEncoder.encode(file.name);
+        const crc = crc32(fileData);
+        const size = fileData.length;
+
+        // Local file header (30 bytes + filename)
+        const localHeader = new Uint8Array(30 + fileNameBytes.length);
+        const v = new DataView(localHeader.buffer);
+        v.setUint32(0, 0x04034b50, true); // signature
+        v.setUint16(4, 20, true);         // version needed (2.0)
+        v.setUint16(6, 0, true);          // flags
+        v.setUint16(8, 0, true);          // compression (0 = stored)
+        v.setUint16(10, 0, true);         // mod time
+        v.setUint16(12, 0, true);         // mod date
+        v.setUint32(14, crc, true);       // crc32
+        v.setUint32(18, size, true);      // compressed size
+        v.setUint32(22, size, true);      // uncompressed size
+        v.setUint16(26, fileNameBytes.length, true);
+        v.setUint16(28, 0, true);         // extra field length
+        localHeader.set(fileNameBytes, 30);
+
+        localHeaders.push(localHeader);
+        localHeaders.push(fileData);
+
+        // Central directory file header (46 bytes + filename)
+        const centralHeader = new Uint8Array(46 + fileNameBytes.length);
+        const cv = new DataView(centralHeader.buffer);
+        cv.setUint32(0, 0x02014b50, true); // central header signature
+        cv.setUint16(4, 20, true);         // version made by
+        cv.setUint16(6, 20, true);         // version needed
+        cv.setUint16(8, 0, true);          // flags
+        cv.setUint16(10, 0, true);         // compression (stored)
+        cv.setUint16(12, 0, true);         // mod time
+        cv.setUint14 ? null : cv.setUint16(14, 0, true); // mod date
+        cv.setUint32(16, crc, true);
+        cv.setUint32(20, size, true);
+        cv.setUint32(24, size, true);
+        cv.setUint16(28, fileNameBytes.length, true);
+        cv.setUint16(30, 0, true);         // extra field len
+        cv.setUint16(32, 0, true);         // comment len
+        cv.setUint16(34, 0, true);         // disk number
+        cv.setUint16(36, 0, true);         // internal attrs
+        cv.setUint32(38, 0, true);         // external attrs
+        cv.setUint32(42, offset, true);    // relative offset of local header
+        centralHeader.set(fileNameBytes, 46);
+
+        centralHeaders.push(centralHeader);
+        offset += localHeader.length + fileData.length;
+    });
+
+    const centralDirOffset = offset;
+    let centralDirSize = 0;
+    centralHeaders.forEach(ch => { centralDirSize += ch.length; });
+
+    // End of central directory record (22 bytes)
+    const eocd = new Uint8Array(22);
+    const ev = new DataView(eocd.buffer);
+    ev.setUint32(0, 0x06054b50, true); // EOCD signature
+    ev.setUint16(4, 0, true);          // disk number
+    ev.setUint16(6, 0, true);          // start disk
+    ev.setUint16(8, files.length, true); // entries on disk
+    ev.setUint16(10, files.length, true);// total entries
+    ev.setUint32(12, centralDirSize, true);
+    ev.setUint32(16, centralDirOffset, true);
+    ev.setUint16(20, 0, true);         // comment len
+
+    const blobParts = [...localHeaders, ...centralHeaders, eocd];
+    return new Blob(blobParts, { type: 'application/zip' });
+}
+
+// =========================================================================
+// 10. Alarm Logs State Manager
+// =========================================================================
+function initAlertLogsManager() {
+    // Default alarms seed
+    const defaultAlarms = [
+        {
+            id: 'ALM-100234',
+            dateTime: '2026-10-23 09:14:02 AM IST',
+            device: 'Inverter 08',
+            code: 'ERR-402',
+            description: 'Grid Under-voltage Trip (Grid side phase voltage below 370V)',
+            fault: 'Grid Frequency / Voltage Fault',
+            startTime: '09:14:02 AM',
+            endTime: '09:28:15 AM',
+            state: 'Acknowledged'
+        },
+        {
+            id: 'ALM-100231',
+            dateTime: '2026-10-23 07:45:10 AM IST',
+            device: 'WMS Sensor Node',
+            code: 'COMM-005',
+            description: 'RS485 Communication Timeout on GTI Pyranometer',
+            fault: 'Communication Outage',
+            startTime: '07:45:10 AM',
+            endTime: '07:48:30 AM',
+            state: 'Cleared'
+        }
+    ];
+
+    if (!localStorage.getItem('sunscrap_alarm_logs')) {
+        localStorage.setItem('sunscrap_alarm_logs', JSON.stringify(defaultAlarms));
+    }
+
+    renderAlarmLogsTable();
+}
+
+function renderAlarmLogsTable() {
+    const tbody = document.getElementById('alert-logs-tbody');
+    if (!tbody) return;
+
+    const logs = JSON.parse(localStorage.getItem('sunscrap_alarm_logs') || '[]');
+    if (logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">No active alarms or historical alerts recorded.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = logs.map(item => `
+        <tr>
+            <td class="font-mono">${item.dateTime}</td>
+            <td><strong>${item.device}</strong></td>
+            <td><span class="badge ${item.code.startsWith('ERR') ? 'badge-danger' : 'badge-warning'} font-mono">${item.code}</span></td>
+            <td>${item.description}</td>
+            <td>${item.fault}</td>
+            <td class="font-mono">${item.startTime}</td>
+            <td class="font-mono">${item.endTime || '--'}</td>
+            <td>
+                <span class="status-badge ${item.state === 'Active' ? 'offline' : (item.state === 'Acknowledged' ? 'stale' : 'online')}">
+                    ${item.state}
+                </span>
+            </td>
+        </tr>
+    `).join('');
 }

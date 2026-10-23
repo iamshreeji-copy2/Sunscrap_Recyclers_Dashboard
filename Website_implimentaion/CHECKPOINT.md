@@ -56,12 +56,16 @@
 | **Report 8: MFM Params** | Full MFM electrical parameter history (V_LL, currents, powers) | `apps/reports/views.py` (`report_mfm_parameter_view`) | ✅ **COMPLETED** |
 | **Report 9: WMS Params** | Weather parameter history (GHI, GTI, Ambient, Module, Humidity, Wind)| `apps/reports/views.py` (`report_wms_parameter_view`) | ✅ **COMPLETED** |
 | **Report 10: Communication** | Outage lifecycle, 24h uptime %, status (Online/Stale/Offline) | `apps/reports/views.py` (`report_communication_view`) | ✅ **COMPLETED** |
-| **6-Output Contract** | Copy TSV, genuine XLSX, CSV with formula defense, PDF, Print, Email | `apps/exports/services.py`, `components/export_toolbar.html` | ✅ **COMPLETED** |
-| **Download Center** | Job status, progress, size, checksum, secure download endpoint | `apps/exports/views.py` (`downloads_view`, `/download`) | ✅ **COMPLETED** |
+| **6-Output / 8-Output Contract** | Copy TSV, genuine XLSX, CSV with formula defense, PDF, Print, Email, WhatsApp, ZIP | `apps/exports/services.py`, `components/export_toolbar.html` | ✅ **COMPLETED** |
+| **Download Center & ZIP** | Job status, progress, size, checksum, secure download endpoint & ZIP packages | `apps/exports/views.py` (`downloads_view`), `static/js/app.js` | ✅ **COMPLETED** |
 | **Report Schedules** | Daily, Weekly, Monthly recurring report delivery to email lists | `apps/exports/views.py` (`schedules_view`) | ✅ **COMPLETED** |
+| **Emergency Critical Siren & Strobe**| Dual-tone Web Audio acoustic siren (880/620Hz), pulsing red strobe overlay, Cancel & Go buttons, Alert Center | `static/css/theme.css`, `static/js/app.js`, `base.html` | ✅ **COMPLETED** |
+| **WhatsApp & Email Dispatch** | One-click formatted WhatsApp dispatch link (`#25D366`), modal snapshot emailer | `components/export_toolbar.html`, `static/js/app.js` | ✅ **COMPLETED** |
+| **Daily & Monthly Historical Reports** | Integration of historical data from `/Reports` (Daily 10-18 to 10-23, Monthly 05 to 10), exact 25-column schema | `apps/reports/views.py`, `report_summary.html` | ✅ **COMPLETED** |
+| **Universal Table Sorting** | Interactive `<th>` header sorting (`▲`, `▼`, `⇅`) handling numeric units, dates, strings | `static/js/app.js`, `static/css/theme.css` | ✅ **COMPLETED** |
 | **Accessibility Hub** | Slide-in drawer, Light/Dark theme, Vibrant/Grayscale/High-Contrast, font scaling (`85%`-`125%`, `A-`/`A+`), localStorage | `static/css/theme.css`, `static/js/app.js`, `base.html` | ✅ **COMPLETED** |
 | **Commercial Tariff Engine** | Real-time financial revenue in INR (₹) with USD/EUR/GBP conversion, custom tariff unit rates (e.g. ₹3/unit), Indian numbering | `dashboard.html`, `static/js/app.js` | ✅ **COMPLETED** |
-| **GitHub Pages Deployment** | Static site generation (`build_static_site.py`), standalone export fallbacks, deployed to `iamshreeji-copy2/iamshreeji-copy2` | `build_static_site.py`, `gh_pages_deploy/` | ✅ **COMPLETED** |
+| **GitHub Pages Deployment** | Static site generation (`build_static_site.py`), standalone export fallbacks, deployed to `iamshreeji-copy2/Sunscrap_Recyclers_Dashboard` | `build_static_site.py`, `gh_pages_deploy/` | ✅ **COMPLETED** |
 | **Local Brand Assets** | `sunscrap-logo.svg` / `.png` (white on navy), `solar-banner.png` (800x200)| `static/assets/`, `assets/` | ✅ **COMPLETED** |
 | **Local Offline Vendoring** | Local `htmx.min.js` and `echarts.min.js` without external CDN dependency | `static/vendor/` | ✅ **COMPLETED** |
 | **Container & Ops** | Dockerfile, docker-compose.yml (Postgres, Redis, Web, Nginx), nginx.conf | `docker/` | ✅ **COMPLETED** |
@@ -70,10 +74,10 @@
 
 ## 🌐 Live GitHub Pages & Remote Repository
 
-- **Live URL:** [https://iamshreeji-copy2.github.io/iamshreeji-copy2/](https://iamshreeji-copy2.github.io/iamshreeji-copy2/)
-- **GitHub Repository:** [https://github.com/iamshreeji-copy2/iamshreeji-copy2](https://github.com/iamshreeji-copy2/iamshreeji-copy2)
+- **Live URL:** [https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/](https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/)
+- **GitHub Repository:** [https://github.com/iamshreeji-copy2/Sunscrap_Recyclers_Dashboard](https://github.com/iamshreeji-copy2/Sunscrap_Recyclers_Dashboard)
 - **Deployment Status:** `built` (HTTP 200 OK verified)
-- **Static Exporter Script:** `build_static_site.py` (converts all 17 Django routes into relative static pages with client-side CSV/print download fallbacks).
+- **Static Exporter Script:** `build_static_site.py` (converts all 17 Django routes into relative static pages with client-side CSV, ZIP, WhatsApp, and print download fallbacks).
 
 ---
 

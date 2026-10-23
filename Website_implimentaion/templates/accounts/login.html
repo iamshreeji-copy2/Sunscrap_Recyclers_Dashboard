@@ -137,11 +137,11 @@
             </div>
         {% endif %}
 
-        <form method="POST" action="{% url 'login' %}">
+        <form method="POST" action="{% url 'login' %}" onsubmit="handleStaticLogin(event)">
             {% csrf_token %}
             <div class="form-group">
                 <label class="form-label" for="username">Username or Email</label>
-                <input type="text" id="username" name="username" class="form-input" required autofocus placeholder="Enter your operator username">
+                <input type="text" id="username" name="username" class="form-input" required autofocus placeholder="admin (Default: admin)" value="admin">
             </div>
 
             <div class="form-group">
@@ -150,7 +150,7 @@
                     <a href="{% url 'forgot_password' %}" style="font-size: 0.75rem; color: var(--primary); text-decoration: none; font-weight: 600;">Forgot Password?</a>
                 </div>
                 <div class="pwd-container">
-                    <input type="password" id="password" name="password" class="form-input" required placeholder="••••••••">
+                    <input type="password" id="password" name="password" class="form-input" required placeholder="••••••••" value="Sunscrap@2026">
                     <button type="button" class="btn-toggle-pwd" data-target="password">Show</button>
                 </div>
             </div>
@@ -164,6 +164,18 @@
 
             <button type="submit" class="btn-submit">Sign In to SCADA</button>
         </form>
+
+        <script>
+        function handleStaticLogin(event) {
+            // Check if running on GitHub Pages / static
+            if (window.location.protocol === 'file:' || window.location.hostname.includes('github.io') || window.location.pathname.endsWith('.html')) {
+                event.preventDefault();
+                localStorage.setItem('scada_logged_in_user', 'admin');
+                const target = window.location.pathname.includes('Sunscrap_Recyclers_Dashboard') ? '/Sunscrap_Recyclers_Dashboard/index.html' : './index.html';
+                window.location.href = target;
+            }
+        }
+        </script>
 
         <div class="login-footer-links">
             <a href="{% url 'login_otp' %}">Sign in with Email OTP</a>

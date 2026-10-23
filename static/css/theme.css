@@ -797,3 +797,274 @@ body {
     margin-left: 70px;
   }
 }
+
+/* ==========================================================================
+   Emergency Critical Alarm & Blinking Red Screen Strobe System
+   ========================================================================== */
+.alert-strobe-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  animation: alertStrobeAnim 0.75s ease-in-out infinite alternate;
+}
+
+@keyframes alertStrobeAnim {
+  0% {
+    background-color: rgba(220, 38, 38, 0.28);
+    box-shadow: inset 0 0 120px rgba(220, 38, 38, 0.95);
+  }
+  50% {
+    background-color: rgba(239, 68, 68, 0.15);
+    box-shadow: inset 0 0 60px rgba(220, 38, 38, 0.6);
+  }
+  100% {
+    background-color: rgba(185, 28, 28, 0.05);
+    box-shadow: inset 0 0 20px rgba(185, 28, 28, 0.25);
+  }
+}
+
+.emergency-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(11, 19, 43, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.emergency-modal {
+  background-color: var(--surface);
+  border: 3px solid #DC2626;
+  border-radius: var(--radius-lg);
+  max-width: 580px;
+  width: 100%;
+  box-shadow: 0 0 45px rgba(220, 38, 38, 0.7), var(--shadow-lg);
+  overflow: hidden;
+  animation: alertModalPulse 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes alertModalPulse {
+  0% { transform: scale(1); box-shadow: 0 0 30px rgba(220, 38, 38, 0.6); }
+  100% { transform: scale(1.015); box-shadow: 0 0 55px rgba(220, 38, 38, 0.95); }
+}
+
+.emergency-modal-header {
+  background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+  color: #FFFFFF;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.emergency-modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: 0.5px;
+}
+
+.emergency-modal-body {
+  padding: 24px;
+  color: var(--text-main);
+}
+
+.emergency-alarm-banner {
+  background-color: rgba(220, 38, 38, 0.1);
+  border-left: 4px solid #DC2626;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.emergency-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.emergency-kv {
+  background-color: var(--surface-alt);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.emergency-kv .label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.emergency-kv .val {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.emergency-modal-footer {
+  padding: 16px 24px;
+  background-color: var(--surface-alt);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-alert-cancel {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-alert-cancel:hover {
+  background-color: #E2E8F0;
+  color: #DC2626;
+  border-color: #DC2626;
+}
+
+.btn-alert-go {
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-alert-go:hover {
+  background: linear-gradient(135deg, #B91C1C 0%, #991B1B 100%);
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.6);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Share on WhatsApp & ZIP Export Toolbar Extensions
+   ========================================================================== */
+.btn-whatsapp {
+  background-color: #25D366 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #1EBE5D !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.btn-whatsapp:hover {
+  background-color: #1EBE5D !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35);
+}
+
+.btn-zip {
+  background-color: #475569 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #334155 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.btn-zip:hover {
+  background-color: #334155 !important;
+  box-shadow: 0 4px 12px rgba(71, 85, 105, 0.35);
+}
+
+/* ==========================================================================
+   Universal Interactive Table Header Sorting
+   ========================================================================== */
+th.sortable-th {
+  cursor: pointer !important;
+  user-select: none;
+  position: relative;
+  transition: background-color 0.15s ease;
+}
+
+th.sortable-th:hover {
+  background-color: rgba(30, 58, 138, 0.12) !important;
+}
+
+.dark-mode th.sortable-th:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.sort-indicator {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.78rem;
+  opacity: 0.45;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+th.sortable-th:hover .sort-indicator {
+  opacity: 0.9;
+}
+
+th.sort-asc .sort-indicator {
+  opacity: 1;
+  color: var(--primary);
+  content: '▲';
+}
+
+th.sort-desc .sort-indicator {
+  opacity: 1;
+  color: var(--primary);
+  content: '▼';
+}
+
+/* Notification Banners matching Screenshots */
+.banner-info-otp {
+  background: linear-gradient(90deg, #1E3A8A 0%, #2563EB 100%);
+  color: #FFFFFF;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+.banner-warning-email {
+  background: linear-gradient(90deg, #D97706 0%, #B45309 100%);
+  color: #FFFFFF;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
