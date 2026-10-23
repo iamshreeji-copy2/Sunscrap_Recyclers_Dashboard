@@ -1,36 +1,62 @@
 ================================================================================
-SUNSCRAP SOLAR SCADA — CHRONOLOGICAL USER CODING PROMPT ARCHIVE
-Project Directory: /home/linux/Documents/Darshan_SCADA_Software_October_2026
-Generated: 2026-10-23 02:50:00 PM IST
-Total Prompts Recorded: 11
+SAT SOLUTIONS (SATs) SOLAR SCADA — CHRONOLOGICAL USER PROMPTS & COMMANDS ARCHIVE
+(Formerly Sunscrap Recyclers SCADA System)
+Directory: /home/linux/Documents/Darshan_SCADA_Software_October_2026
+Generated: 2026-10-23 04:52:00 PM IST
+Total User Coding Prompts: 19
+Total Development Milestones: 5 Major Releases (v1.0 -> v2.4 SATs Enterprise)
+================================================================================
+
+================================================================================
+PART 1: COMPLETE CHRONOLOGICAL USER CODING PROMPTS ARCHIVE (PROMPTS #1 - #19)
 ================================================================================
 
 --------------------------------------------------------------------------------
 PROMPT #1
 Date & Time (IST): 2026-10-23 01:02:09 PM IST
 Date & Time (UTC): 2026-10-23 07:32:09 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 /goal cd /home/linux/Documents/Darshan_SCADA_Software_October_2026, start the implimentation here, make the website implimetnaion here, /home/linux/Documents/Darshan_SCADA_Software_October_2026/Website_implimentaion in this folder and make the complete checkpoint file this is complated or this is pending in roder to preserve tthe task compaltion reports in case of teh i need to changes the agent and make teh this checkpoint report should be the easily understnadbel byt the new coding agent and it should be teh new llm should star thte impltaion by consuming less numebr of tikens..
+
+Deliverable / Outcome:
+- Initialized project scaffold under Website_implimentaion.
+- Built full Django + Tailwind + Chart.js + SQLite SCADA foundation.
+- Created CHECKPOINT.md to document task completion states for low-token agent handoffs.
 
 --------------------------------------------------------------------------------
 PROMPT #2
 Date & Time (IST): 2026-10-23 01:33:03 PM IST
 Date & Time (UTC): 2026-10-23 08:03:03 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 make the accesisbiility button and in that mput this colro and font size and the light and dark mode in to it, , make the one logic in teh dashbaord, shoe me the how much inr rs. the eletricity produced in teh inr, for that you may need to ask for the conversion currentcy ainr, dolelr, euro or poinn.e.g, one unit is the 3rs. so you need to do the multiplicaiton of that,..and kinf od this..and also deploy tis website tot eh github pages, make teh enw one repo of this 
 iamshreeji-copy2, and make the github pages enable and deploy it on the github as of now..and give me the link and the makjet eh readmd file and all teh ..
+
+Deliverable / Outcome:
+- Added Floating Accessibility Panel with Font Scaling, Contrast toggles, Light/Dark theme.
+- Added Revenue Calculator widget (₹ INR / $ USD / € EUR / £ GBP with configurable rate per unit).
+- Generated static bundle and deployed to GitHub Pages (iamshreeji-copy2).
 
 --------------------------------------------------------------------------------
 PROMPT #3
 Date & Time (IST): 2026-10-23 01:43:26 PM IST
 Date & Time (UTC): 2026-10-23 08:13:26 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 make one alery box where you can set the alert and alery should make the sound and make the bluink of the red screen pop up which should have the cancel button also..to close the popoup, when i click on the aleert windows go button it should go directly to specific page, where the alert logs detencted amke teh lgos also, add the share on whatsaap fieature also, and add the email features, and downlaod in teh zip file also, add the omnthly and deily reports ffrom this, /home/linux/Documents/Darshan_SCADA_Software_October_2026/Reports,make sthe sort options also in teh each tbales, you should check teh all features from this path, /home/linux/Documents/Darshan_SCADA_Software_October_2026/Screenshots where i saved the screenshots in teh pdf format, /home/linux/Documents/Darshan_SCADA_Software_October_2026/Screenshots, and add the missing features in our website and add the login page in teh deployed website, and make teh weebsiteor the github repo name to the Sunscrap_Recyclers_Dashboard,
+
+Deliverable / Outcome:
+- Implemented Priority-1 Critical Alert Modal with flashing red strobe, siren audio synthesizer, Go-to-Fault and Cancel controls.
+- Added Alert Logs Trail with severity filtering.
+- Implemented WhatsApp & Email report sharing, ZIP report bundler, daily & monthly reports parser from Reports/.
+- Renamed repository target to Sunscrap_Recyclers_Dashboard.
 
 --------------------------------------------------------------------------------
 PROMPT #4
 Date & Time (IST): 2026-10-23 01:57:32 PM IST
 Date & Time (UTC): 2026-10-23 08:27:32 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 first of all take the backup of the current code for the safe reason and make this code as teh version v1 website, and in the v2 website, make teh two kind of teh dahsboard option, one is the analystical and teh second is the technical, analysitical will contains teh finanacial and the future plan absed data analsysis or the datascience based dashbaord, and the technical dahbaord will contains this all , current ...one webiste avaialbel at this path, https://iamshreeji-copy2.github.io/iamshreeji-copy2/, andd teh dffernet kind of teh grpahs for the bweter visulalization and the make sure there should be the iunteractive graphs and the clolroful gprahs to explaint eh ifnormation with low latecny write the x and y axis int eh all teh plots, dont miss that, make sure to freeze the right side bar, Sunscrap Solar SCADA
 Dashboard & Monitoring
@@ -58,10 +84,18 @@ System Health
 Security Audit, and in teh bottom right side there should be one circle which shouw the click to go on top, and make the more efficient website...and add the login creditintial tot he main website, and make hidden some of the information which are the sensitive and not needed, hide form teh viewer users, the option of the share, which will create the new link will have the en[[piry time, 1 hours, 24 hours, custom hours, or days or months or range, ..lkund of which wil have the access to the viewer or the able to see some of the website infomraiton as per the plant owner set, which informaiton should show to the that user, which sharing the link with him or her, and make the effective website and make sure that is the produce grade website and quality assutance proof.
 add the option to add the -plan detials such as the lcoaiton, owener name and the owener details and time zone and the gps based lcoation save in teh website and make teh one backed datasbase which should save this all the infomraiton in to that, is the radis or the django is the okay rhen create then make sure the github pages should support this it should not ask me for the money, okay..make the more personalized website this and sav ethe all the logs and the information if any users set any new ifnormation then, as shownin teh speenshot, you can use the different kind of the plots, like speedometer and much more and you can give t he option to suer to set the or to view the data in which kind of the plots, and it should have the anomation and low latency.
 
+Deliverable / Outcome:
+- Archived v1 and introduced dual-mode dashboard architecture: Technical SCADA vs Analytical & Forecasting.
+- Built comprehensive 22-module sidebar navigation.
+- Added Scroll-To-Top floating pill.
+- Implemented Plant Profile modal (GPS coordinates, timezone, owner details, plant capacity) persisted via LocalStorage + backend JSON DB.
+- Added Time-limited share link generator (1h, 24h, custom expiry, role-based visibility).
+
 --------------------------------------------------------------------------------
 PROMPT #5
 Date & Time (IST): 2026-10-23 02:06:21 PM IST
 Date & Time (UTC): 2026-10-23 08:36:21 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 admin can able to ad the new or deplete teh existintg users, make this changes also,
 i am wonder, the dashbaord is showing the full ifnormaiton and then after it is showing the login button, ...i am logged out but it is showing the login button..and able to see the all ifnormation ..reduce or remove this kind of the issues, and make sure when anyone click on teh website it should first do teh login to the website only..then after it should able to see the all dahsbaord and teh wesites data. when i minimse or close the alert it should open the previous alreayt history when i am clicking on that icon, and make sure who logged in and who loggied out which times it should save that all teh ofnoration along with their lcoation and the device name and their broweser and approximate lcoation and teh netowrk provider all teh fonraiton it sould be saved int eh  backed for the developer to resovlet eh queries, first user is developer, second is the admin, third is teh plan owner, forth is the any one who third party able to see or teh comment on teh dashbaord,
@@ -78,19 +112,33 @@ Alarm State
 ACTIVE / UNACKNOWLEDGED, it should allow me to go to the Target Device
 Inverter 08 (Inv-08 / 320 kWp) plot or the tables, and it should save the all the alerts logs, for the user...it can able to see for th efuture resefermmce
 
+Deliverable / Outcome:
+- Implemented strict RBAC auth gate (Developer, Administrator, Plant Owner, Viewer).
+- Restricted public dashboard visibility until successful login.
+- Added User Management & Operator Session Audit Logging (IP, device, browser, login/logout timestamp).
+- Integrated Web Audio API industrial emergency siren oscillator.
+- Linked alarm banner directly to Inverter 08 telemetry drill-down.
+
 --------------------------------------------------------------------------------
 PROMPT #6
 Date & Time (IST): 2026-10-23 02:25:09 PM IST
 Date & Time (UTC): 2026-10-23 08:55:09 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 make sure to give the cancel button to teh red alert box, so anyone can close it after seeing it..it should be closable ..
 "✕ Cancel & Silence Siren" is now working, in teh exsiting deployed website check and tell me what is teh issues, and why it is "https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/login.html" this login apge have the alerm windows, it should have the lgoin pages simply.
 make teh one new apge for the alart logs, where each apge should have the go abck option to gor thethe prevuisous page, donte make teh any pages uncorelated to teh prvious our main websites, .and add the option to add teh plant image phototo option, to ...
 
+Deliverable / Outcome:
+- Removed intrusive alarm overlay from login.html.
+- Created dedicated alert_logs.html incident history view with breadcrumbs and contextual back navigation.
+- Added Plant Site Photograph upload & preset gallery.
+
 --------------------------------------------------------------------------------
 PROMPT #7
 Date & Time (IST): 2026-10-23 02:44:03 PM IST
 Date & Time (UTC): 2026-10-23 09:14:03 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 dont show the Authorized Operator Roles (1-Click Fill)
 ● RBAC Active
@@ -105,24 +153,38 @@ viewer / Viewer@2026, , this should be privates,
 after login, i am again seeing the "CRITICAL PLANT ALARM DETECTED
 PRIORITY 1" ...it should be the cloasable and the and make teh cancel and silence siren.....it should be the clickable and it should be the
 
+Deliverable / Outcome:
+- Hid credentials cheat-sheet from login page (now private / hidden toggle).
+- Fixed alarm dismissal state persistence via sessionStorage to prevent alert reappearing on every page load once silenced.
+
 --------------------------------------------------------------------------------
 PROMPT #8
 Date & Time (IST): 2026-10-23 02:49:39 PM IST
 Date & Time (UTC): 2026-10-23 09:19:39 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 can you write the all previous coding prompt here, /home/linux/Documents/Darshan_SCADA_Software_October_2026/previous_coding_prompt.txt in this file date and time wise, ...so i can save it for the future reference..short and large all the prompts.
+
+Deliverable / Outcome:
+- Created the initial previous_coding_prompt.txt archive tracking Prompts #1 through #8.
 
 --------------------------------------------------------------------------------
 PROMPT #9
 Date & Time (IST): 2026-10-23 02:51:19 PM IST
 Date & Time (UTC): 2026-10-23 09:21:19 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 plant and gps should com eunder the profile button, so hide form the main dahsbaord, plant photo will go under the same, discussions will be the use the thumbnail for the messages, share portal maike teh thumbnail only, make the alreadrt thumbnail onyl..dont writ ethe full spelling..
+
+Deliverable / Outcome:
+- Moved Plant Specifications, GPS, and Facility Photos inside User Profile & Security.
+- Compacted header buttons to clean icon badges (Alert bell, Share icon, Discussions icon).
 
 --------------------------------------------------------------------------------
 PROMPT #10
 Date & Time (IST): 2026-10-23 02:56:46 PM IST
 Date & Time (UTC): 2026-10-23 09:26:46 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 make teh sign out button ..bit gui based,sign and out is breaking speelling
 wbhy it is showing the two times fo abck in teh ← Go Back to Previous Page
@@ -133,18 +195,28 @@ wbhy it is showing the two times fo abck in teh ← Go Back to Previous Page
 ← Go Back to Previous Page
 SCADA Station • Incident Logs Trail<  page, SCADA Alarm & Alert Incident History Log
 
+Deliverable / Outcome:
+- Fixed Sign Out button CSS whitespace: nowrap and added logout icon.
+- Removed duplicated back-navigation headers across all secondary pages.
+
 --------------------------------------------------------------------------------
 PROMPT #11
 Date & Time (IST): 2026-10-23 03:14:38 PM IST
 Date & Time (UTC): 2026-10-23 09:44:38 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 make this upper side of the page, Commercial CapEx Investment & ROI Payback Tracker
 Tracking capital cost recovery against solar generation revenue and green carbon credit monetization., removethis fom teh dashabrod, ← Go Back to Previous Page, techncial and anlaysistical both, ← Go Back to Previous Page
+
+Deliverable / Outcome:
+- Promoted Commercial CapEx & ROI Payback Tracker card higher on the Analytical dashboard.
+- Completely removed redundant ← Go Back breadcrumb headers from both Technical and Analytical dashboards.
 
 --------------------------------------------------------------------------------
 PROMPT #12
 Date & Time (IST): 2026-10-23 03:22:36 PM IST
 Date & Time (UTC): 2026-10-23 09:52:36 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 why it is showing the ⚡ Technical SCADA
 📊 Analytical AI/ML
@@ -168,15 +240,16 @@ remove this form the each pages, ⚡ Technical SCADA
 📊 Analytical AI/ML
 🚨 Alert Logs
 
-
-
-
-
+Deliverable / Outcome:
+- Removed sticky sub-header nav buttons from auxiliary views.
+- Fixed profile editing form to properly save phone number, full name, and email into localStorage & mock backend API.
+- Fixed Share Modal URL copy functionality with clipboard fallback.
 
 --------------------------------------------------------------------------------
 PROMPT #13
 Date & Time (IST): 2026-10-23 03:35:41 PM IST
 Date & Time (UTC): 2026-10-23 10:05:41 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 add the icon of the website and and make it more bearutiful and add the website tracking in to this, changes he name of teh ewbsite tfromt eh sunscrap to teh SATs, https://satsolutions.in/, add this website link int eh our login pages and all and add teh copyright, add this email id also to teh websit, 
 Email:
@@ -190,9 +263,251 @@ Status Code: ERR-402 (Grid Under-voltage)
 Timestamp: 01:32:05 PM IST
 Alarm State: ACTIVE / UNACKNOWLEDGED, in this, SCADA Alarm & Alert Incident History Log, why that is not going abcna adn no dismiss button..check and repair it..
 
+Deliverable / Outcome:
+- Added SAT Solutions official branding link (https://satsolutions.in/) and contact email (info.sats123@gmail.com).
+- Added Favicon and website visit counter badge.
+- Added Dismiss & Silence button directly inside the Incident History Log page.
+
 --------------------------------------------------------------------------------
 PROMPT #14
 Date & Time (IST): 2026-10-23 03:51:00 PM IST
 Date & Time (UTC): 2026-10-23 10:21:00 UTC
+Session ID: 6df00036-e0f1-4e18-8811-a50115018bdd
 --------------------------------------------------------------------------------
 why the scroll bar is too simple make it more beatuful and more aestatic, amd it should be hide and unhide option i mean teh menu button which can make this system dahbaord possible to virw in teh full mode.
+
+Deliverable / Outcome:
+- Implemented custom sleek glassmorphic scrollbar styling across all views.
+- Added Sidebar Collapse / Expand toggle button (Zen Fullscreen View mode).
+
+--------------------------------------------------------------------------------
+PROMPT #15
+Date & Time (IST): 2026-10-23 03:48:14 PM IST
+Date & Time (UTC): 2026-10-23 10:18:14 UTC
+Session ID: 6c20a90a-e59b-4691-949e-6bc8dc1de6cb
+--------------------------------------------------------------------------------
+make teh subscrap name to the SATs, Semiconductor Analysis and Testing Solutions
+
+Deliverable / Outcome:
+- Initiated formal company rebranding across titles, brand headers, and metadata to SATs (Semiconductor Analysis and Testing Solutions).
+
+--------------------------------------------------------------------------------
+PROMPT #16
+Date & Time (IST): 2026-10-23 03:54:05 PM IST
+Date & Time (UTC): 2026-10-23 10:24:05 UTC
+Session ID: 6c20a90a-e59b-4691-949e-6bc8dc1de6cb
+--------------------------------------------------------------------------------
+renmae the atthe all palces, and make the website name to the SATs. as teh comapny, now do the branding of this website as the rofedfessional producet owner
+here write teh plant name, and their capacity in teh breket, (3900 kW AC / 4640 kWp DC)
+use the website theme colors in this webiste, https://satsolutions.in/, i mean official sats website colors use here.
+reove teh unwanted things from here, SATs Logo
+© 2026 SAT Solutions. All rights reserved.
+•
+satsolutions.in
+•
+info.sats123@gmail.com
+Website Telemetry & Tracking Active
+|
+1,438 hits, and make sure it should be the shows only thumbnails of the social media dont show teh full text and make sure to show int eh center alignemnt
+int eh login apge do teh same, https://satsolutions.in/
+•
+info.sats123@gmail.com
+© 2026 SAT Solutions. All rights reserved.
+Workstation Telemetry & Analytics Tracker Active, show the only the lgoos of the social media dont show teh full text.
+
+Deliverable / Outcome:
+- Replaced all company branding with "SAT Solutions (SATs)" across templates, navigation, and reports.
+- Displayed plant name with capacity: "(3900 kW AC / 4640 kWp DC)".
+- Aligned design palette with satsolutions.in (#0f172a, #0284c7, #38bdf8, #f8fafc).
+- Cleaned redundant text from footer; added centered social media icon thumbnails (LinkedIn, Twitter/X, GitHub, Email).
+- Unified login.html card styling with SATs branding and icon-only social badges.
+
+--------------------------------------------------------------------------------
+PROMPT #17
+Date & Time (IST): 2026-10-23 04:16:17 PM IST
+Date & Time (UTC): 2026-10-23 10:46:17 UTC
+Session ID: 6c20a90a-e59b-4691-949e-6bc8dc1de6cb
+--------------------------------------------------------------------------------
+can i deploy this project tot eh 
+Host the Database Freely on MongoDB Atlas
+
+You can create a MongoDB Atlas Free Tier (M0 Shared Cluster). This gives you a fully functional MongoDB cloud database with 512MB of storage, which is plenty for personal projects, portfolios, and learning.
+
+2, ? can you tell me freely, and how many times it will work free, i mean 5 to 10 days?
+when i am trying to tdo the changes, in the Plant Specifications, Photo, Owner & GPS Location
+×
+Plant / Organization Name
+SAT Solutions (SATs)
+Plant Capacity (AC / DC)
+3,900 kW AC / 4,640 kWp DC
+Plant Site Image & Facility Photograph
+📁 Upload Photo
+Site Photo
+Choose a facility preset or upload your custom plant photograph:
+☀️ Aerial Array
+⚡ 13x Inverters
+🏢 11kV Feeder
+Physical Site Location
+Plot 148, Sanand GIDC Phase II, Ahmedabad, Gujarat, India
+Owner Name
+Darshan Patel
+Owner Contact / Email
+info.sats123@gmail.com (+91 94256 55845)
+GPS Coordinates (Latitude & Longitude)
+📍 Auto-Detect GPS
+Latitude (°N)
+23.1884
+Longitude (°E)
+72.6276
+Google Maps Link: 22.9868° N, 72.3787° E (View on Map)
+Timezone
+Asia/Kolkata (IST +05:30)
+Grid Interconnection< it is showing the noticificaiton on teh back screen which is actually blurred is it not okay, make this changes, it should be not blur that right side bottom mesages which comes up side ....
+remoe the logo from teh left most side panel, https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/static/assets/sats-logo.svg, which is not needed...
+remove this inforation formt eh left side menus, which is redunducnt, 🌐 satsolutions.in
+📧 info.sats123@gmail.com
+© 2026 SAT Solutions. All rights reserved. which is already given in teh bottom side of the each pages,
+Website Telemetry & Tracking Active remove this also, 
+Website Telemetry & Tracking Active..this is not needed.
+in teh left side menus, amek teh only singel daahbaord, and  when anyone lcick on the SCADA Operational Dashboard, then only they can visible the ⚡ Technical SCADA
+📊 Analytical & Forecasting, mode, it is like toggle mode, at a time one mode should be accesisible..
+
+Deliverable / Outcome:
+- Provided detailed MongoDB Atlas Free Tier (M0 Sandbox) guide: 100% free indefinitely, no trial limit, no credit card required.
+- Fixed backdrop blur issue: modal backdrop now prevents blinding/blurring of incoming toast notifications.
+- Removed redundant logo from sidebar brand header.
+- Stripped duplicate website links, email, copyright, and telemetry trackers from the sidebar footer.
+- Consolidated sidebar dashboard menu into a clean single item with a modal toggle for Technical SCADA vs Analytical & Forecasting.
+
+--------------------------------------------------------------------------------
+PROMPT #18
+Date & Time (IST): 2026-10-23 04:16:53 PM IST
+Date & Time (UTC): 2026-10-23 10:46:53 UTC
+Session ID: 6c20a90a-e59b-4691-949e-6bc8dc1de6cb
+--------------------------------------------------------------------------------
+reusme from the last pending prompts
+
+Deliverable / Outcome:
+- Resumed pending changes, re-verified static site generator, ran Django test suite, and deployed commit to gh_pages_deploy.
+
+--------------------------------------------------------------------------------
+PROMPT #19
+Date & Time (IST): 2026-10-23 04:25:08 PM IST
+Date & Time (UTC): 2026-10-23 10:55:08 UTC
+Session ID: 6c20a90a-e59b-4691-949e-6bc8dc1de6cb
+--------------------------------------------------------------------------------
+the x axis and teh y axis are still overlapping, Real-Time Power & Solar Irradiance Profiles, and reduce this overlapping...
+
+Deliverable / Outcome:
+- Restructured Chart.js dual-axis configuration for "Real-Time Power & Solar Irradiance Profiles".
+- Added proper padding, autoSkip ticks, rotation angles, separated left axis (Active Power kW) and right axis (Irradiance W/m²), preventing any collision or label overlap.
+- Re-built static bundle and published to GitHub Pages repository.
+
+--------------------------------------------------------------------------------
+PROMPT #20 (CURRENT)
+Date & Time (IST): 2026-10-23 04:46:52 PM IST
+Date & Time (UTC): 2026-10-23 11:16:52 UTC
+Session ID: 41a4c4a2-efe1-4df1-b918-c7c8445e7668
+--------------------------------------------------------------------------------
+can you writ ethe history of the commands or the coding prompts int eh "previous_coding_prompt.txt"files.
+
+Deliverable / Outcome:
+- Fully consolidated and updated all previous_coding_prompt.txt files across the repository and workspace with complete chronological prompts and terminal command history.
+
+
+================================================================================
+PART 2: CHRONOLOGICAL TERMINAL & DEVELOPER COMMANDS HISTORY
+================================================================================
+
+1. BASH SHELL TERMINAL COMMANDS (User Execution in bash):
+--------------------------------------------------------------------------------
+# Environment inspection and monitoring
+watch -n 0.1 nvidia-smi
+htop
+nvcc --version
+echo x11
+
+# GitHub CLI Authentication & account switching
+gh auth switch --user LatentContext
+gh auth login -h github.com -p https -w
+
+# Antigravity CLI invocations
+agy --dangerously-skip-permissions -c
+agy --dangerously-skip-permissions
+agy plugin install https://github.com/DietrichGebert/ponytail
+
+# Direct file editing and checking
+vi previous_coding_prompt.txt
+vi prompt.vi
+vi dynamic_prompt.txt
+vi larger_indepth_prompt.txt
+
+2. SCADA APPLICATION BACKEND & SERVER COMMANDS (Agent & Local Testing):
+--------------------------------------------------------------------------------
+# Starting Local HTTP / SCADA Server
+python3 manage.py runserver 0.0.0.0:8001
+python3 -m http.server 8000 --directory /home/linux/Documents/Darshan_SCADA_Software_October_2026/gh_pages_deploy
+
+# Static Site Compilation & Verification
+cd /home/linux/Documents/Darshan_SCADA_Software_October_2026/Website_implimentaion && python3 build_static_site.py
+cd /home/linux/Documents/Darshan_SCADA_Software_October_2026/Website_implimentaion && python3 manage.py test tests
+
+# Django Shell Verification of Inverters & Plant Models
+python3 manage.py shell -c "from core.models import Inverter; print(Inverter.objects.count())"
+python3 manage.py shell -c "from core.models import PlantProfile; print(PlantProfile.objects.first().name)"
+
+# Asset & Dependency Acquisition
+curl -sSL https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js -o static/js/htmx.min.js
+curl -I http://127.0.0.1:8001/login
+curl -I http://127.0.0.1:8001/dashboard
+curl -I http://127.0.0.1:8001/static/css/theme.css
+
+3. GIT VERSION CONTROL & GITHUB PAGES DEPLOYMENT COMMANDS:
+--------------------------------------------------------------------------------
+# Repository Status Checks
+cd /home/linux/Documents/Darshan_SCADA_Software_October_2026/gh_pages_deploy && git status
+git -C /home/linux/Documents/Darshan_SCADA_Software_October_2026/gh_pages_deploy remote -v
+
+# Milestone 1: Initial deployment to GitHub Pages (iamshreeji-copy2)
+git add .
+git commit -m "feat: initial release of Sunscrap Solar SCADA Dashboard v1"
+git push -u origin main --force
+
+# Milestone 2: Dual Dashboard, Critical Alarm Siren, and RBAC
+git add .
+git commit -m "feat(v2): technical & analytical dual dashboard, critical siren, RBAC security"
+git push
+
+# Milestone 3: Rebranding to SAT Solutions (SATs)
+git add .
+git commit -m "feat(branding): migrate branding to SATs (Semiconductor Analysis and Testing Solutions)"
+git push
+
+# Milestone 4: Unblur background modal, clean menu entries & single toggle dashboard
+git add .
+git commit -m "feat: unblur background modal, remove redundant logo & menu entries, implement single toggle SCADA dashboard"
+git push
+
+# Milestone 5: Chart axis collision fix & clean layout
+git add .
+git commit -m "fix(charts): prevent x/y axis overlapping on Real-Time Power & Solar Irradiance Profile"
+git push
+
+================================================================================
+PART 3: SUMMARY OF IMPLEMENTED SCADA CAPABILITIES & ARTIFACTS
+================================================================================
+• Architecture: Django 5 + SQLite backend + Static Site Generator (Zero-cost GitHub Pages export).
+• Dual Operational Mode:
+  1. Technical SCADA Dashboard (13x Inverters telemetry, 69 parameters, MFM, WMS, PR ratio).
+  2. Analytical & Forecasting Dashboard (Machine learning solar forecasts, CapEx ROI tracker).
+• Industrial Safety System:
+  - Priority 1 Grid Under-voltage audible siren oscillator.
+  - Interactive strobe modal, drill-down to faulty Inverter 08, and incident audit log.
+• Role-Based Access Control (RBAC):
+  - Developer, Administrator, Plant Owner, Viewer.
+  - Session activity tracker logging login/logout timestamps and IP/device metadata.
+• Multi-Currency Revenue Calculator:
+  - Supports INR (₹), USD ($), EUR (€), GBP (£) with configurable tariff rates.
+• Live Production Deployment:
+  - GitHub Pages: https://iamshreeji-copy2.github.io/Sunscrap_Recyclers_Dashboard/
+================================================================================
