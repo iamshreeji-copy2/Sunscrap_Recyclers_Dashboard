@@ -59,10 +59,21 @@
 | **6-Output Contract** | Copy TSV, genuine XLSX, CSV with formula defense, PDF, Print, Email | `apps/exports/services.py`, `components/export_toolbar.html` | ✅ **COMPLETED** |
 | **Download Center** | Job status, progress, size, checksum, secure download endpoint | `apps/exports/views.py` (`downloads_view`, `/download`) | ✅ **COMPLETED** |
 | **Report Schedules** | Daily, Weekly, Monthly recurring report delivery to email lists | `apps/exports/views.py` (`schedules_view`) | ✅ **COMPLETED** |
-| **HCI / Accessibility** | Font-size controls (`A-` / `A` / `A+`), Colorful vs Grayscale toggle | `static/js/app.js`, `static/css/theme.css` | ✅ **COMPLETED** |
+| **Accessibility Hub** | Slide-in drawer, Light/Dark theme, Vibrant/Grayscale/High-Contrast, font scaling (`85%`-`125%`, `A-`/`A+`), localStorage | `static/css/theme.css`, `static/js/app.js`, `base.html` | ✅ **COMPLETED** |
+| **Commercial Tariff Engine** | Real-time financial revenue in INR (₹) with USD/EUR/GBP conversion, custom tariff unit rates (e.g. ₹3/unit), Indian numbering | `dashboard.html`, `static/js/app.js` | ✅ **COMPLETED** |
+| **GitHub Pages Deployment** | Static site generation (`build_static_site.py`), standalone export fallbacks, deployed to `iamshreeji-copy2/iamshreeji-copy2` | `build_static_site.py`, `gh_pages_deploy/` | ✅ **COMPLETED** |
 | **Local Brand Assets** | `sunscrap-logo.svg` / `.png` (white on navy), `solar-banner.png` (800x200)| `static/assets/`, `assets/` | ✅ **COMPLETED** |
 | **Local Offline Vendoring** | Local `htmx.min.js` and `echarts.min.js` without external CDN dependency | `static/vendor/` | ✅ **COMPLETED** |
 | **Container & Ops** | Dockerfile, docker-compose.yml (Postgres, Redis, Web, Nginx), nginx.conf | `docker/` | ✅ **COMPLETED** |
+
+---
+
+## 🌐 Live GitHub Pages & Remote Repository
+
+- **Live URL:** [https://iamshreeji-copy2.github.io/iamshreeji-copy2/](https://iamshreeji-copy2.github.io/iamshreeji-copy2/)
+- **GitHub Repository:** [https://github.com/iamshreeji-copy2/iamshreeji-copy2](https://github.com/iamshreeji-copy2/iamshreeji-copy2)
+- **Deployment Status:** `built` (HTTP 200 OK verified)
+- **Static Exporter Script:** `build_static_site.py` (converts all 17 Django routes into relative static pages with client-side CSV/print download fallbacks).
 
 ---
 
