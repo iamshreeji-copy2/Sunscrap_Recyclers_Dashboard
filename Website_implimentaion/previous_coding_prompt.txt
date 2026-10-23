@@ -679,3 +679,15 @@ CHANGES MADE:
 - static/assets/carousel/: Copied and organized all 8 images from corosal directory (slide1.png through slide8.png); generated updated sharp solar-banner.png (800x200).
 - login.html: Added full-screen background carousel with #slide-base, #slide-incoming, #wipe-line, and .carousel-dark-overlay; implemented 3-second cycle with 1.05s glowing vertical white wipe line sweep transition; added dark radial + linear vignette overlay so login popup is clear, focused, and crisp.
 - build_static_site.py: Added regex rewrite rules for data-src and CSS url() static paths.
+
+---
+PROMPT #30 — Login Background Carousel Opacity & Visibility Adjustment
+DATE: 2026-10-23
+
+REQUESTS:
+1. Make more opacity for the background carousel on the login page (it was previously too dark)
+
+CHANGES MADE:
+- login.html: Set .carousel-slide opacity to 0.92 and raised brightness filter from 0.40 to 0.80 (with 1.08 contrast and 1.15 saturation).
+- login.html: Lightened .carousel-dark-overlay from heavy 55%-88% dark vignette down to subtle 20%-45% gradient.
+- login.html: Removed heavy backdrop blur so solar array imagery is sharp, vivid, and clearly visible behind the login card.

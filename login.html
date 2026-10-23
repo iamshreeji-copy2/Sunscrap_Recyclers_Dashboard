@@ -49,8 +49,9 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            filter: brightness(0.40) contrast(1.2) saturate(1.15);
-            transform: scale(1.03);
+            opacity: 0.92;
+            filter: brightness(0.80) contrast(1.08) saturate(1.15);
+            transform: scale(1.02);
             will-change: clip-path, transform;
         }
 
@@ -66,7 +67,7 @@
             left: 0;
             width: 3px;
             background: #FFFFFF;
-            box-shadow: 0 0 16px 4px rgba(255, 255, 255, 0.95), 0 0 32px 8px rgba(0, 131, 116, 0.8);
+            box-shadow: 0 0 18px 5px rgba(255, 255, 255, 0.95), 0 0 32px 8px rgba(0, 131, 116, 0.85);
             z-index: 3;
             pointer-events: none;
             opacity: 0;
@@ -76,11 +77,10 @@
         .carousel-dark-overlay {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at center, rgba(6, 17, 15, 0.55) 0%, rgba(3, 8, 7, 0.88) 100%),
-                        linear-gradient(180deg, rgba(0, 56, 49, 0.35) 0%, rgba(6, 17, 15, 0.75) 100%);
+            background: radial-gradient(circle at center, rgba(6, 17, 15, 0.20) 0%, rgba(3, 8, 7, 0.45) 100%),
+                        linear-gradient(180deg, rgba(0, 40, 35, 0.15) 0%, rgba(6, 17, 15, 0.38) 100%);
             z-index: 4;
             pointer-events: none;
-            backdrop-filter: blur(2px);
         }
 
         .login-card {
@@ -266,7 +266,7 @@
         
 
         <form method="POST" action="./index.html" onsubmit="handleWorkstationLogin(event)">
-            <input type="hidden" name="csrfmiddlewaretoken" value="VvKkMqcVQskMC1wtH4UaAVPQraPiWV2bquidIl04QZdKuEk1dA2T24dqWFVzLB0P">
+            <input type="hidden" name="csrfmiddlewaretoken" value="o9YW2pg7znkN8mRNOXhCTbnhtYLwfjbq2eYseHcIqAUP7HIQzUZrO2pnBOwmwQnY">
             <!-- Telemetry inputs auto-filled by client JavaScript -->
             <input type="hidden" id="login-device-name" name="device_name" value="">
             <input type="hidden" id="login-approx-location" name="approx_location" value="Ahmedabad, Gujarat, India (22.9868° N, 72.3787° E)">
