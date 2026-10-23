@@ -56,3 +56,4 @@
 | **Multi-Currency Commercial Engine** | INR (₹) base with custom unit rates (e.g. ₹3/unit), USD, EUR, GBP conversions | `dashboard.html`, `static/js/app.js` | ✅ **COMPLETED** |
 | **Output Contract & Export Suite** | Copy TSV, CSV, genuine Excel XLSX, PDF, Print, WhatsApp, and ZIP bundles | `components/export_toolbar.html`, `static/js/app.js` | ✅ **COMPLETED** |
 | **Static GitHub Pages Deployment** | Relative URL compiler, unauthenticated login grabber, published on `main` branch | `build_static_site.py`, `gh_pages_deploy/` | ✅ **COMPLETED** |
+| **Responsive Mobile & Tablet UX** | Fluid responsive layouts across mobile & tablet without reducing desktop width; off-canvas drawer, mobile bottom bar, touch wrappers | `theme.css`, `base.html`, `app.js`, `dashboard.html` | ✅ **COMPLETED** |

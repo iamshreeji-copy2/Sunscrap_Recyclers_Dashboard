@@ -1476,22 +1476,132 @@ window.detectGPSLocation = function() {
 };
 
 // =========================================================================
-// 14. Version v2: Operator Role Switcher (Admin vs Restricted Viewer)
+// 14. Physical Site Location Autocomplete (OpenStreetMap Nominatim — no API key required)
+// =========================================================================
+(function initLocationAutocomplete() {
+    const input = document.getElementById('plant-meta-location');
+    const dropdown = document.getElementById('location-suggestions-dropdown');
+    if (!input || !dropdown) return;
+
+    let _debounceTimer = null;
+    let _activeIdx = -1;
+    let _currentResults = [];
+
+    function clearDropdown() {
+        dropdown.style.display = 'none';
+        dropdown.innerHTML = '';
+        _activeIdx = -1;
+        _currentResults = [];
+    }
+
+    function renderSuggestions(results) {
+        _currentResults = results;
+        dropdown.innerHTML = '';
+        _activeIdx = -1;
+        if (!results.length) { clearDropdown(); return; }
+        results.forEach((r, i) => {
+            const item = document.createElement('div');
+            item.style.cssText = 'padding:9px 13px; font-size:0.83rem; cursor:pointer; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; gap:8px; line-height:1.35;';
+            item.innerHTML = `<svg style="flex-shrink:0;margin-top:2px" width="13" height="13" fill="var(--primary)" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg><span>${r.display_name}</span>`;
+            item.addEventListener('mouseenter', () => highlightItem(i));
+            item.addEventListener('mouseleave', () => highlightItem(-1));
+            item.addEventListener('mousedown', (e) => { e.preventDefault(); selectSuggestion(i); });
+            dropdown.appendChild(item);
+        });
+        dropdown.style.display = 'block';
+    }
+
+    function highlightItem(idx) {
+        const items = dropdown.querySelectorAll('div');
+        items.forEach((el, i) => {
+            el.style.background = i === idx ? 'var(--primary-light, rgba(59,130,246,0.15))' : '';
+        });
+        _activeIdx = idx;
+    }
+
+    function selectSuggestion(idx) {
+        const r = _currentResults[idx];
+        if (!r) return;
+        input.value = r.display_name;
+        clearDropdown();
+
+        // Auto-fill GPS lat/lng if present
+        const latEl = document.getElementById('plant-meta-lat');
+        const lngEl = document.getElementById('plant-meta-lng');
+        const gmapsLink = document.getElementById('plant-gmaps-link');
+        if (r.lat && latEl) latEl.value = parseFloat(r.lat).toFixed(6);
+        if (r.lon && lngEl) lngEl.value = parseFloat(r.lon).toFixed(6);
+        if (r.lat && r.lon && gmapsLink) {
+            const lat = parseFloat(r.lat).toFixed(4);
+            const lon = parseFloat(r.lon).toFixed(4);
+            gmapsLink.href = `https://maps.google.com/?q=${lat},${lon}`;
+            gmapsLink.textContent = `${lat}° N, ${lon}° E (View on Map)`;
+        }
+    }
+
+    function fetchSuggestions(query) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&q=${encodeURIComponent(query)}`;
+        fetch(url, { headers: { 'Accept-Language': 'en' } })
+            .then(r => r.json())
+            .then(data => renderSuggestions(data || []))
+            .catch(() => clearDropdown());
+    }
+
+    input.addEventListener('input', () => {
+        const q = input.value.trim();
+        clearTimeout(_debounceTimer);
+        if (q.length < 3) { clearDropdown(); return; }
+        _debounceTimer = setTimeout(() => fetchSuggestions(q), 350);
+    });
+
+    input.addEventListener('keydown', (e) => {
+        const items = dropdown.querySelectorAll('div');
+        if (!items.length) return;
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            highlightItem(Math.min(_activeIdx + 1, items.length - 1));
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            highlightItem(Math.max(_activeIdx - 1, 0));
+        } else if (e.key === 'Enter' && _activeIdx >= 0) {
+            e.preventDefault();
+            selectSuggestion(_activeIdx);
+        } else if (e.key === 'Escape') {
+            clearDropdown();
+        }
+    });
+
+    input.addEventListener('focus', () => {
+        const q = input.value.trim();
+        if (q.length >= 3 && !_currentResults.length) fetchSuggestions(q);
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) clearDropdown();
+    });
+})();
+
+// =========================================================================
+// 14b. Version v2: Operator Role Switcher (Admin vs Restricted Viewer)
 // =========================================================================
 function initRoleSwitcher() {
     const btn = document.getElementById('btn-toggle-role');
     const badge = document.getElementById('role-display-badge');
-    if (!btn || !badge) return;
 
-    let isViewer = localStorage.getItem('scada_role_mode') === 'viewer';
+    // Always apply stored role state (body class) even if no badge/btn on this page
+    const isViewer = localStorage.getItem('scada_role_mode') === 'viewer';
     applyRoleMode(isViewer);
 
-    btn.addEventListener('click', () => {
-        isViewer = !isViewer;
-        applyRoleMode(isViewer);
-        localStorage.setItem('scada_role_mode', isViewer ? 'viewer' : 'admin');
-        showToast(isViewer ? 'Switched to Viewer Mode (Sensitive settings masked)' : 'Switched to Administrator Mode (Full permissions)');
-    });
+    // Wire click if the button exists (profile page)
+    if (btn) {
+        btn.addEventListener('click', () => {
+            const nowViewer = localStorage.getItem('scada_role_mode') === 'viewer';
+            const next = !nowViewer;
+            applyRoleMode(next);
+            localStorage.setItem('scada_role_mode', next ? 'viewer' : 'admin');
+            showToast(next ? 'Switched to Viewer Mode (Sensitive settings masked)' : 'Switched to Administrator Mode (Full permissions)');
+        });
+    }
 }
 
 window.toggleOperatorRole = function() {
