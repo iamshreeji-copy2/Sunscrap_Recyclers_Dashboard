@@ -732,4 +732,19 @@ CHANGES MADE:
 - templates/monitoring/dashboard.html & dashboard_analytical.html: Added dedicated "Live Slideshow" action button next to segmented toggle pills.
 - build_static_site.py: Recompiled full static distribution across all 26 pages in gh_pages_deploy.
 
+---
+PROMPT #33 — Increased SATs Sidebar Brand Logo Size & Symmetric Optical Centering
+DATE: 2026-10-24
+
+REQUESTS:
+1. Increase the SATs logo size in the sidebar
+2. Make sure it is vertically and horizontally in the center
+
+CHANGES MADE:
+- static/assets/sats-official-logo.png: Trimmed the raw PNG from 734x527 down to 723x424, removing 67px of blank top/bottom teal margins and 11px left/right asymmetrical offset, creating exact 15px symmetric optical padding on all 4 sides so the white artwork is centered down to the sub-pixel.
+- static/css/theme.css: Updated .sidebar-brand to height: var(--header-height); min-height: 70px; padding: 8px 16px; with flexbox center alignment. Increased logo dimensions (.sidebar-brand img, .sidebar-brand svg, .sidebar-brand-logo-img) to height: 52px; max-height: 54px; max-width: 210px; with border-radius: 6px and subtle shadow.
+- templates/base.html: Updated sidebar logo image markup with .sidebar-brand-logo-img class and height: 52px; max-height: 54px; max-width: 210px;, yielding a 60% taller and 2.56x larger visual presence in the sidebar.
+- build_static_site.py: Recompiled static deployment with updated logo across all 26 pages.
+
+
 

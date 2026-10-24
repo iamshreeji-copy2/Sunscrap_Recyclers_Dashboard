@@ -51,7 +51,7 @@
     <aside class="app-sidebar" id="app-sidebar">
         <div class="sidebar-brand">
             <a href="./index.html" class="sidebar-brand-link" title="SAT Solutions">
-                <img src="./static/assets/sats-official-logo.png" alt="SAT Solutions" style="height: 40px; max-width: 180px; width: auto; object-fit: contain; border-radius: 4px; display: block; margin: 0 auto;" onerror="this.src='/static/assets/sats-logo.svg';">
+                <img src="./static/assets/sats-official-logo.png" alt="SAT Solutions" class="sidebar-brand-logo-img" style="height: 52px; max-height: 54px; max-width: 210px; width: auto; object-fit: contain; border-radius: 6px; display: block; margin: 0 auto;" onerror="this.src='/static/assets/sats-logo.svg';">
             </a>
             <!-- Dedicated Mobile & Tablet Close Button -->
             <button type="button" class="btn-close-mobile-sidebar" onclick="closeMobileSidebar()" aria-label="Close navigation">&times;</button>
@@ -297,7 +297,7 @@
             <a href="/profile/email" class="export-btn">Change Email (Verified)</a>
         </div>
         <form method="POST" id="profile-details-form" onsubmit="handleProfileUpdate(event)">
-            <input type="hidden" name="csrfmiddlewaretoken" value="IzmQMtrD6ctYHGSZvnLV476QuCQIM2ycYxiKbf7snIafvyAvd0BLZI20TsqhtuJW">
+            <input type="hidden" name="csrfmiddlewaretoken" value="s3tty4NajDpRwMqwoa1F3ck3PVUumgs5ogsoGg6EfNZQOnNTaIb7wopE6ER9cYOZ">
             <input type="hidden" name="action" value="update_details">
             <div class="form-grid-2col">
                 <div>
@@ -401,7 +401,7 @@
             <h2 class="card-title">Change Password</h2>
         </div>
         <form method="POST">
-            <input type="hidden" name="csrfmiddlewaretoken" value="IzmQMtrD6ctYHGSZvnLV476QuCQIM2ycYxiKbf7snIafvyAvd0BLZI20TsqhtuJW">
+            <input type="hidden" name="csrfmiddlewaretoken" value="s3tty4NajDpRwMqwoa1F3ck3PVUumgs5ogsoGg6EfNZQOnNTaIb7wopE6ER9cYOZ">
             <input type="hidden" name="action" value="change_password">
             <div style="margin-bottom: 14px;">
                 <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;">Current Password</label>

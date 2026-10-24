@@ -548,13 +548,15 @@ body.sidebar-collapsed .btn-menu-toggle {
 
 .sidebar-brand {
   height: var(--header-height);
-  padding: 10px 16px;
+  min-height: 70px;
+  padding: 8px 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   position: relative;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
 }
 
 .sidebar-brand-link {
@@ -565,15 +567,26 @@ body.sidebar-collapsed .btn-menu-toggle {
   height: 100%;
   text-decoration: none;
   margin: 0 auto;
+  text-align: center;
 }
 
-.sidebar-brand img, .sidebar-brand svg {
-  height: 42px;
-  max-width: 180px;
+.sidebar-brand img, .sidebar-brand svg, .sidebar-brand-logo-img {
+  height: 52px;
+  max-height: 54px;
+  max-width: 210px;
   width: auto;
   object-fit: contain;
   margin: 0 auto;
   display: block;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sidebar-brand-link:hover .sidebar-brand-logo-img,
+.sidebar-brand-link:hover img {
+  transform: scale(1.02);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 .sidebar-nav {
