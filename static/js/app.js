@@ -2353,4 +2353,444 @@ function initFullModeController() {
     });
 }
 
+/* ====================================================================== */
+/* SCADA LIVE KIOSK SLIDESHOW CONTROLLER & REAL-TIME TELEMETRY STREAM      */
+/* ====================================================================== */
+
+(function initScadaSlideshowModule() {
+    let currentSlide = 0;
+    const totalSlides = 7;
+    let slideIntervalMs = 8000;
+    let selectedFx = 'sweep';
+    let isPaused = false;
+    let autoSlideTimer = null;
+    let progressBarAnim = null;
+    let progressStartTime = 0;
+    let progressElapsed = 0;
+    let liveTelemetryTimer = null;
+    let liveClockTimer = null;
+
+    const slideMeta = [
+        {
+            title: "Executive Plant Overview & Master Energy KPIs",
+            category: "PLANT GENERATION TELEMETRY",
+            icon: "⚡",
+            nextHint: "Next: Diurnal Power Curve & Grid Stability"
+        },
+        {
+            title: "Real-Time Diurnal Bell Curve & Grid Telemetry",
+            category: "SOLAR POWER CURVES & TELEMETRY",
+            icon: "📈",
+            nextHint: "Next: Inverter Fleet Matrix (13 Units)"
+        },
+        {
+            title: "Inverter Fleet Telemetry & Thermal Health Matrix",
+            category: "INVERTER TELEMETRY MATRIX",
+            icon: "📟",
+            nextHint: "Next: 11kV Substation & MFM Telemetry"
+        },
+        {
+            title: "Multi-Function Meter (MFM) & Grid Power Quality",
+            category: "ELECTRICAL SUBSTATION & MFM",
+            icon: "🔌",
+            nextHint: "Next: Weather Monitoring Station (WMS)"
+        },
+        {
+            title: "Weather Monitoring Station (WMS) & Irradiation",
+            category: "WEATHER & METEOROLOGY (WMS)",
+            icon: "⛅",
+            nextHint: "Next: SCADA Alarms & System Safety"
+        },
+        {
+            title: "Active Alarms, Network Diagnostics & Plant Safety",
+            category: "SAFETY & ALARM TELEMETRY",
+            icon: "🚨",
+            nextHint: "Next: ESG Impact & Commercial Return"
+        },
+        {
+            title: "Commercial Revenue & ESG Decarbonization Impact",
+            category: "ESG IMPACT & FINANCIAL RETURN",
+            icon: "🌱",
+            nextHint: "Next: Executive Plant Overview & KPIs"
+        }
+    ];
+
+    // Restore saved settings
+    try {
+        const savedSpeed = localStorage.getItem('sats_slideshow_speed');
+        if (savedSpeed) slideIntervalMs = parseInt(savedSpeed, 10) || 8000;
+        const savedFx = localStorage.getItem('sats_slideshow_fx');
+        if (savedFx) selectedFx = savedFx;
+    } catch (e) {}
+
+    // Public API Methods
+    window.openScadaSlideshow = function() {
+        const overlay = document.getElementById('scada-slideshow-overlay');
+        if (!overlay) return;
+
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        // Initialize controls state from memory
+        const speedSel = document.getElementById('slideshow-speed-select');
+        if (speedSel) speedSel.value = String(slideIntervalMs);
+        const fxSel = document.getElementById('slideshow-fx-select');
+        if (fxSel) fxSel.value = selectedFx;
+
+        // Sync plant GPS and metadata if modified
+        syncSlideshowMetadata();
+
+        // Start live SCADA digital clock
+        updateLiveClock();
+        if (liveClockTimer) clearInterval(liveClockTimer);
+        liveClockTimer = setInterval(updateLiveClock, 1000);
+
+        // Start live telemetry polling simulation
+        if (liveTelemetryTimer) clearInterval(liveTelemetryTimer);
+        liveTelemetryTimer = setInterval(tickLiveTelemetry, 2500);
+
+        // Launch to slide 0 and start auto-play
+        isPaused = false;
+        updatePlayPauseUI();
+        window.goToSlide(0, false);
+
+        // Optional request fullscreen for genuine kiosk mode
+        if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        }
+
+        // Attach global key listeners for slideshow
+        document.addEventListener('keydown', handleSlideshowKeys);
+    };
+
+    window.closeScadaSlideshow = function() {
+        const overlay = document.getElementById('scada-slideshow-overlay');
+        if (overlay) overlay.style.display = 'none';
+        document.body.style.overflow = '';
+
+        // Clear timers
+        stopAutoTimer();
+        if (liveTelemetryTimer) {
+            clearInterval(liveTelemetryTimer);
+            liveTelemetryTimer = null;
+        }
+        if (liveClockTimer) {
+            clearInterval(liveClockTimer);
+            liveClockTimer = null;
+        }
+
+        // Exit browser fullscreen if active
+        if (document.fullscreenElement && document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+        }
+
+        document.removeEventListener('keydown', handleSlideshowKeys);
+    };
+
+    window.toggleSlideshowFullscreen = function() {
+        if (!document.fullscreenElement) {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+    };
+
+    window.toggleSlideshowPlayPause = function() {
+        isPaused = !isPaused;
+        updatePlayPauseUI();
+        if (isPaused) {
+            stopAutoTimer();
+        } else {
+            // Resume with remaining time
+            const remaining = Math.max(1000, slideIntervalMs - progressElapsed);
+            startAutoTimer(remaining);
+        }
+    };
+
+    function updatePlayPauseUI() {
+        const btn = document.getElementById('btn-slideshow-playpause');
+        const icon = document.getElementById('slideshow-playpause-icon');
+        const label = document.getElementById('slideshow-playpause-label');
+        if (!btn || !icon || !label) return;
+
+        if (isPaused) {
+            btn.classList.add('paused');
+            icon.textContent = '▶';
+            label.textContent = 'Play';
+            btn.setAttribute('title', 'Resume Slideshow Auto-Cycle (Spacebar)');
+        } else {
+            btn.classList.remove('paused');
+            icon.textContent = '⏸';
+            label.textContent = 'Pause';
+            btn.setAttribute('title', 'Pause Slideshow Auto-Cycle (Spacebar)');
+        }
+    }
+
+    window.onSlideshowSpeedChange = function(val) {
+        slideIntervalMs = parseInt(val, 10) || 8000;
+        try {
+            localStorage.setItem('sats_slideshow_speed', String(slideIntervalMs));
+        } catch (e) {}
+        if (!isPaused) {
+            startAutoTimer(slideIntervalMs);
+        }
+    };
+
+    window.onSlideshowFxChange = function(val) {
+        selectedFx = val;
+        try {
+            localStorage.setItem('sats_slideshow_fx', val);
+        } catch (e) {}
+    };
+
+    window.nextSlide = function(isUserInteraction) {
+        const nextIdx = (currentSlide + 1) % totalSlides;
+        window.goToSlide(nextIdx, isUserInteraction);
+    };
+
+    window.prevSlide = function(isUserInteraction) {
+        const prevIdx = (currentSlide - 1 + totalSlides) % totalSlides;
+        window.goToSlide(prevIdx, isUserInteraction);
+    };
+
+    // Central Slide Transition Engine
+    window.goToSlide = function(targetIndex, isUserInteraction) {
+        if (targetIndex < 0 || targetIndex >= totalSlides) return;
+
+        const slides = document.querySelectorAll('#scada-slideshow-canvas .scada-slide');
+        if (!slides.length) return;
+
+        const outgoingSlide = slides[currentSlide];
+        const incomingSlide = slides[targetIndex];
+
+        // Determine FX
+        let fx = selectedFx;
+        if (fx === 'mix') {
+            const fxOptions = ['sweep', 'cube', 'slide', 'zoom', 'shutter'];
+            fx = fxOptions[Math.floor(Math.random() * fxOptions.length)];
+        }
+
+        // Clean previous animation classes
+        slides.forEach(s => {
+            s.classList.remove(
+                'anim-sweep-in', 'anim-sweep-out',
+                'anim-cube-in', 'anim-cube-out',
+                'anim-slide-in', 'anim-slide-out',
+                'anim-zoom-in', 'anim-zoom-out',
+                'anim-shutter-in', 'anim-shutter-out'
+            );
+        });
+
+        if (outgoingSlide !== incomingSlide && outgoingSlide) {
+            outgoingSlide.classList.add(`anim-${fx}-out`);
+            outgoingSlide.classList.remove('active');
+        }
+
+        incomingSlide.classList.add('active');
+        incomingSlide.classList.add(`anim-${fx}-in`);
+
+        // Clean up classes after animation finishes
+        setTimeout(() => {
+            if (incomingSlide) {
+                incomingSlide.classList.remove(`anim-${fx}-in`);
+            }
+            if (outgoingSlide && outgoingSlide !== incomingSlide) {
+                outgoingSlide.classList.remove(`anim-${fx}-out`);
+            }
+        }, 750);
+
+        currentSlide = targetIndex;
+
+        // Update Frame UI Metadata
+        updateFrameUI(targetIndex, isUserInteraction);
+
+        // Reset & Restart Timer + Progress Bar
+        if (!isPaused) {
+            startAutoTimer(slideIntervalMs);
+        } else {
+            resetProgressBar(0);
+        }
+    };
+
+    function updateFrameUI(idx, isUserInteraction) {
+        const meta = slideMeta[idx] || slideMeta[0];
+
+        // 1. Counter (e.g. "01", "07")
+        const currNumEl = document.getElementById('slideshow-curr-idx');
+        if (currNumEl) currNumEl.textContent = String(idx + 1).padStart(2, '0');
+
+        const totalNumEl = document.getElementById('slideshow-total-count');
+        if (totalNumEl) totalNumEl.textContent = String(totalSlides).padStart(2, '0');
+
+        // 2. Titles & Category
+        const titleEl = document.getElementById('slideshow-active-title');
+        if (titleEl) titleEl.textContent = meta.title;
+
+        const catIconEl = document.getElementById('slideshow-slide-cat-icon');
+        if (catIconEl) catIconEl.textContent = meta.icon;
+
+        const catTextEl = document.getElementById('slideshow-slide-cat-text');
+        if (catTextEl) catTextEl.textContent = meta.category;
+
+        const nextHintEl = document.getElementById('slideshow-next-hint');
+        if (nextHintEl) nextHintEl.textContent = meta.nextHint;
+
+        // 3. Dot Hits Pagination
+        const dots = document.querySelectorAll('#slideshow-dots-track .slide-dot');
+        dots.forEach((dot, dotIdx) => {
+            if (dotIdx === idx) {
+                dot.classList.add('active');
+                if (isUserInteraction) {
+                    dot.style.transform = 'scale(1.5)';
+                    setTimeout(() => { dot.style.transform = ''; }, 300);
+                }
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    }
+
+    // Auto-Cycle Countdown & Progress Bar
+    function startAutoTimer(durationMs) {
+        stopAutoTimer();
+        progressStartTime = Date.now();
+        progressElapsed = 0;
+
+        function stepProgress() {
+            const elapsed = Date.now() - progressStartTime;
+            progressElapsed = elapsed;
+            const pct = Math.min(100, (elapsed / durationMs) * 100);
+            const fill = document.getElementById('slideshow-progress-fill');
+            if (fill) fill.style.width = pct + '%';
+
+            if (elapsed < durationMs) {
+                progressBarAnim = requestAnimationFrame(stepProgress);
+            } else {
+                window.nextSlide(false);
+            }
+        }
+
+        progressBarAnim = requestAnimationFrame(stepProgress);
+    }
+
+    function stopAutoTimer() {
+        if (progressBarAnim) {
+            cancelAnimationFrame(progressBarAnim);
+            progressBarAnim = null;
+        }
+        if (autoSlideTimer) {
+            clearTimeout(autoSlideTimer);
+            autoSlideTimer = null;
+        }
+    }
+
+    function resetProgressBar(pct) {
+        const fill = document.getElementById('slideshow-progress-fill');
+        if (fill) fill.style.width = (pct || 0) + '%';
+    }
+
+    // Digital SCADA Clock
+    function updateLiveClock() {
+        const clockEl = document.getElementById('slideshow-live-clock');
+        if (!clockEl) return;
+        const now = new Date();
+        const hrs = String(now.getHours()).padStart(2, '0');
+        const mins = String(now.getMinutes()).padStart(2, '0');
+        const secs = String(now.getSeconds()).padStart(2, '0');
+        clockEl.textContent = `${hrs}:${mins}:${secs} IST`;
+    }
+
+    // Live Telemetry Simulation: Subtle, Realistic Micro-Fluctuations
+    let baseGenKWh = 18450.60;
+    let basePowerKW = 3248.50;
+
+    function tickLiveTelemetry() {
+        // Micro fluctuation for Active Power (±1.5 kW)
+        const powerJitter = (Math.random() - 0.48) * 2.2;
+        const currentPower = Math.max(3180, Math.min(3350, basePowerKW + powerJitter));
+
+        // Accumulate slight energy generation
+        baseGenKWh += 0.02;
+
+        // Irradiance jitter (842 - 847 W/m²)
+        const ghiJitter = Math.floor(844 + (Math.random() * 4 - 2));
+        const poaJitter = Math.floor(ghiJitter * 1.055);
+
+        // Grid Frequency (50.01 - 50.03 Hz)
+        const freqVal = (50.015 + (Math.random() * 0.02 - 0.01)).toFixed(2);
+
+        // Line Voltage (11.03 - 11.05 kV)
+        const vVal = (11.035 + (Math.random() * 0.015)).toFixed(2);
+
+        // Update DOM elements and trigger visual pulse
+        const updates = [
+            { id: 'slide-val-active-power', val: currentPower.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+            { id: 'slide-val-sub-kw', val: currentPower.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+            { id: 'slide-fleet-total-kw', val: currentPower.toFixed(1) + ' kW' },
+            { id: 'slide-val-gen-today', val: baseGenKWh.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+            { id: 'slide-val-ghi', val: ghiJitter + ' W/m²' },
+            { id: 'slide-val-ghi-2', val: ghiJitter },
+            { id: 'wms-val-poa', val: poaJitter },
+            { id: 'slide-val-freq', val: freqVal },
+            { id: 'slide-val-feeder-v', val: vVal + ' kV' },
+            { id: 'slide-val-revenue-today', val: '₹' + (baseGenKWh * 3.0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+            { id: 'slide-fin-today', val: '₹' + (baseGenKWh * 3.0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
+        ];
+
+        updates.forEach(u => {
+            const el = document.getElementById(u.id);
+            if (el) {
+                el.textContent = u.val;
+                el.classList.add('telemetry-pulse');
+                setTimeout(() => el.classList.remove('telemetry-pulse'), 700);
+            }
+        });
+
+        // Jitter individual inverters slightly
+        for (let i = 1; i <= 13; i++) {
+            const invEl = document.getElementById(`inv-val-${i}`);
+            if (invEl) {
+                const baseInv = (i === 8) ? 254.2 : (278.0 + (i % 3) * 1.1);
+                const invJitter = (baseInv + (Math.random() * 0.8 - 0.4)).toFixed(1);
+                invEl.textContent = `${invJitter} kW`;
+            }
+        }
+    }
+
+    function syncSlideshowMetadata() {
+        try {
+            const savedLat = localStorage.getItem('sats_plant_lat');
+            const savedLng = localStorage.getItem('sats_plant_lng');
+            const gpsEl = document.getElementById('slide-gps-display');
+            if (gpsEl && savedLat && savedLng) {
+                gpsEl.textContent = `${parseFloat(savedLat).toFixed(4)}° N, ${parseFloat(savedLng).toFixed(4)}° E`;
+            }
+        } catch (e) {}
+    }
+
+    // Keyboard Shortcuts
+    function handleSlideshowKeys(e) {
+        if (e.key === 'Escape') {
+            window.closeScadaSlideshow();
+        } else if (e.code === 'Space') {
+            e.preventDefault();
+            window.toggleSlideshowPlayPause();
+        } else if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+            window.nextSlide(true);
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+            window.prevSlide(true);
+        } else if (e.key >= '1' && e.key <= '7') {
+            const num = parseInt(e.key, 10) - 1;
+            window.goToSlide(num, true);
+        } else if (e.key === 'f' || e.key === 'F') {
+            window.toggleSlideshowFullscreen();
+        }
+    }
+})();
+
+
 

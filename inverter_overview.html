@@ -171,10 +171,14 @@
             </div>
 
             <div class="header-right" style="display:flex; align-items:center; gap:8px;">
-                <!-- 0. Fullscreen Control Room Mode Toggle Button -->
-                <button type="button" class="header-icon-btn" id="btn-toggle-fullscreen" onclick="toggleFullscreenDisplay()" title="Toggle Fullscreen Control Room Mode" style="border-color: rgba(14, 165, 233, 0.4); color: #0EA5E9;">
-                    <svg id="icon-fs-enter" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-                    <svg id="icon-fs-exit" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="display:none;"><path d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M14 4v6m0 0h6m-6 0L21 3M10 4v6m0 0H4m6 0L3 3"/></svg>
+                <!-- 0. SCADA Live Slideshow (Kiosk Presentation Mode) Toggle Button -->
+                <button type="button" class="header-icon-btn" id="btn-toggle-fullscreen" onclick="openScadaSlideshow()" title="SCADA Live Slideshow (Auto-Cycling Fullscreen Presentation Mode)" style="border-color: rgba(14, 165, 233, 0.5); color: #0EA5E9; background: rgba(14, 165, 233, 0.08);" aria-label="Launch SCADA Live Slideshow">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                        <polygon points="10 8 16 11 10 14 10 8" fill="currentColor"></polygon>
+                    </svg>
                 </button>
                 <!-- 1. Plant Discussion / Comments: Message Thumbnail Icon (No text spelling) -->
                 <button type="button" class="header-icon-btn" id="btn-open-plant-notes" title="Plant Telemetry Discussion & Engineering Remarks" onclick="if(window.openModal){ window.openModal('modal-plant-comments-backdrop'); } else { const m = document.getElementById('modal-plant-comments-backdrop'); if(m){ m.classList.remove('hidden'); m.style.display='flex'; } }">
@@ -1461,6 +1465,943 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     </div>
 </div>
+
+
+<!-- ====================================================================== -->
+<!-- SCADA LIVE KIOSK SLIDESHOW PRESENTATION MODE (Enterprise Single-Screen) -->
+<!-- ====================================================================== -->
+<div id="scada-slideshow-overlay" class="scada-slideshow-backdrop" style="display:none;" role="dialog" aria-modal="true" aria-label="SCADA Live Fullscreen Slideshow">
+    <!-- Outer SCADA Industrial Glass Frame with Neon Bezel -->
+    <div class="scada-slideshow-frame">
+        <!-- 4 Glowing Technical Corner Accents -->
+        <div class="frame-corner frame-corner-tl"></div>
+        <div class="frame-corner frame-corner-tr"></div>
+        <div class="frame-corner frame-corner-bl"></div>
+        <div class="frame-corner frame-corner-br"></div>
+
+        <!-- Frame Top Bar: Plant Branding, Status Beacon, Controls & Live Clock -->
+        <header class="slideshow-header">
+            <div class="slideshow-header-left">
+                <div class="slideshow-brand-box">
+                    <img src="./static/assets/sats-official-logo.png" alt="SAT Solutions" class="slideshow-brand-logo" onerror="this.src='/static/assets/sats-logo.svg';">
+                </div>
+                <div class="slideshow-plant-meta">
+                    <div class="slideshow-plant-title">SATs Solar Plant</div>
+                    <div class="slideshow-plant-subtitle">
+                        <span class="live-pulse-dot"></span>
+                        <span class="live-pulse-text">LIVE TELEMETRY FEED</span>
+                        <span class="meta-sep">&bull;</span>
+                        <span>3,900 kW AC / 4,640 kWp DC</span>
+                        <span class="meta-sep">&bull;</span>
+                        <span id="slide-gps-display">22.9868° N, 72.3787° E</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center: Current Slide Category Badge -->
+            <div class="slideshow-header-center">
+                <div class="slideshow-category-badge" id="slideshow-category-pill">
+                    <span id="slideshow-slide-cat-icon">⚡</span>
+                    <span id="slideshow-slide-cat-text">PLANT GENERATION TELEMETRY</span>
+                </div>
+            </div>
+
+            <!-- Right: Animation Selector, Interval Timer, Play/Pause, Fullscreen & Exit -->
+            <div class="slideshow-header-right">
+                <!-- Transition Animation Selector -->
+                <div class="slideshow-control-group" title="Select Creative Transition Animation">
+                    <span class="control-label">FX:</span>
+                    <select id="slideshow-fx-select" class="slideshow-select" onchange="onSlideshowFxChange(this.value)">
+                        <option value="sweep" selected>✨ Laser Sweep</option>
+                        <option value="mix">🎲 Dynamic Mix</option>
+                        <option value="cube">🧊 3D Cube Flip</option>
+                        <option value="slide">🌊 Fluid Slide</option>
+                        <option value="zoom">🔍 Glass Zoom</option>
+                        <option value="shutter">💠 Iris Reveal</option>
+                    </select>
+                </div>
+
+                <!-- Slide Interval Switcher -->
+                <div class="slideshow-control-group" title="Slide Switch Time (Auto-Cycle Interval)">
+                    <span class="control-label">⏱️</span>
+                    <select id="slideshow-speed-select" class="slideshow-select" onchange="onSlideshowSpeedChange(this.value)">
+                        <option value="5000">5s</option>
+                        <option value="8000" selected>8s (Std)</option>
+                        <option value="12000">12s</option>
+                        <option value="20000">20s</option>
+                        <option value="30000">30s</option>
+                    </select>
+                </div>
+
+                <!-- Play / Pause Toggle -->
+                <button type="button" id="btn-slideshow-playpause" class="slideshow-btn" onclick="toggleSlideshowPlayPause()" title="Play / Pause Slideshow (Spacebar)">
+                    <span id="slideshow-playpause-icon">⏸</span>
+                    <span id="slideshow-playpause-label">Pause</span>
+                </button>
+
+                <!-- Fullscreen Toggle -->
+                <button type="button" class="slideshow-btn" onclick="toggleSlideshowFullscreen()" title="Toggle True Fullscreen (F)">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                </button>
+
+                <!-- Live Digital SCADA Clock -->
+                <div class="slideshow-clock-box">
+                    <div id="slideshow-live-clock" class="slideshow-clock-time">--:--:-- IST</div>
+                    <div class="slideshow-clock-date">23 OCT 2026</div>
+                </div>
+
+                <!-- Close / Exit Kiosk Button -->
+                <button type="button" class="slideshow-btn slideshow-btn-close" onclick="closeScadaSlideshow()" title="Exit Slideshow Mode (Esc)" aria-label="Exit Slideshow">
+                    &times;
+                </button>
+            </div>
+        </header>
+
+        <!-- Slide Presentation Canvas (Houses All 7 Dynamic SCADA Slides) -->
+        <main class="slideshow-canvas" id="scada-slideshow-canvas">
+
+            <!-- ========================================================== -->
+            <!-- SLIDE 1: MASTER PLANT OVERVIEW & ENERGY GENERATION KPIS    -->
+            <!-- ========================================================== -->
+            <section class="scada-slide active" data-slide-index="0" data-category="PLANT GENERATION TELEMETRY" data-cat-icon="⚡">
+                <div class="slide-inner">
+                    <div class="slide-headline-row">
+                        <div>
+                            <div class="slide-pretitle">SCADA STATION LEVEL 1 &bull; SANAND GIDC SOLAR PV FACILITY</div>
+                            <h2 class="slide-title">Executive Plant Overview & Master Energy KPIs</h2>
+                        </div>
+                        <div class="slide-status-chip">
+                            <span class="status-pulse-dot"></span>
+                            <span>DISCOM GRID SYNCHRONIZED &bull; 50.02 Hz</span>
+                        </div>
+                    </div>
+
+                    <!-- 4 Giant KPI Hero Cards -->
+                    <div class="slide-kpi-grid">
+                        <div class="slide-kpi-card highlight-cyan">
+                            <div class="kpi-card-header">
+                                <span class="kpi-card-label">TODAY'S ENERGY GENERATION</span>
+                                <span class="kpi-card-badge online">+1.4% Ahead</span>
+                            </div>
+                            <div class="kpi-card-value-row">
+                                <span class="kpi-giant-val live-telemetry-val" id="slide-val-gen-today">18,450.60</span>
+                                <span class="kpi-val-unit">kWh</span>
+                            </div>
+                            <div class="kpi-progress-bar-wrap">
+                                <div class="kpi-progress-fill" style="width: 88%;"></div>
+                            </div>
+                            <div class="kpi-card-footer">
+                                <span>Target: 18,200 kWh</span>
+                                <span>Specific Yield: <strong class="text-cyan">4.73 kWh/kWp</strong></span>
+                            </div>
+                        </div>
+
+                        <div class="slide-kpi-card highlight-emerald">
+                            <div class="kpi-card-header">
+                                <span class="kpi-card-label">INSTANT ACTIVE POWER</span>
+                                <span class="kpi-card-badge online">83.3% Utilization</span>
+                            </div>
+                            <div class="kpi-card-value-row">
+                                <span class="kpi-giant-val live-telemetry-val" id="slide-val-active-power">3,248.50</span>
+                                <span class="kpi-val-unit">kW</span>
+                            </div>
+                            <div class="kpi-progress-bar-wrap">
+                                <div class="kpi-progress-fill green" style="width: 83.3%;"></div>
+                            </div>
+                            <div class="kpi-card-footer">
+                                <span>Inverter Capacity: 3,900 kW</span>
+                                <span>Today's Peak: <strong class="text-emerald">3,612 kW</strong> @ 12:45</span>
+                            </div>
+                        </div>
+
+                        <div class="slide-kpi-card highlight-indigo">
+                            <div class="kpi-card-header">
+                                <span class="kpi-card-label">PERFORMANCE RATIO (PR)</span>
+                                <span class="kpi-card-badge online">Surplus +3.4%</span>
+                            </div>
+                            <div class="kpi-card-value-row">
+                                <span class="kpi-giant-val live-telemetry-val" id="slide-val-pr">78.4</span>
+                                <span class="kpi-val-unit">%</span>
+                            </div>
+                            <div class="kpi-progress-bar-wrap">
+                                <div class="kpi-progress-fill indigo" style="width: 78.4%;"></div>
+                            </div>
+                            <div class="kpi-card-footer">
+                                <span>Industry Standard: 75.0%</span>
+                                <span>Capacity Utilization (CUF): <strong class="text-indigo">21.8%</strong></span>
+                            </div>
+                        </div>
+
+                        <div class="slide-kpi-card highlight-amber">
+                            <div class="kpi-card-header">
+                                <span class="kpi-card-label">COMMERCIAL REVENUE TODAY</span>
+                                <span class="kpi-card-badge ppa">PPA ₹3.00/Unit</span>
+                            </div>
+                            <div class="kpi-card-value-row">
+                                <span class="kpi-giant-val live-telemetry-val" id="slide-val-revenue-today">₹55,351.80</span>
+                            </div>
+                            <div class="kpi-progress-bar-wrap">
+                                <div class="kpi-progress-fill amber" style="width: 92%;"></div>
+                            </div>
+                            <div class="kpi-card-footer">
+                                <span>Month: <strong>₹11,48,200</strong></span>
+                                <span>Lifetime: <strong class="text-amber">₹1.46 Cr</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry Snapshot Ribbon -->
+                    <div class="slide-ribbon-grid">
+                        <div class="ribbon-item">
+                            <span class="ribbon-icon">☀️</span>
+                            <div>
+                                <div class="ribbon-label">Global Irradiance (GHI)</div>
+                                <div class="ribbon-value live-telemetry-val" id="slide-val-ghi">845 W/m²</div>
+                            </div>
+                        </div>
+                        <div class="ribbon-item">
+                            <span class="ribbon-icon">🌡️</span>
+                            <div>
+                                <div class="ribbon-label">PV Module Surface Temp</div>
+                                <div class="ribbon-value live-telemetry-val" id="slide-val-mod-temp">48.2 °C</div>
+                            </div>
+                        </div>
+                        <div class="ribbon-item">
+                            <span class="ribbon-icon">⚡</span>
+                            <div>
+                                <div class="ribbon-label">Feeder Export Voltage</div>
+                                <div class="ribbon-value live-telemetry-val" id="slide-val-feeder-v">11.04 kV</div>
+                            </div>
+                        </div>
+                        <div class="ribbon-item">
+                            <span class="ribbon-icon">📟</span>
+                            <div>
+                                <div class="ribbon-label">Inverter Fleet Status</div>
+                                <div class="ribbon-value"><strong class="text-emerald">13 / 13</strong> Online <span class="badge-mini-warn">1 Warning</span></div>
+                            </div>
+                        </div>
+                        <div class="ribbon-item">
+                            <span class="ribbon-icon">🌱</span>
+                            <div>
+                                <div class="ribbon-label">Carbon Offset Today</div>
+                                <div class="ribbon-value text-emerald">15.1 MT CO₂</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================== -->
+            <!-- SLIDE 2: REAL-TIME POWER TELEMETRY & DIURNAL GENERATION     -->
+            <!-- ========================================================== -->
+            <section class="scada-slide" data-slide-index="1" data-category="SOLAR POWER CURVES & TELEMETRY" data-cat-icon="📈">
+                <div class="slide-inner">
+                    <div class="slide-headline-row">
+                        <div>
+                            <div class="slide-pretitle">SOLAR IRRADIATION VS POWER PRODUCTION CURVE</div>
+                            <h2 class="slide-title">Real-Time Diurnal Bell Curve & Grid Telemetry</h2>
+                        </div>
+                        <div class="slide-status-chip">
+                            <span>POLLING CYCLE: 2.5s &bull; MODBUS LATENCY: 12ms</span>
+                        </div>
+                    </div>
+
+                    <div class="slide-split-layout">
+                        <!-- Left: High-Tech Cyber Solar Generation Curve Chart (SVG) -->
+                        <div class="slide-card-glass chart-panel-wrapper">
+                            <div class="chart-panel-header">
+                                <span class="chart-panel-title">☀️ Real-Time Solar Diurnal Curve (Actual vs Clear-Sky Model vs AI Forecast)</span>
+                                <div class="chart-legend-pills">
+                                    <span class="legend-pill act">● Actual Power (kW)</span>
+                                    <span class="legend-pill clr">--- Clear-Sky Target</span>
+                                    <span class="legend-pill fct">&bull;&bull;&bull; Day-Ahead Forecast</span>
+                                </div>
+                            </div>
+
+                            <div class="svg-chart-container">
+                                <svg viewBox="0 0 900 340" class="scada-diurnal-svg" preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="curveGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" stop-color="#0EA5E9" stop-opacity="0.6"/>
+                                            <stop offset="70%" stop-color="#0284C7" stop-opacity="0.15"/>
+                                            <stop offset="100%" stop-color="#0284C7" stop-opacity="0.0"/>
+                                        </linearGradient>
+                                        <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                                            <feGaussianBlur stdDeviation="3" result="blur"/>
+                                            <feMerge>
+                                                <feMergeNode in="blur"/>
+                                                <feMergeNode in="SourceGraphic"/>
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
+
+                                    <!-- Grid Lines -->
+                                    <line x1="60" y1="40" x2="880" y2="40" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4,4"/>
+                                    <line x1="60" y1="100" x2="880" y2="100" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4,4"/>
+                                    <line x1="60" y1="160" x2="880" y2="160" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4,4"/>
+                                    <line x1="60" y1="220" x2="880" y2="220" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4,4"/>
+                                    <line x1="60" y1="280" x2="880" y2="280" stroke="rgba(255,255,255,0.18)"/>
+
+                                    <!-- Y-Axis Labels -->
+                                    <text x="50" y="45" class="svg-axis-text">4,000 kW</text>
+                                    <text x="50" y="105" class="svg-axis-text">3,000 kW</text>
+                                    <text x="50" y="165" class="svg-axis-text">2,000 kW</text>
+                                    <text x="50" y="225" class="svg-axis-text">1,000 kW</text>
+                                    <text x="50" y="285" class="svg-axis-text">0 kW</text>
+
+                                    <!-- Clear-Sky Theoretical Bell Curve -->
+                                    <path d="M 60 280 C 180 280, 260 210, 360 90 C 440 20, 520 20, 600 90 C 700 210, 780 280, 880 280" fill="none" stroke="#F59E0B" stroke-width="1.8" stroke-dasharray="5,4" opacity="0.6"/>
+
+                                    <!-- Day-Ahead Forecast Curve -->
+                                    <path d="M 60 280 C 180 280, 260 220, 360 100 C 440 35, 520 35, 600 100 C 700 220, 780 280, 880 280" fill="none" stroke="#8B5CF6" stroke-width="1.8" stroke-dasharray="3,3" opacity="0.6"/>
+
+                                    <!-- Actual Filled Power Area -->
+                                    <path d="M 60 280 C 180 280, 260 215, 360 95 C 440 25, 520 28, 600 98 C 650 145, 690 190, 720 220 L 720 280 Z" fill="url(#curveGrad)"/>
+                                    <!-- Actual Stroke -->
+                                    <path d="M 60 280 C 180 280, 260 215, 360 95 C 440 25, 520 28, 600 98 C 650 145, 690 190, 720 220" fill="none" stroke="#38BDF8" stroke-width="3" filter="url(#neonGlow)"/>
+
+                                    <!-- Current Time Indicator Line -->
+                                    <line x1="720" y1="40" x2="720" y2="280" stroke="#EF4444" stroke-width="2" stroke-dasharray="4,2"/>
+                                    <circle cx="720" cy="220" r="6" fill="#38BDF8" stroke="#FFFFFF" stroke-width="2" filter="url(#neonGlow)"/>
+                                    <text x="725" y="210" class="svg-cursor-text">NOW: 3,248.5 kW</text>
+
+                                    <!-- X-Axis Labels -->
+                                    <text x="60" y="305" class="svg-axis-text">06:00</text>
+                                    <text x="180" y="305" class="svg-axis-text">08:00</text>
+                                    <text x="320" y="305" class="svg-axis-text">10:00</text>
+                                    <text x="460" y="305" class="svg-axis-text">12:00 PM</text>
+                                    <text x="600" y="305" class="svg-axis-text">14:00</text>
+                                    <text x="740" y="305" class="svg-axis-text">16:00</text>
+                                    <text x="860" y="305" class="svg-axis-text">18:00</text>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Right: Detailed Instantaneous Telemetry Gauges -->
+                        <div class="slide-gauges-col">
+                            <div class="slide-metric-tile">
+                                <div class="tile-label">GRID EXPORT ACTIVE POWER</div>
+                                <div class="tile-val-row">
+                                    <span class="tile-num text-cyan live-telemetry-val" id="slide-val-sub-kw">3,248.50</span>
+                                    <span class="tile-unit">kW</span>
+                                </div>
+                                <div class="tile-sub">83.3% of 3.90 MW Capacity</div>
+                            </div>
+
+                            <div class="slide-metric-tile">
+                                <div class="tile-label">REACTIVE POWER (Q)</div>
+                                <div class="tile-val-row">
+                                    <span class="tile-num text-emerald live-telemetry-val" id="slide-val-q">+284.10</span>
+                                    <span class="tile-unit">kVAR</span>
+                                </div>
+                                <div class="tile-sub">cos φ = <strong>0.996 Lagging</strong></div>
+                            </div>
+
+                            <div class="slide-metric-tile">
+                                <div class="tile-label">GRID FREQUENCY</div>
+                                <div class="tile-val-row">
+                                    <span class="tile-num text-amber live-telemetry-val" id="slide-val-freq">50.02</span>
+                                    <span class="tile-unit">Hz</span>
+                                </div>
+                                <div class="tile-sub">Nominal 50.00 Hz (Band: 49.90 - 50.05)</div>
+                            </div>
+
+                            <div class="slide-metric-tile">
+                                <div class="tile-label">DC TO AC EFFICIENCY</div>
+                                <div class="tile-val-row">
+                                    <span class="tile-num text-indigo live-telemetry-val" id="slide-val-eff">98.42</span>
+                                    <span class="tile-unit">%</span>
+                                </div>
+                                <div class="tile-sub">Clipping Loss: 0.00% &bull; THD: 1.8%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================== -->
+            <!-- SLIDE 3: INVERTER FLEET MATRIX (ALL 13 INVERTERS GRID)     -->
+            <!-- ========================================================== -->
+            <section class="scada-slide" data-slide-index="2" data-category="INVERTER TELEMETRY MATRIX" data-cat-icon="📟">
+                <div class="slide-inner">
+                    <div class="slide-headline-row">
+                        <div>
+                            <div class="slide-pretitle">STRING & CENTRAL CONVERTER FLEET &bull; 13 UNITS</div>
+                            <h2 class="slide-title">Inverter Fleet Telemetry & Thermal Health Matrix</h2>
+                        </div>
+                        <div class="fleet-summary-strip">
+                            <span class="fleet-count-pill green">12 Optimal</span>
+                            <span class="fleet-count-pill amber">1 Attention (INV-08)</span>
+                            <span class="fleet-count-pill gray">0 Offline</span>
+                            <span class="fleet-total-power">Fleet Total: <strong class="text-cyan live-telemetry-val" id="slide-fleet-total-kw">3,248.5 kW</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- 13 Inverters Visual Grid -->
+                    <div class="inverter-slideshow-grid" id="slideshow-inverter-matrix">
+                        <!-- INV-01 -->
+                        <div class="inv-slide-card">
+                            <div class="inv-head">
+                                <span class="inv-id">INV-01</span>
+                                <span class="inv-status-dot online"></span>
+                            </div>
+                            <div class="inv-kw live-telemetry-val" id="inv-val-1">278.4 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>742V</strong></span>
+                                <span>AC: <strong>412A</strong></span>
+                                <span>Temp: <strong>44.2°C</strong></span>
+                                <span>Eff: <strong>98.6%</strong></span>
+                            </div>
+                        </div>
+                        <!-- INV-02 -->
+                        <div class="inv-slide-card">
+                            <div class="inv-head">
+                                <span class="inv-id">INV-02</span>
+                                <span class="inv-status-dot online"></span>
+                            </div>
+                            <div class="inv-kw live-telemetry-val" id="inv-val-2">279.1 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>745V</strong></span>
+                                <span>AC: <strong>414A</strong></span>
+                                <span>Temp: <strong>44.8°C</strong></span>
+                                <span>Eff: <strong>98.7%</strong></span>
+                            </div>
+                        </div>
+                        <!-- INV-03 -->
+                        <div class="inv-slide-card">
+                            <div class="inv-head">
+                                <span class="inv-id">INV-03</span>
+                                <span class="inv-status-dot online"></span>
+                            </div>
+                            <div class="inv-kw live-telemetry-val" id="inv-val-3">277.8 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>740V</strong></span>
+                                <span>AC: <strong>411A</strong></span>
+                                <span>Temp: <strong>45.1°C</strong></span>
+                                <span>Eff: <strong>98.5%</strong></span>
+                            </div>
+                        </div>
+                        <!-- INV-04 -->
+                        <div class="inv-slide-card">
+                            <div class="inv-head">
+                                <span class="inv-id">INV-04</span>
+                                <span class="inv-status-dot online"></span>
+                            </div>
+                            <div class="inv-kw live-telemetry-val" id="inv-val-4">281.2 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>748V</strong></span>
+                                <span>AC: <strong>416A</strong></span>
+                                <span>Temp: <strong>45.5°C</strong></span>
+                                <span>Eff: <strong>98.7%</strong></span>
+                            </div>
+                        </div>
+                        <!-- INV-05 -->
+                        <div class="inv-slide-card">
+                            <div class="inv-head">
+                                <span class="inv-id">INV-05</span>
+                                <span class="inv-status-dot online"></span>
+                            </div>
+                            <div class="inv-kw live-telemetry-val" id="inv-val-5">276.5 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>739V</strong></span>
+                                <span>AC: <strong>410A</strong></span>
+                                <span>Temp: <strong>43.9°C</strong></span>
+                                <span>Eff: <strong>98.6%</strong></span>
+                            </div>
+                        </div>
+                        <!-- INV-06 -->
+                        <div class="inv-slide-card">
+                            <div class="inv-head">
+                                <span class="inv-id">INV-06</span>
+                                <span class="inv-status-dot online"></span>
+                            </div>
+                            <div class="inv-kw live-telemetry-val" id="inv-val-6">280.0 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>746V</strong></span>
+                                <span>AC: <strong>415A</strong></span>
+                                <span>Temp: <strong>44.7°C</strong></span>
+                                <span>Eff: <strong>98.6%</strong></span>
+                            </div>
+                        </div>
+                        <!-- INV-07 -->
+                        <div class="inv-slide-card">
+                            <div class="inv-head">
+                                <span class="inv-id">INV-07</span>
+                                <span class="inv-status-dot online"></span>
+                            </div>
+                            <div class="inv-kw live-telemetry-val" id="inv-val-7">279.4 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>744V</strong></span>
+                                <span>AC: <strong>413A</strong></span>
+                                <span>Temp: <strong>44.5°C</strong></span>
+                                <span>Eff: <strong>98.7%</strong></span>
+                            </div>
+                        </div>
+                        <!-- INV-08 [ALARM SPOTLIGHT] -->
+                        <div class="inv-slide-card alarm-highlight">
+                            <div class="inv-head">
+                                <span class="inv-id text-amber">INV-08 [ALARM]</span>
+                                <span class="inv-status-dot warning"></span>
+                            </div>
+                            <div class="inv-kw text-amber live-telemetry-val" id="inv-val-8">254.2 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>731V</strong></span>
+                                <span>AC: <strong>385A</strong></span>
+                                <span class="text-amber">Temp: <strong>48.4°C ⚠️</strong></span>
+                                <span>Eff: <strong>97.8%</strong></span>
+                            </div>
+                            <div class="inv-alert-tag">ERR-402: Auto-Throttled 92%</div>
+                        </div>
+                        <!-- INV-09 -->
+                        <div class="inv-slide-card">
+                            <div class="inv-head">
+                                <span class="inv-id">INV-09</span>
+                                <span class="inv-status-dot online"></span>
+                            </div>
+                            <div class="inv-kw live-telemetry-val" id="inv-val-9">278.0 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>741V</strong></span>
+                                <span>AC: <strong>412A</strong></span>
+                                <span>Temp: <strong>44.0°C</strong></span>
+                                <span>Eff: <strong>98.6%</strong></span>
+                            </div>
+                        </div>
+                        <!-- INV-10 -->
+                        <div class="inv-slide-card">
+                            <div class="inv-head">
+                                <span class="inv-id">INV-10</span>
+                                <span class="inv-status-dot online"></span>
+                            </div>
+                            <div class="inv-kw live-telemetry-val" id="inv-val-10">281.8 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>749V</strong></span>
+                                <span>AC: <strong>417A</strong></span>
+                                <span>Temp: <strong>45.2°C</strong></span>
+                                <span>Eff: <strong>98.8%</strong></span>
+                            </div>
+                        </div>
+                        <!-- INV-11 -->
+                        <div class="inv-slide-card">
+                            <div class="inv-head">
+                                <span class="inv-id">INV-11</span>
+                                <span class="inv-status-dot online"></span>
+                            </div>
+                            <div class="inv-kw live-telemetry-val" id="inv-val-11">277.1 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>740V</strong></span>
+                                <span>AC: <strong>411A</strong></span>
+                                <span>Temp: <strong>44.3°C</strong></span>
+                                <span>Eff: <strong>98.6%</strong></span>
+                            </div>
+                        </div>
+                        <!-- INV-12 -->
+                        <div class="inv-slide-card">
+                            <div class="inv-head">
+                                <span class="inv-id">INV-12</span>
+                                <span class="inv-status-dot online"></span>
+                            </div>
+                            <div class="inv-kw live-telemetry-val" id="inv-val-12">279.8 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>745V</strong></span>
+                                <span>AC: <strong>414A</strong></span>
+                                <span>Temp: <strong>44.9°C</strong></span>
+                                <span>Eff: <strong>98.7%</strong></span>
+                            </div>
+                        </div>
+                        <!-- INV-13 -->
+                        <div class="inv-slide-card">
+                            <div class="inv-head">
+                                <span class="inv-id">INV-13</span>
+                                <span class="inv-status-dot online"></span>
+                            </div>
+                            <div class="inv-kw live-telemetry-val" id="inv-val-13">280.2 kW</div>
+                            <div class="inv-meta-grid">
+                                <span>DC: <strong>746V</strong></span>
+                                <span>AC: <strong>415A</strong></span>
+                                <span>Temp: <strong>44.6°C</strong></span>
+                                <span>Eff: <strong>98.7%</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================== -->
+            <!-- SLIDE 4: HIGH-VOLTAGE SUBSTATION & MULTI-FUNCTION METER    -->
+            <!-- ========================================================== -->
+            <section class="scada-slide" data-slide-index="3" data-category="ELECTRICAL SUBSTATION & MFM" data-cat-icon="🔌">
+                <div class="slide-inner">
+                    <div class="slide-headline-row">
+                        <div>
+                            <div class="slide-pretitle">11 kV STEP-UP SUBSTATION & INTERCONNECTION FEEDER</div>
+                            <h2 class="slide-title">Multi-Function Meter (MFM) & Grid Power Quality</h2>
+                        </div>
+                        <div class="slide-status-chip">
+                            <span>TRANSFORMER T1: 4.5 MVA &bull; OIL TEMP: 58.4°C</span>
+                        </div>
+                    </div>
+
+                    <div class="substation-grid">
+                        <!-- 3-Phase Voltage Block -->
+                        <div class="slide-card-glass sub-block">
+                            <div class="sub-block-title">⚡ 3-Phase Line-to-Line Voltages (11 kV Bus)</div>
+                            <div class="three-phase-rows">
+                                <div class="phase-row phase-r">
+                                    <span class="phase-badge">Phase R-Y</span>
+                                    <span class="phase-value live-telemetry-val" id="mfm-v-ry">11,042 V</span>
+                                    <span class="phase-status">Normal</span>
+                                </div>
+                                <div class="phase-row phase-y">
+                                    <span class="phase-badge">Phase Y-B</span>
+                                    <span class="phase-value live-telemetry-val" id="mfm-v-yb">11,038 V</span>
+                                    <span class="phase-status">Normal</span>
+                                </div>
+                                <div class="phase-row phase-b">
+                                    <span class="phase-badge">Phase B-R</span>
+                                    <span class="phase-value live-telemetry-val" id="mfm-v-br">11,045 V</span>
+                                    <span class="phase-status">Normal</span>
+                                </div>
+                            </div>
+                            <div class="sub-block-note">Average Bus Voltage: <strong>11.04 kV</strong> (Nominal 11.00 kV &bull; Deviation: +0.36%)</div>
+                        </div>
+
+                        <!-- 3-Phase Current Block -->
+                        <div class="slide-card-glass sub-block">
+                            <div class="sub-block-title">🌊 3-Phase Export Currents</div>
+                            <div class="three-phase-rows">
+                                <div class="phase-row phase-r">
+                                    <span class="phase-badge">Current I_R</span>
+                                    <span class="phase-value live-telemetry-val" id="mfm-i-r">184.2 A</span>
+                                    <span class="phase-status">Balanced</span>
+                                </div>
+                                <div class="phase-row phase-y">
+                                    <span class="phase-badge">Current I_Y</span>
+                                    <span class="phase-value live-telemetry-val" id="mfm-i-y">183.9 A</span>
+                                    <span class="phase-status">Balanced</span>
+                                </div>
+                                <div class="phase-row phase-b">
+                                    <span class="phase-badge">Current I_B</span>
+                                    <span class="phase-value live-telemetry-val" id="mfm-i-b">184.5 A</span>
+                                    <span class="phase-status">Balanced</span>
+                                </div>
+                            </div>
+                            <div class="sub-block-note">Current Unbalance: <strong>0.18%</strong> (Permissible limit &lt; 3.0%)</div>
+                        </div>
+
+                        <!-- Energy Accounting Counters -->
+                        <div class="slide-card-glass sub-block">
+                            <div class="sub-block-title">📊 High-Precision Energy Accounting</div>
+                            <div class="energy-meters-grid">
+                                <div class="meter-cell">
+                                    <div class="meter-lbl">TODAY'S NET EXPORT</div>
+                                    <div class="meter-val text-cyan live-telemetry-val" id="mfm-exp-today">18,450.6 kWh</div>
+                                </div>
+                                <div class="meter-cell">
+                                    <div class="meter-lbl">MONTH TO DATE EXPORT</div>
+                                    <div class="meter-val text-emerald">382.74 MWh</div>
+                                </div>
+                                <div class="meter-cell">
+                                    <div class="meter-lbl">CUMULATIVE LIFETIME EXPORT</div>
+                                    <div class="meter-val text-amber">4,892.42 MWh</div>
+                                </div>
+                                <div class="meter-cell">
+                                    <div class="meter-lbl">AUXILIARY IMPORT CONSUMPTION</div>
+                                    <div class="meter-val text-indigo">42.8 kWh</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Switchyard Hardware Health -->
+                        <div class="slide-card-glass sub-block">
+                            <div class="sub-block-title">🛡️ Substation Hardware Health & Protection</div>
+                            <div class="health-checks-list">
+                                <div class="chk-item"><span class="chk-icon text-emerald">✔</span><span>11kV Vacuum Circuit Breaker (VCB): <strong>CLOSED / ENERGIZED</strong></span></div>
+                                <div class="chk-item"><span class="chk-icon text-emerald">✔</span><span>SF6 Gas Pressure Indicator: <strong>6.2 bar (Safe Range)</strong></span></div>
+                                <div class="chk-item"><span class="chk-icon text-emerald">✔</span><span>Transformer Winding Temp (WTI): <strong>62.1 °C (Trip at 95°C)</strong></span></div>
+                                <div class="chk-item"><span class="chk-icon text-emerald">✔</span><span>Lightning Arrester Surge Counter: <strong>004 Strikes Recorded</strong></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================== -->
+            <!-- SLIDE 5: WEATHER MONITORING STATION (WMS)                  -->
+            <!-- ========================================================== -->
+            <section class="scada-slide" data-slide-index="4" data-category="WEATHER & METEOROLOGY (WMS)" data-cat-icon="⛅">
+                <div class="slide-inner">
+                    <div class="slide-headline-row">
+                        <div>
+                            <div class="slide-pretitle">ON-SITE METEOROLOGICAL STATION &bull; CLASS-A PYRANOMETERS</div>
+                            <h2 class="slide-title">Weather Monitoring Station (WMS) & Irradiation</h2>
+                        </div>
+                        <div class="slide-status-chip">
+                            <span>SOLAR NOON ZENITH: 12:45 IST &bull; CLEAR SKY CONDITIONS</span>
+                        </div>
+                    </div>
+
+                    <div class="wms-slideshow-grid">
+                        <div class="wms-card">
+                            <div class="wms-icon-box">☀️</div>
+                            <div class="wms-label">Plane of Array (POA) Irradiance</div>
+                            <div class="wms-val-row">
+                                <span class="wms-giant text-cyan live-telemetry-val" id="wms-val-poa">892</span>
+                                <span class="wms-unit">W/m²</span>
+                            </div>
+                            <div class="wms-sub">Pyranometer 1 &bull; 15° Fixed Tilt South</div>
+                        </div>
+
+                        <div class="wms-card">
+                            <div class="wms-icon-box">🌐</div>
+                            <div class="wms-label">Global Horizontal Irradiance (GHI)</div>
+                            <div class="wms-val-row">
+                                <span class="wms-giant text-emerald live-telemetry-val" id="wms-val-ghi-2">845</span>
+                                <span class="wms-unit">W/m²</span>
+                            </div>
+                            <div class="wms-sub">Peak Insolation: 982 W/m² @ 12:45</div>
+                        </div>
+
+                        <div class="wms-card">
+                            <div class="wms-icon-box">🌡️</div>
+                            <div class="wms-label">PV Module Surface Temp</div>
+                            <div class="wms-val-row">
+                                <span class="wms-giant text-amber live-telemetry-val" id="wms-val-mod">48.2</span>
+                                <span class="wms-unit">°C</span>
+                            </div>
+                            <div class="wms-sub">PT100 Back-Contact Sensor (Array A-4)</div>
+                        </div>
+
+                        <div class="wms-card">
+                            <div class="wms-icon-box">🌤️</div>
+                            <div class="wms-label">Ambient Air Temperature</div>
+                            <div class="wms-val-row">
+                                <span class="wms-giant text-indigo live-telemetry-val" id="wms-val-amb">33.6</span>
+                                <span class="wms-unit">°C</span>
+                            </div>
+                            <div class="wms-sub">Relative Humidity: <strong>42%</strong></div>
+                        </div>
+
+                        <div class="wms-card">
+                            <div class="wms-icon-box">💨</div>
+                            <div class="wms-label">Wind Velocity & Heading</div>
+                            <div class="wms-val-row">
+                                <span class="wms-giant text-cyan live-telemetry-val" id="wms-val-wind">3.8</span>
+                                <span class="wms-unit">m/s</span>
+                            </div>
+                            <div class="wms-sub">13.7 km/h &bull; Heading: <strong>WNW 295°</strong></div>
+                        </div>
+
+                        <div class="wms-card">
+                            <div class="wms-icon-box">✨</div>
+                            <div class="wms-label">Module Soiling Cleanliness</div>
+                            <div class="wms-val-row">
+                                <span class="wms-giant text-emerald">98.2</span>
+                                <span class="wms-unit">%</span>
+                            </div>
+                            <div class="wms-sub">Clean Arrays &bull; Next Wash in 4 Days</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================== -->
+            <!-- SLIDE 6: SCADA ALARMS, SAFETY & SYSTEM HEALTH              -->
+            <!-- ========================================================== -->
+            <section class="scada-slide" data-slide-index="5" data-category="SAFETY & ALARM TELEMETRY" data-cat-icon="🚨">
+                <div class="slide-inner">
+                    <div class="slide-headline-row">
+                        <div>
+                            <div class="slide-pretitle">HARDWARE SAFETY, GATEWAY DIAGNOSTICS & AUDIT LOGS</div>
+                            <h2 class="slide-title">Active Alarms, Network Diagnostics & Plant Safety</h2>
+                        </div>
+                        <div class="slide-status-chip">
+                            <span>OVERALL SCADA HEALTH: <strong>99.4% OPTIMAL</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="safety-layout-grid">
+                        <!-- Left: Active Alarm Spotlight Card -->
+                        <div class="slide-card-glass spotlight-alarm-box">
+                            <div class="spotlight-badge-bar">
+                                <span class="badge-active-alarm">ACTIVE ALARM SPOTLIGHT</span>
+                                <span class="badge-sev-warning">WARNING LEVEL 2</span>
+                            </div>
+                            <h3 class="alarm-title">ERR-402: Inverter 08 High Temperature Transient</h3>
+                            <div class="alarm-details-grid">
+                                <div><strong>Target Device:</strong> Inverter 08 (Inv-08 / 320 kWp)</div>
+                                <div><strong>Current Heat Sink:</strong> <span class="text-amber">48.4 °C</span> (Trip threshold: 45.0 °C)</div>
+                                <div><strong>Auto Mitigation:</strong> Twin auxiliary cooling fans engaged at 100%; load de-rated to 92% capacity</div>
+                                <div><strong>Trigger Timestamp:</strong> Today at 12:48:15 IST (Duration: 6h 58m)</div>
+                            </div>
+                            <div class="alarm-action-bar">
+                                <span class="alarm-status-pill">● Actively Controlled by Protection Relay</span>
+                                <span>Acoustic Siren: <strong>Armed / Standby</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- Right: Communication Gateways & Loop Diagnostics -->
+                        <div class="slide-card-glass comms-diag-box">
+                            <div class="diag-header">📡 SCADA Field Bus & Gateway Health</div>
+                            <div class="gateway-diag-rows">
+                                <div class="gw-row">
+                                    <div class="gw-name">Moxa NPort 5650 Modbus TCP Gateway (IP: 192.168.1.120)</div>
+                                    <div class="gw-badge online">ONLINE (Ping: 11ms)</div>
+                                </div>
+                                <div class="gw-row">
+                                    <div class="gw-name">RS-485 Modbus Loop A (Inverters 01-07): 3,420 pkts/min</div>
+                                    <div class="gw-badge online">0 Packet Loss</div>
+                                </div>
+                                <div class="gw-row">
+                                    <div class="gw-name">RS-485 Modbus Loop B (Inverters 08-13): 3,418 pkts/min</div>
+                                    <div class="gw-badge online">0 Packet Loss</div>
+                                </div>
+                                <div class="gw-row">
+                                    <div class="gw-name">SCADA SQL Historian & Telemetry Engine Uptime</div>
+                                    <div class="gw-badge online">99.98% (42 Days)</div>
+                                </div>
+                            </div>
+                            <div class="emergency-readiness-strip">
+                                <span>🚨 Emergency Siren & Strobe: <strong>Tested & Ready</strong></span>
+                                <span>Station Operator: <strong>Admin / Lead Engineer</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================== -->
+            <!-- SLIDE 7: COMMERCIAL FINANCIALS & ESG SUSTAINABILITY IMPACT -->
+            <!-- ========================================================== -->
+            <section class="scada-slide" data-slide-index="6" data-category="ESG IMPACT & FINANCIAL RETURN" data-cat-icon="🌱">
+                <div class="slide-inner">
+                    <div class="slide-headline-row">
+                        <div>
+                            <div class="slide-pretitle">CLEAN GREEN ENERGY TRANSITION & PPA FINANCIAL RETURN</div>
+                            <h2 class="slide-title">Commercial Revenue & ESG Decarbonization Impact</h2>
+                        </div>
+                        <div class="slide-status-chip">
+                            <span>TOTAL CAPEX AMORTIZATION: <strong>64.2% PAYBACK COMPLETE</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="esg-split-layout">
+                        <!-- Left: Commercial Revenue Metrics -->
+                        <div class="slide-card-glass esg-col">
+                            <h3 class="esg-col-header">💰 Commercial Revenue & Tariff Economics</h3>
+                            <div class="financial-cards-stack">
+                                <div class="fin-card">
+                                    <div class="fin-label">TODAY'S ENERGY VALUE</div>
+                                    <div class="fin-val text-cyan live-telemetry-val" id="slide-fin-today">₹55,351.80</div>
+                                    <div class="fin-sub">18,450.60 kWh @ ₹3.00 / Unit Tariff</div>
+                                </div>
+                                <div class="fin-card">
+                                    <div class="fin-label">CURRENT MONTH BILLING</div>
+                                    <div class="fin-val text-emerald">₹11,48,200.00</div>
+                                    <div class="fin-sub">382,733 kWh Generated (Target: ₹12.0L)</div>
+                                </div>
+                                <div class="fin-card">
+                                    <div class="fin-label">PLANT LIFETIME REVENUE</div>
+                                    <div class="fin-val text-amber">₹1,46,77,260.00</div>
+                                    <div class="fin-sub">Cumulative Generation: 4,892,420 kWh</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: ESG Environmental Decarbonization -->
+                        <div class="slide-card-glass esg-col">
+                            <h3 class="esg-col-header">🌿 ESG Environmental Decarbonization Counters</h3>
+                            <div class="esg-metrics-grid">
+                                <div class="esg-tile">
+                                    <div class="esg-tile-icon">🏭</div>
+                                    <div class="esg-tile-num text-emerald">4,011.8 MT</div>
+                                    <div class="esg-tile-desc">CO₂ Greenhouse Emissions Avoided</div>
+                                </div>
+                                <div class="esg-tile">
+                                    <div class="esg-tile-icon">🌳</div>
+                                    <div class="esg-tile-num text-cyan">1,84,540</div>
+                                    <div class="esg-tile-desc">Equivalent Mature Trees Planted</div>
+                                </div>
+                                <div class="esg-tile">
+                                    <div class="esg-tile-icon">⛏️</div>
+                                    <div class="esg-tile-num text-amber">1,950.4 MT</div>
+                                    <div class="esg-tile-desc">Coal Combustion Displaced</div>
+                                </div>
+                                <div class="esg-tile">
+                                    <div class="esg-tile-icon">🚗</div>
+                                    <div class="esg-tile-num text-indigo">872 Cars</div>
+                                    <div class="esg-tile-desc">Passenger Vehicles Removed for 1 Year</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Frame Bottom Bar: Slide Counter, Dot Hits, Progress Bar & Navigation -->
+        <footer class="slideshow-footer">
+            <!-- Left: Slide Count & Current Category -->
+            <div class="slideshow-footer-left">
+                <div class="slide-counter-chip">
+                    <span class="counter-label">SLIDE</span>
+                    <span class="counter-current" id="slideshow-curr-idx">01</span>
+                    <span class="counter-slash">/</span>
+                    <span class="counter-total" id="slideshow-total-count">07</span>
+                </div>
+                <div class="slide-current-title-badge" id="slideshow-active-title">
+                    Executive Plant Overview & Master Energy KPIs
+                </div>
+            </div>
+
+            <!-- Center: Interactive "Dot Hits" Pagination with Tooltips -->
+            <div class="slideshow-footer-center">
+                <div class="slideshow-dots" id="slideshow-dots-track" role="tablist" aria-label="Slideshow Navigation Dots">
+                    <button type="button" class="slide-dot active" data-index="0" onclick="goToSlide(0, true)" title="Slide 1: Plant Overview & Energy KPIs" aria-label="Go to Slide 1">
+                        <span class="dot-preview">1. Overview & KPIs</span>
+                    </button>
+                    <button type="button" class="slide-dot" data-index="1" onclick="goToSlide(1, true)" title="Slide 2: Real-time Power & Diurnal Curve" aria-label="Go to Slide 2">
+                        <span class="dot-preview">2. Power & Diurnal Curve</span>
+                    </button>
+                    <button type="button" class="slide-dot" data-index="2" onclick="goToSlide(2, true)" title="Slide 3: Inverter Fleet Matrix (13)" aria-label="Go to Slide 3">
+                        <span class="dot-preview">3. Inverter Fleet Matrix</span>
+                    </button>
+                    <button type="button" class="slide-dot" data-index="3" onclick="goToSlide(3, true)" title="Slide 4: 11kV Substation & MFM Telemetry" aria-label="Go to Slide 4">
+                        <span class="dot-preview">4. Substation & MFM</span>
+                    </button>
+                    <button type="button" class="slide-dot" data-index="4" onclick="goToSlide(4, true)" title="Slide 5: Weather Monitoring Station (WMS)" aria-label="Go to Slide 5">
+                        <span class="dot-preview">5. Weather Station (WMS)</span>
+                    </button>
+                    <button type="button" class="slide-dot" data-index="5" onclick="goToSlide(5, true)" title="Slide 6: SCADA Alarms & System Diagnostics" aria-label="Go to Slide 6">
+                        <span class="dot-preview">6. SCADA Alarms & Diagnostics</span>
+                    </button>
+                    <button type="button" class="slide-dot" data-index="6" onclick="goToSlide(6, true)" title="Slide 7: Commercial Financials & ESG Impact" aria-label="Go to Slide 7">
+                        <span class="dot-preview">7. ESG & Commercial Return</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Next Slide Teaser & Step Buttons -->
+            <div class="slideshow-footer-right">
+                <span class="next-slide-hint" id="slideshow-next-hint">Next: Real-Time Diurnal Curve</span>
+                <div class="slideshow-nav-btns">
+                    <button type="button" class="slideshow-step-btn" onclick="prevSlide(true)" title="Previous Slide (Left Arrow)" aria-label="Previous Slide">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <button type="button" class="slideshow-step-btn" onclick="nextSlide(true)" title="Next Slide (Right Arrow)" aria-label="Next Slide">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Bottom Linear Countdown Progress Bar -->
+        <div class="slideshow-progress-track">
+            <div id="slideshow-progress-fill" class="slideshow-progress-bar"></div>
+        </div>
+    </div>
+</div>
+
 
 </body>
 </html>

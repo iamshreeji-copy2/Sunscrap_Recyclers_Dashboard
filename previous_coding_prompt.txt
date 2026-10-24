@@ -709,3 +709,27 @@ CHANGES MADE:
 - dashboard.html & dashboard_analytical.html: Preserved top segmented toggle buttons ("⚡ Technical SCADA" vs "📊 Analytical & Forecasting") for fast switching between telemetry monitoring and predictive forecasting.
 - build_static_site.py: Rebuilt static distribution in gh_pages_deploy with all 26 pages updated.
 
+---
+PROMPT #32 — Enterprise SCADA Kiosk Fullscreen Live Slideshow
+DATE: 2026-10-23 / 2026-10-24
+
+REQUESTS:
+1. Make a single-screen based slideshow that automatically animates and shows all SCADA information in fullscreen without anything needed
+2. Replace the fullscreen icon in the dashboard/header with the slideshow-based theme
+3. Show all information in the slideshow (Executive KPIs, Diurnal power curves, Inverter fleet matrix 13 units, Substation MFM, Weather station WMS, Alarms & Safety, ESG & Financials)
+4. Allow setting the slide switch time (interval switcher) with smooth countdown progress bar and Play/Pause control
+5. Multiple creative animations (Laser Sweep, 3D Cube Flip, Fluid Slide, Glass Zoom, Iris Reveal, Dynamic Mix)
+6. Interactive 'Dot Hits' pagination with title previews
+7. Proper border outside of the slide (cyber metallic bezel with glowing corner brackets)
+8. Display slide count (e.g. SLIDE 01 / 07) and next slide hints
+9. Show live and updated results with real-time telemetry fluctuations, live clock, and visual pulse flashes
+
+CHANGES MADE:
+- templates/components/scada_slideshow.html: Built comprehensive 7-slide SCADA Kiosk presentation overlay with cyber frame, glowing corner brackets, top control bar (brand, status beacon, FX select, speed select, Play/Pause, fullscreen, live digital clock, close button), 7 responsive slides covering all solar telemetry, footer with monospace slide counter, 'Dot Hits' interactive pagination dots, next slide hint, step buttons, and bottom linear progress bar.
+- static/css/theme.css: Added complete responsive styling for .scada-slideshow-backdrop, .scada-slideshow-frame, .frame-corner accents, .slideshow-header, .slideshow-footer, .slide-dot, .dot-preview, 5 keyframe animation sets (laserSweepIn/Out, cubeRotateIn/Out, fluidSlideIn/Out, glassZoomIn/Out, irisRevealIn/Out), .telemetry-pulse, and mobile/tablet responsive media queries.
+- static/js/app.js: Implemented initScadaSlideshowModule with openScadaSlideshow(), closeScadaSlideshow(), goToSlide(), nextSlide(), prevSlide(), toggleSlideshowPlayPause(), onSlideshowSpeedChange(), onSlideshowFxChange(), tickLiveTelemetry() (2.5s real-time jitter for active power, kWh, irradiance, frequency, voltage, and inverters), live SCADA clock, and full keyboard navigation (Esc, Space, Arrows, 1-7, F).
+- templates/base.html: Replaced #btn-toggle-fullscreen with SCADA Live Slideshow launcher icon and title; included components/scada_slideshow.html before </body>.
+- templates/monitoring/dashboard.html & dashboard_analytical.html: Added dedicated "Live Slideshow" action button next to segmented toggle pills.
+- build_static_site.py: Recompiled full static distribution across all 26 pages in gh_pages_deploy.
+
+
