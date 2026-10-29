@@ -435,9 +435,11 @@ def report_energy_generation_view(request):
 
 @login_required
 def report_inverter_generation_view(request):
-    period = request.GET.get('period', 'daily')
-    interval = request.GET.get('interval', '15min')
+    period = request.GET.get('period', 'daily').lower()
+    interval = request.GET.get('interval', '15min').lower()
     zone = request.GET.get('zone', 'all')
+    per_page = request.GET.get('per_page', '100').lower()
+    page = request.GET.get('page', 1)
     
     inverters = list(Device.objects.filter(device_type=DeviceType.INVERTER).order_by('display_order'))
     if zone != 'all':
@@ -451,114 +453,129 @@ def report_inverter_generation_view(request):
     now = timezone.now()
     rows_data = []
 
-    # --- Build a map of device_key -> Device for fast lookup ---
-    inv_key_map = {inv.device_id.lower().replace("-", "_"): inv for inv in inverters}
-
-    # --- Determine date range based on period ---
     from collections import defaultdict
-    import math
 
     if period == 'daily':
-        # 1. Real recorded observations today
+        # Pure real cloud telemetry from InverterObservation for today
         obs_qs = (
             InverterObservation.objects
             .filter(device__in=inverters, timestamp__date=now.date())
             .order_by('timestamp')
         )
-        real_by_bucket = defaultdict(dict)
-        for obs in obs_qs:
-            ts_local = obs.timestamp.astimezone()
-            floored_min = (ts_local.minute // 15) * 15
-            b_ts = ts_local.replace(minute=floored_min, second=0, microsecond=0)
-            dev_key = obs.device.device_id.lower().replace('-', '_')
-            val = float(obs.daily_yield or 0.0)
-            if dev_key not in real_by_bucket[b_ts.strftime('%Y-%m-%d %H:%M')] or val > real_by_bucket[b_ts.strftime('%Y-%m-%d %H:%M')][dev_key]:
-                real_by_bucket[b_ts.strftime('%Y-%m-%d %H:%M')][dev_key] = val
-
-        # 2. Target final yields per inverter
-        from apps.telemetry.models import DeviceLatest
-        final_yields = {}
-        for inv in inverters:
-            dev_key = inv.device_id.lower().replace('-', '_')
-            if inv.device_id == 'INV-09':
-                dl9 = DeviceLatest.objects.filter(device=inv).first()
-                final_yields[dev_key] = float(dl9.daily_yield) if dl9 and float(dl9.daily_yield or 0) > 0 else 1302.2
-            else:
-                dl = DeviceLatest.objects.filter(device=inv).first()
-                final_yields[dev_key] = float(dl.daily_yield) if dl and float(dl.daily_yield or 0) > 0 else (920.0 + (inv.display_order * 8.5))
-
-        # 3. Generate all 15-min intervals from 06:00 AM to current interval (50-60 intervals across the day)
-        start_dt = now.astimezone().replace(hour=6, minute=0, second=0, microsecond=0)
-        curr_dt = now.astimezone().replace(minute=(now.astimezone().minute // 15) * 15, second=0, microsecond=0)
-        if curr_dt < start_dt:
-            curr_dt = start_dt
-
-        t_rise = 6.38   # 06:23 AM sunrise
-        t_set = 18.25   # 18:15 PM sunset
-
-        t = start_dt
-        while t <= curr_dt:
-            label = t.strftime('%Y-%m-%d %H:%M')
-            t_hour = t.hour + (t.minute / 60.0)
-            
-            if t_hour < t_rise:
-                frac = 0.0
-            elif t_hour >= t_set:
-                frac = 1.0
-            else:
-                frac = (1.0 - math.cos(math.pi * (t_hour - t_rise) / (t_set - t_rise))) / 2.0
+        
+        if interval == 'raw':
+            # Raw timestamp-level observations
+            by_ts = defaultdict(dict)
+            for obs in obs_qs:
+                ts_str = obs.timestamp.astimezone().strftime('%Y-%m-%d %H:%M:%S')
+                dev_key = obs.device.device_id.lower().replace('-', '_')
+                by_ts[ts_str][dev_key] = float(obs.daily_yield or 0.0)
                 
+            for ts_str in sorted(by_ts.keys(), reverse=True):
+                row = {'timestamp': ts_str}
+                row_sum = 0.0
+                for inv in inverters:
+                    dev_key = inv.device_id.lower().replace('-', '_')
+                    val = round(by_ts[ts_str].get(dev_key, 0.0), 2)
+                    row[dev_key] = val
+                    row_sum += val
+                row['row_total'] = round(row_sum, 2)
+                rows_data.append(row)
+        else:
+            # 15min (default) or hourly intervals from 06:00 AM to current interval
+            step_minutes = 60 if interval == 'hourly' else 15
+            
+            real_by_bucket = defaultdict(dict)
+            for obs in obs_qs:
+                ts_local = obs.timestamp.astimezone()
+                floored_min = (ts_local.minute // step_minutes) * step_minutes
+                b_ts = ts_local.replace(minute=floored_min, second=0, microsecond=0)
+                dev_key = obs.device.device_id.lower().replace('-', '_')
+                val = float(obs.daily_yield or 0.0)
+                # Keep latest observation in that bucket
+                real_by_bucket[b_ts.strftime('%Y-%m-%d %H:%M')][dev_key] = val
+                
+            start_dt = now.astimezone().replace(hour=6, minute=0, second=0, microsecond=0)
+            curr_floored_min = (now.astimezone().minute // step_minutes) * step_minutes
+            curr_dt = now.astimezone().replace(minute=curr_floored_min, second=0, microsecond=0)
+            if curr_dt < start_dt:
+                curr_dt = start_dt
+                
+            t = start_dt
+            while t <= curr_dt:
+                label = t.strftime('%Y-%m-%d %H:%M')
+                row = {'timestamp': label}
+                row_sum = 0.0
+                for inv in inverters:
+                    dev_key = inv.device_id.lower().replace('-', '_')
+                    # PURE REAL CLOUD DATA: 0.0 if device did not log in this bucket
+                    if label in real_by_bucket and dev_key in real_by_bucket[label]:
+                        val = round(real_by_bucket[label][dev_key], 2)
+                    else:
+                        val = 0.0
+                    row[dev_key] = val
+                    row_sum += val
+                row['row_total'] = round(row_sum, 2)
+                rows_data.append(row)
+                t += timedelta(minutes=step_minutes)
+                
+            rows_data.reverse()
+
+    elif period == 'weekly':
+        # Last 7 days, strictly using actual recorded cloud observations
+        for d in range(7):
+            dt_cur = (now - timedelta(days=d)).date()
+            label = dt_cur.strftime('%Y-%m-%d')
             row = {'timestamp': label}
             row_sum = 0.0
+            
+            day_obs = InverterObservation.objects.filter(device__in=inverters, timestamp__date=dt_cur)
+            day_vals = {}
+            for obs in day_obs:
+                dev_key = obs.device.device_id.lower().replace('-', '_')
+                val = float(obs.daily_yield or 0.0)
+                if dev_key not in day_vals or val > day_vals[dev_key]:
+                    day_vals[dev_key] = val
+                    
             for inv in inverters:
                 dev_key = inv.device_id.lower().replace('-', '_')
-                if label in real_by_bucket and dev_key in real_by_bucket[label]:
-                    val = round(real_by_bucket[label][dev_key], 2)
-                else:
-                    val = round(final_yields[dev_key] * frac, 2)
+                val = round(day_vals.get(dev_key, 0.0), 2)
                 row[dev_key] = val
                 row_sum += val
             row['row_total'] = round(row_sum, 2)
             rows_data.append(row)
-            t += timedelta(minutes=15)
-            
-        rows_data.reverse()
-
-    elif period == 'weekly':
-        for d in range(7):
-            dt_cur = (now - timedelta(days=d)).date()
-            row = {'timestamp': dt_cur.strftime('%Y-%m-%d')}
-            r_sum = 0.0
-            for inv in inverters:
-                dev_key = inv.device_id.lower().replace('-', '_')
-                y_base = 1302.2 if inv.device_id == 'INV-09' else (920.0 + inv.display_order * 8.5)
-                val = round(max(0.0, y_base - (d * 12.0)), 2)
-                row[dev_key] = val
-                r_sum += val
-            row['row_total'] = round(r_sum, 2)
-            rows_data.append(row)
 
     elif period == 'monthly':
+        # Current month days, strictly using actual recorded cloud observations
         for d in range(now.day):
             dt_cur = (now - timedelta(days=d)).date()
-            row = {'timestamp': dt_cur.strftime('%Y-%m-%d')}
-            r_sum = 0.0
+            label = dt_cur.strftime('%Y-%m-%d')
+            row = {'timestamp': label}
+            row_sum = 0.0
+            
+            day_obs = InverterObservation.objects.filter(device__in=inverters, timestamp__date=dt_cur)
+            day_vals = {}
+            for obs in day_obs:
+                dev_key = obs.device.device_id.lower().replace('-', '_')
+                val = float(obs.daily_yield or 0.0)
+                if dev_key not in day_vals or val > day_vals[dev_key]:
+                    day_vals[dev_key] = val
+                    
             for inv in inverters:
                 dev_key = inv.device_id.lower().replace('-', '_')
-                y_base = 1302.2 if inv.device_id == 'INV-09' else (920.0 + inv.display_order * 8.5)
-                val = round(max(0.0, y_base - ((d % 7) * 9.5)), 2)
+                val = round(day_vals.get(dev_key, 0.0), 2)
                 row[dev_key] = val
-                r_sum += val
-            row['row_total'] = round(r_sum, 2)
+                row_sum += val
+            row['row_total'] = round(row_sum, 2)
             rows_data.append(row)
 
     # --- If zero real rows, show a clear empty state (no fake data) ---
     if not rows_data:
         # Single placeholder row so table renders headers correctly
-        row = {'timestamp': now.strftime('%Y-%m-%d %H:%M') + '  (no data yet)'}
+        row = {'timestamp': now.strftime('%Y-%m-%d %H:%M') + ' (no data recorded)'}
         for inv in inverters:
-            row[inv.device_id.lower().replace("-", "_")] = '—'
-        row['row_total'] = '—'
+            row[inv.device_id.lower().replace("-", "_")] = 0.0
+        row['row_total'] = 0.0
         rows_data.append(row)
         
     snapshot = create_or_get_snapshot(
@@ -571,6 +588,33 @@ def report_inverter_generation_view(request):
         job = ExportJob.objects.create(snapshot=snapshot, export_format=export_fmt, requester=request.user)
         process_export_job(job)
         return redirect('download_file', job_id=job.job_id)
+
+    # Pagination & per_page entry filtering
+    total_count = len(rows_data)
+    if per_page == 'all':
+        page_obj = None
+        display_rows = rows_data
+        start_index = 1 if total_count > 0 else 0
+        end_index = total_count
+        page_window = []
+    else:
+        try:
+            per_page_int = int(per_page)
+            if per_page_int not in (25, 50, 100, 250):
+                per_page_int = 100
+        except (ValueError, TypeError):
+            per_page_int = 100
+            per_page = '100'
+            
+        paginator = Paginator(rows_data, per_page_int)
+        page_obj = paginator.get_page(page)
+        display_rows = page_obj.object_list
+        start_index = page_obj.start_index() if total_count > 0 else 0
+        end_index = page_obj.end_index() if total_count > 0 else 0
+        
+        cur_p = page_obj.number
+        num_p = paginator.num_pages
+        page_window = [p for p in range(max(1, cur_p - 2), min(num_p + 1, cur_p + 3))]
         
     context = {
         'report_title': 'Inverter Generation Yield Report',
@@ -578,9 +622,15 @@ def report_inverter_generation_view(request):
         'period': period,
         'interval': interval,
         'zone': zone,
+        'per_page': per_page,
+        'page_obj': page_obj,
+        'page_window': page_window,
+        'start_index': start_index,
+        'end_index': end_index,
+        'total_count': total_count,
         'snapshot': snapshot,
         'columns': columns,
-        'rows': rows_data,
+        'rows': display_rows,
     }
     return render(request, 'reports/report_inverter_generation.html', context)
 

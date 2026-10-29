@@ -11,6 +11,8 @@
 
 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; background: var(--surface); padding: 12px 18px; border-radius: var(--radius-md); border: 1px solid var(--border);">
     <form method="GET" style="display: flex; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <input type="hidden" name="per_page" value="{{ per_page }}">
+        
         <div style="display: flex; align-items: center; gap: 8px;">
             <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Zone:</label>
             <select name="zone" onchange="this.form.submit()" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; color: var(--text-main); background: var(--surface);">
@@ -27,6 +29,28 @@
                 <button type="submit" name="period" value="weekly" class="export-btn {% if period == 'weekly' %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Weekly</button>
                 <button type="submit" name="period" value="monthly" class="export-btn {% if period == 'monthly' %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Monthly</button>
             </div>
+        </div>
+
+        {% if period == 'daily' or not period %}
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Interval:</label>
+            <div style="display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden;">
+                <button type="submit" name="interval" value="15min" class="export-btn {% if interval == '15min' or not interval %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">15 Min</button>
+                <button type="submit" name="interval" value="raw" class="export-btn {% if interval == 'raw' %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Raw 1-Min</button>
+                <button type="submit" name="interval" value="hourly" class="export-btn {% if interval == 'hourly' %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Hourly</button>
+            </div>
+        </div>
+        {% endif %}
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Show Entries:</label>
+            <select onchange="changePerPage(this.value)" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; color: var(--text-main); background: var(--surface);">
+                <option value="25" {% if per_page == '25' %}selected{% endif %}>25</option>
+                <option value="50" {% if per_page == '50' %}selected{% endif %}>50</option>
+                <option value="100" {% if per_page == '100' or not per_page %}selected{% endif %}>100</option>
+                <option value="250" {% if per_page == '250' %}selected{% endif %}>250</option>
+                <option value="all" {% if per_page == 'all' %}selected{% endif %}>All</option>
+            </select>
         </div>
     </form>
 
@@ -69,4 +93,46 @@
         </table>
     </div>
 </div>
+
+{% if page_obj and page_obj.paginator.num_pages > 1 %}
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 16px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);">
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Showing <strong>{{ start_index }}</strong> to <strong>{{ end_index }}</strong> of <strong>{{ total_count }}</strong> entries • 
+        Page <strong>{{ page_obj.number }}</strong> of <strong>{{ page_obj.paginator.num_pages }}</strong>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+        {% if page_obj.has_previous %}
+            <a href="?page=1&period={{ period }}&interval={{ interval }}&zone={{ zone }}&per_page={{ per_page }}" class="export-btn" style="padding: 5px 10px; font-size: 0.8rem;" title="First Page">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}&period={{ period }}&interval={{ interval }}&zone={{ zone }}&per_page={{ per_page }}" class="export-btn" style="padding: 5px 10px; font-size: 0.8rem;">&lsaquo; Prev</a>
+        {% endif %}
+
+        {% for p_num in page_window %}
+            {% if p_num == page_obj.number %}
+                <span class="export-btn export-btn-primary" style="padding: 5px 12px; font-size: 0.82rem; font-weight: 800;">{{ p_num }}</span>
+            {% else %}
+                <a href="?page={{ p_num }}&period={{ period }}&interval={{ interval }}&zone={{ zone }}&per_page={{ per_page }}" class="export-btn" style="padding: 5px 12px; font-size: 0.82rem;">{{ p_num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&period={{ period }}&interval={{ interval }}&zone={{ zone }}&per_page={{ per_page }}" class="export-btn" style="padding: 5px 10px; font-size: 0.8rem;">Next &rsaquo;</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&period={{ period }}&interval={{ interval }}&zone={{ zone }}&per_page={{ per_page }}" class="export-btn" style="padding: 5px 10px; font-size: 0.8rem;" title="Last Page">Last &raquo;</a>
+        {% endif %}
+    </div>
+</div>
+{% elif total_count > 0 %}
+<div style="margin-top: 12px; font-size: 0.82rem; color: var(--text-muted); text-align: right;">
+    Showing all <strong>{{ total_count }}</strong> entries
+</div>
+{% endif %}
+
+<script>
+function changePerPage(val) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', val);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+</script>
 {% endblock %}
