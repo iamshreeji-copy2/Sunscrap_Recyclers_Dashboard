@@ -291,7 +291,8 @@ class ScadaMqttBridge:
         else:
             logger.error(f"Failed to connect to MQTT Broker, return code: {rc_code}")
 
-    def on_disconnect(self, client, userdata, rc, properties=None):
+    def on_disconnect(self, client, userdata, *args, **kwargs):
+        rc = args[0] if args else kwargs.get('reason_code', kwargs.get('rc', 'unknown'))
         logger.warning(f"Disconnected from MQTT Broker (rc={rc}). Reconnecting automatically...")
 
     def on_message(self, client, userdata, msg):

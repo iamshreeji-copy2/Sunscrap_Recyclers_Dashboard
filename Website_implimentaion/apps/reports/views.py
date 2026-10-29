@@ -405,8 +405,10 @@ def report_inverter_generation_view(request):
     )
 
     # Build a nested dict: bucket_label -> device_key -> latest daily_yield
-    # We use 15-minute floor-buckets for grouping (same as the rest of the SCADA system)
-    bucket_map = defaultdict(dict)  # { "2026-10-29 19:00": {"inv_01": 1302.2, ...} }
+    # Carry forward previous yield within the day so inverters don't falsely show 0.0 when not transmitting
+    latest_known = {inv.device_id.lower().replace("-", "_"): 0.0 for inv in inverters}
+    bucket_map = defaultdict(dict)
+    obs_by_bucket = defaultdict(list)
 
     for obs in obs_qs:
         ts_local = obs.timestamp.astimezone()
@@ -414,11 +416,15 @@ def report_inverter_generation_view(request):
         floored_minute = (ts_local.minute // 15) * 15
         bucket_ts = ts_local.replace(minute=floored_minute, second=0, microsecond=0)
         bucket_label = bucket_ts.strftime('%Y-%m-%d %H:%M')
-        dev_key = obs.device.device_id.lower().replace("-", "_")
-        # Keep the highest daily_yield seen in this bucket (most recent reading wins)
-        existing = bucket_map[bucket_label].get(dev_key, None)
-        if existing is None or float(obs.daily_yield or 0) >= float(existing):
-            bucket_map[bucket_label][dev_key] = float(obs.daily_yield or 0)
+        obs_by_bucket[bucket_label].append(obs)
+
+    for bucket_label in sorted(obs_by_bucket.keys()):
+        for obs in obs_by_bucket[bucket_label]:
+            dev_key = obs.device.device_id.lower().replace("-", "_")
+            val = float(obs.daily_yield or 0.0)
+            if val > latest_known.get(dev_key, 0.0):
+                latest_known[dev_key] = val
+        bucket_map[bucket_label] = dict(latest_known)
 
     # --- Convert to sorted rows (newest first) ---
     for bucket_label in sorted(bucket_map.keys(), reverse=True):

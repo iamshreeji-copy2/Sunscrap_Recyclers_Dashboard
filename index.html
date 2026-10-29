@@ -355,13 +355,13 @@
 <div class="kpi-grid">
     <div class="kpi-card kpi-gold">
         <span class="kpi-label">Specific Yield</span>
-        <div class="kpi-value">0.28 <span class="kpi-unit">kWh/kWp</span></div>
+        <div class="kpi-value">2.4 <span class="kpi-unit">kWh/kWp</span></div>
         <span class="kpi-sub">Basis: Summed Inverter AC / 4,640 kWp DC</span>
     </div>
 
     <div class="kpi-card kpi-green">
         <span class="kpi-label">Plant CUF (24-Hour)</span>
-        <div class="kpi-value">1.39 <span class="kpi-unit">%</span></div>
+        <div class="kpi-value">11.92 <span class="kpi-unit">%</span></div>
         <span class="kpi-sub">Basis: E_AC / (3,900 kW × 24 h)</span>
     </div>
 
@@ -382,25 +382,25 @@
 <div class="kpi-grid">
     <div class="kpi-card">
         <span class="kpi-label">Inverter Total Active Power</span>
-        <div class="kpi-value" style="color: var(--primary);">0.00 <span class="kpi-unit">kW</span></div>
+        <div class="kpi-value" style="color: var(--primary);">2768.60 <span class="kpi-unit">kW</span></div>
         <span class="kpi-sub">13 Inverters Operating Sum</span>
     </div>
 
     <div class="kpi-card">
         <span class="kpi-label">Inverter Today Generation</span>
-        <div class="kpi-value">1302.20 <span class="kpi-unit">kWh</span></div>
+        <div class="kpi-value">11156.70 <span class="kpi-unit">kWh</span></div>
         <span class="kpi-sub">Cumulative Today Yield (13 Inverters)</span>
     </div>
 
     <div class="kpi-card">
         <span class="kpi-label">Outgoing Meter Export Today</span>
-        <div class="kpi-value">0.00 <span class="kpi-unit">kWh</span></div>
-        <span class="kpi-sub">Grid Substation Export (Active: 0.0 kW)</span>
+        <div class="kpi-value">11778.24 <span class="kpi-unit">kWh</span></div>
+        <span class="kpi-sub">Grid Substation Export (Active: 3245.0 kW)</span>
     </div>
 
     <div class="kpi-card">
         <span class="kpi-label">Target Energy Achievement</span>
-        <div class="kpi-value">7.0 <span class="kpi-unit">%</span></div>
+        <div class="kpi-value">60.3 <span class="kpi-unit">%</span></div>
         <span class="kpi-sub">Target: 18500 kWh</span>
     </div>
 </div>
@@ -495,9 +495,9 @@
     </div>
 
     <!-- Hidden Raw Data Holders for JavaScript Financial Engine -->
-    <span id="val-revenue-today-kwh" data-kwh="1302.2" style="display:none;"></span>
+    <span id="val-revenue-today-kwh" data-kwh="11156.7" style="display:none;"></span>
     <span id="val-revenue-life-kwh" data-kwh="0.0" style="display:none;"></span>
-    <span id="val-revenue-export-kwh" data-kwh="0.0" style="display:none;"></span>
+    <span id="val-revenue-export-kwh" data-kwh="11778.24" style="display:none;"></span>
 
     <!-- Revenue Output KPI Cards -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 10px;">
@@ -508,7 +508,7 @@
             </div>
             <div class="kpi-value" id="display-revenue-today" style="color: #059669; font-size: 1.85rem;">₹ 35,763.90</div>
             <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">
-                <b>1302.20 kWh</b> generated today @ <span id="display-rate-unit">₹3.00/unit</span>
+                <b>11156.70 kWh</b> generated today @ <span id="display-rate-unit">₹3.00/unit</span>
             </div>
         </div>
 
@@ -519,7 +519,7 @@
             </div>
             <div class="kpi-value" id="display-revenue-export" style="color: var(--primary); font-size: 1.85rem;">₹ 35,334.72</div>
             <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">
-                <b>0.00 kWh</b> export through Outgoing MFM
+                <b>11778.24 kWh</b> export through Outgoing MFM
             </div>
         </div>
 
@@ -560,17 +560,17 @@
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
                 <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Ambient Temp</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">25.0</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">24.3</div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">°C</span>
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
                 <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Module Temp</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">23.1</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">22.3</div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">°C</span>
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
                 <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Humidity</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">57.6</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">63.6</div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">%RH</span>
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
@@ -600,15 +600,15 @@
         <div style="display: flex; flex-direction: column; gap: 14px;">
             <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
                 <span style="font-size: 0.85rem; color: var(--text-muted);">Avoided CO₂</span>
-                <span style="font-size: 1.15rem; font-weight: 800; color: var(--success);">1.07 <span style="font-size: 0.8rem; font-weight: 600;">tCO₂</span></span>
+                <span style="font-size: 1.15rem; font-weight: 800; color: var(--success);">9.15 <span style="font-size: 0.8rem; font-weight: 600;">tCO₂</span></span>
             </div>
             <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
                 <span style="font-size: 0.85rem; color: var(--text-muted);">Trees Equivalent</span>
-                <span style="font-size: 1.15rem; font-weight: 800; color: var(--primary);">52 <span style="font-size: 0.8rem; font-weight: 600;">trees</span></span>
+                <span style="font-size: 1.15rem; font-weight: 800; color: var(--primary);">446 <span style="font-size: 0.8rem; font-weight: 600;">trees</span></span>
             </div>
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <span style="font-size: 0.85rem; color: var(--text-muted);">Coal Avoided</span>
-                <span style="font-size: 1.15rem; font-weight: 800; color: var(--accent-gold);">0.52 <span style="font-size: 0.8rem; font-weight: 600;">tonnes</span></span>
+                <span style="font-size: 1.15rem; font-weight: 800; color: var(--accent-gold);">4.46 <span style="font-size: 0.8rem; font-weight: 600;">tonnes</span></span>
             </div>
         </div>
     </div>
@@ -638,13 +638,13 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const times = ["13:37", "13:38", "13:39", "13:40", "13:41", "13:42", "13:43", "13:44", "13:45", "13:46", "13:47", "13:48", "13:49", "13:50", "13:51", "13:52", "13:53", "13:54", "13:55"];
-    const ghi = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
-    const gti = [0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0];
-    const p_out = [3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9];
-    const p_inv = [3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9];
-    const inv_yield = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
-    const exp_yield = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
+    const times = ["07:41", "07:43", "07:43", "07:44", "13:18", "13:37", "13:38", "13:39", "13:40", "13:41", "13:42", "13:43", "13:44", "13:45", "13:46", "13:47", "13:48", "13:49", "13:50", "13:51", "13:52", "13:53", "13:54", "13:55", "13:56", "13:57", "13:58", "13:59", "14:00", "14:14", "14:15"];
+    const ghi = [845.0, 845.0, 845.0, 845.0, 848.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
+    const gti = [892.0, 892.0, 892.0, 892.0, 895.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0];
+    const p_out = [3245.0, 3295.5, 3295.5, 3295.5, 3307.2, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9];
+    const p_inv = [3283.9, 3335.0, 3335.0, 3335.0, 3346.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9];
+    const inv_yield = [18651.2, 833.8, 833.8, 833.8, 836.7, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
+    const exp_yield = [18430.0, 823.9, 823.9, 823.9, 826.8, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
 
     // 1. Dual-Axis Power & Irradiance Chart with Gradient Fill & Rated Capacity Line
     ChartRegistry.init('dashboard-power-irradiance-chart', {
