@@ -6,8 +6,8 @@ Connects to EMQX Cloud Broker, consumes real-time datalogger telemetry packets a
 - sunscrap/data/WMS
 - sunscrap/data/MFM
 - scada/sunscrap/plant-01/logger-001/telemetry
-Idempotently stores raw batches in database, parses 25 string currents,
-and normalizes device observations for live web SCADA monitoring.
+Includes vendor JSON auto-repair (handles missing device_id keys from field firmware),
+extracts 24/25 string currents and 12 MPPT channels, and updates live SCADA database.
 """
 
 import os
@@ -18,7 +18,7 @@ import ssl
 import time
 import hashlib
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 import django
 
 # Ensure Django is initialized if executed standalone
@@ -51,10 +51,22 @@ DEFAULT_TOPIC = os.environ.get('MQTT_TOPIC', 'sunscrap/data/#')
 STATUS_TOPIC = os.environ.get('MQTT_STATUS_TOPIC', 'scada/sunscrap/plant-01/logger-001/status')
 
 
+def clean_vendor_json(payload_str):
+    """
+    Vendor firmware bug auto-fix:
+    The datalogger outputs malformed JSON starting with {"INV-9", ...} or {"WMS", ...}
+    without a property name.
+    This regex auto-repairs it to {"device_id": "INV-9", ...}.
+    """
+    cleaned = re.sub(r'\{\s*\"([A-Za-z0-9_#-]+)\"\s*,', r'{"device_id": "\1",', payload_str)
+    return cleaned
+
+
 def resolve_device(dev_identifier, topic=""):
     """
     Robust device resolver. Maps:
-    - 'INV_1' / 'INV1' / 'INV-1' / 'INV_01' -> Device('INV-01')
+    - 'INV_1' / 'INV-1' / 'INV1' / 'INV_01' -> Device('INV-01')
+    - 'INV_9' / 'INV-9' -> Device('INV-09')
     - 'INV_13' -> Device('INV-13')
     - 'WMS' -> Device('WMS-01')
     - 'MFM' / 'MFM_1' / 'MFM_LT' -> Device('MFM-LT')
@@ -107,11 +119,10 @@ def resolve_device(dev_identifier, topic=""):
 def parse_string_currents(data_obj):
     """
     Extracts up to 25 string currents from diverse vendor payload layouts:
+    - Vendor fields: 'string1_Idc' .. 'string24_Idc'
     - List of dicts: [{'String #': 1, 'Current (A)': 8.4, 'Status': 'Normal'}, ...]
-    - Dict key 'strings' / 'String Data' / 'string_data'
+    - Dict key 'strings' / 'String Data'
     - Array of floats: 'string_currents': [8.4, 8.2, ...]
-    - Numbered keys: 'string_1_current': 8.4, 'str_1': 8.4
-    Returns: (list_of_25_currents, list_of_string_statuses)
     """
     currents = [0.0] * 25
     statuses = ["Normal"] * 25
@@ -160,17 +171,58 @@ def parse_string_currents(data_obj):
                 pass
         return currents, statuses
 
+    # Check vendor naming: 'string1_Idc' to 'string24_Idc'
     if isinstance(data_obj, dict):
         for idx in range(1, 26):
-            for k in [f'string_{idx}_current', f'string_{idx}', f'str_{idx}', f's{idx}_current', f'String_{idx}']:
-                if k in data_obj:
+            for k in [
+                f'string{idx}_Idc', f'string_{idx}_Idc', f'string{idx}_idc', f'string_{idx}_idc',
+                f'string_{idx}_current', f'string{idx}_current', f'string_{idx}', f'string{idx}',
+                f'str_{idx}', f'str{idx}', f's{idx}_current', f'String_{idx}', f'String{idx}'
+            ]:
+                if k in data_obj and data_obj[k] is not None:
                     try:
-                        currents[idx - 1] = float(data_obj[k])
+                        val = float(data_obj[k])
+                        # Sanitize invalid 6553.5 disconnect markers
+                        currents[idx - 1] = 0.0 if val > 2000.0 else val
                         break
                     except Exception:
                         pass
 
     return currents, statuses
+
+
+def parse_mppt_data(data_obj):
+    """
+    Extracts 12 MPPT channel voltages and currents from vendor payload:
+    - 'pv1_Vdc' .. 'pv12_Vdc'
+    - 'pv1_Idc' .. 'pv12_Idc'
+    Sanitizes 6553.5 disconnect markers down to 0.0.
+    """
+    mppt_v = [0.0] * 12
+    mppt_i = [0.0] * 12
+
+    if isinstance(data_obj, dict):
+        for idx in range(1, 13):
+            # Voltage
+            for vk in [f'pv{idx}_Vdc', f'pv{idx}_vdc', f'mppt{idx}_vdc', f'mppt_{idx}_vdc']:
+                if vk in data_obj and data_obj[vk] is not None:
+                    try:
+                        v = float(data_obj[vk])
+                        mppt_v[idx - 1] = 0.0 if v > 6000.0 else v
+                        break
+                    except Exception:
+                        pass
+            # Current
+            for ik in [f'pv{idx}_Idc', f'pv{idx}_idc', f'mppt{idx}_idc', f'mppt_{idx}_idc']:
+                if ik in data_obj and data_obj[ik] is not None:
+                    try:
+                        i = float(data_obj[ik])
+                        mppt_i[idx - 1] = 0.0 if i > 6000.0 else i
+                        break
+                    except Exception:
+                        pass
+
+    return {'v': mppt_v, 'i': mppt_i}
 
 
 def extract_metric(data, keys, default=0.0):
@@ -179,14 +231,16 @@ def extract_metric(data, keys, default=0.0):
     for k in keys:
         if k in data and data[k] is not None:
             try:
-                return float(data[k])
+                v = float(data[k])
+                return 0.0 if v > 60000.0 else v
             except Exception:
                 pass
     if 'metrics' in data and isinstance(data['metrics'], dict):
         for k in keys:
             if k in data['metrics'] and data['metrics'][k] is not None:
                 try:
-                    return float(data['metrics'][k])
+                    v = float(data['metrics'][k])
+                    return 0.0 if v > 60000.0 else v
                 except Exception:
                     pass
     return default
@@ -219,7 +273,6 @@ class ScadaMqttBridge:
         rc_code = rc.value if hasattr(rc, 'value') else rc
         if rc_code == 0:
             logger.info(f"Connected successfully to MQTT Broker at {self.host}:{self.port}")
-            # Subscribe to developer topics, wildcards, and status topics
             topics_to_sub = [
                 ("sunscrap/data/#", 1),
                 ("sunscrap/data", 1),
@@ -245,9 +298,11 @@ class ScadaMqttBridge:
         topic = msg.topic
         try:
             payload_str = msg.payload.decode('utf-8')
-            data = json.loads(payload_str)
+            # Auto-repair vendor malformed JSON: e.g. {"INV-9", ...} or {"WMS", ...}
+            cleaned_str = clean_vendor_json(payload_str)
+            data = json.loads(cleaned_str)
         except Exception as e:
-            logger.error(f"Failed to parse payload on {topic}: {e}")
+            logger.error(f"Failed to parse payload on {topic}: {e} (Raw: {msg.payload[:80]}...)")
             return
 
         logger.info(f"Received message on {topic} ({len(msg.payload)} bytes)")
@@ -277,10 +332,11 @@ class ScadaMqttBridge:
         payload_raw = json.dumps(data, sort_keys=True)
         payload_hash = hashlib.sha256(payload_raw.encode()).hexdigest()
 
-        # Idempotent deduplication check
-        existing = RawIngestBatch.objects.filter(payload_hash=payload_hash).first()
+        # Idempotent deduplication check (10-second deduplication window for retransmitted packets)
+        ten_secs_ago = timezone.now() - timedelta(seconds=10)
+        existing = RawIngestBatch.objects.filter(payload_hash=payload_hash, received_at__gte=ten_secs_ago).first()
         if existing:
-            logger.info(f"Batch duplicate detected (hash {payload_hash[:12]}...), skipping duplicate write.")
+            logger.info(f"Batch duplicate detected within 10s (hash {payload_hash[:12]}...), skipping duplicate write.")
             return
 
         batch_rec = RawIngestBatch.objects.create(
@@ -324,11 +380,34 @@ class ScadaMqttBridge:
             # Process by device type
             if device.device_type == DeviceType.INVERTER:
                 string_currents, string_statuses = parse_string_currents(rec)
+                mppt_data = parse_mppt_data(rec)
 
-                kw = extract_metric(rec, ['active_power', 'power', 'power_kw', 'pac', 'p_ac', 'Active Power (kW)', 'Active Power', 'Active_Power', 'kw', 'KW', 'activePower'], default=0.0)
-                temp = extract_metric(rec, ['temperature', 'temp', 'internal_temp', 'module_temp', 'Temperature (°C)', 'Temperature', 'inverter_temp'], default=44.0)
-                daily_kwh = extract_metric(rec, ['daily_yield', 'yield_today', 'today_kwh', 'energy_today', 'e_today', 'Daily Yield (kWh)', 'Daily Yield', 'today_yield', 'dailyEnergy'], default=0.0)
-                v_ry = extract_metric(rec, ['v_ry', 'v_ll', 'grid_voltage', 'Grid Voltage (V)', 'ac_voltage', 'voltage_ry'], default=800.0)
+                kw = extract_metric(rec, [
+                    'active_power', 'power', 'power_kw', 'pac', 'p_ac', 'Active Power (kW)',
+                    'Active Power', 'Active_Power', 'kw', 'KW', 'activePower', 'inputkw'
+                ], default=0.0)
+
+                temp = extract_metric(rec, [
+                    'temperature', 'temp', 'internal_temp', 'inv_temp', 'module_temp',
+                    'Temperature (°C)', 'Temperature', 'inverter_temp'
+                ], default=44.0)
+
+                daily_kwh = extract_metric(rec, [
+                    'daily_yield', 'yield_today', 'today_kwh', 'energy_today', 'e_today',
+                    'energy_yield_daily', 'Daily Yield (kWh)', 'Daily Yield', 'today_yield', 'dailyEnergy'
+                ], default=0.0)
+
+                total_kwh = extract_metric(rec, [
+                    'lifetime_yield', 'total_yield', 'e_total', 'energy_yield_total',
+                    'cumulative_energy', 'Lifetime Yield (kWh)'
+                ], default=0.0)
+
+                v_ry = extract_metric(rec, [
+                    'p2p_volt_ry', 'v_ry', 'v_ll', 'grid_voltage', 'Grid Voltage (V)', 'ac_voltage', 'voltage_ry'
+                ], default=800.0)
+                v_yb = extract_metric(rec, ['p2p_volt_yb', 'v_yb'], default=v_ry)
+                v_br = extract_metric(rec, ['p2p_volt_br', 'v_br'], default=v_ry)
+
                 vdc = extract_metric(rec, ['vdc', 'v_dc', 'dc_voltage', 'DC Voltage (V)', 'dcVoltage'], default=745.0)
                 idc = extract_metric(rec, ['idc', 'i_dc', 'dc_current', 'DC Current (A)', 'dcCurrent'], default=0.0)
 
@@ -336,12 +415,15 @@ class ScadaMqttBridge:
                 if idc == 0.0 and sum_strings > 0:
                     idc = round(sum_strings, 1)
 
-                if kw == 0.0 and idc > 0 and vdc > 0:
+                if kw == 0.0 and idc > 0 and vdc > 0 and idc < 1000.0:
                     dc_kw = (vdc * idc) / 1000.0
                     kw = round(dc_kw * 0.985, 1)
 
                 dc_power = extract_metric(rec, ['dc_power', 'dcPower', 'DC Power (kW)'], default=round(kw * 1.015, 1))
-                status_str = extract_str(rec, ['operating_status', 'status', 'Status', 'state', 'operational_status'], default="Running")
+                status_str = extract_str(rec, ['operating_status', 'status', 'Status', 'state', 'operational_status', 'device_status'], default="Running")
+                if status_str == '0':
+                    status_str = "Running"
+
                 alarm_code = extract_str(rec, ['alarm_code', 'alarm', 'error_code', 'fault_code', 'Alarm Code', 'fault'], default="0")
 
                 for idx, s_stat in enumerate(string_statuses):
@@ -349,29 +431,37 @@ class ScadaMqttBridge:
                         if alarm_code == '0':
                             alarm_code = f'STR-{idx+1:02d}'
 
+                i_r = extract_metric(rec, ['ir', 'i_r'], default=round(kw * 1000.0 / (1.732 * v_ry), 1) if v_ry > 0 else 0.0)
+                i_y = extract_metric(rec, ['iy', 'i_y'], default=i_r)
+                i_b = extract_metric(rec, ['ib', 'i_b'], default=i_r)
+                pf = extract_metric(rec, ['pf', 'power_factor', 'Power Factor'], default=0.996)
+                freq = extract_metric(rec, ['freq', 'frequency', 'Frequency (Hz)'], default=50.02)
+                r_iso = extract_metric(rec, ['insulation_resistance', 'r_iso'], default=1000.0)
+
                 InverterObservation.objects.create(
                     device=device,
                     timestamp=timestamp,
                     vdc=vdc,
                     idc=idc,
                     v_ry=v_ry,
-                    v_yb=v_ry,
-                    v_br=v_ry,
-                    i_r=round(kw * 1000.0 / (1.732 * v_ry), 1) if v_ry > 0 else 0.0,
-                    i_y=round(kw * 1000.0 / (1.732 * v_ry), 1) if v_ry > 0 else 0.0,
-                    i_b=round(kw * 1000.0 / (1.732 * v_ry), 1) if v_ry > 0 else 0.0,
-                    power_factor=extract_metric(rec, ['power_factor', 'pf', 'Power Factor'], default=0.996),
-                    frequency=extract_metric(rec, ['frequency', 'freq', 'Frequency (Hz)'], default=50.02),
+                    v_yb=v_yb,
+                    v_br=v_br,
+                    i_r=i_r,
+                    i_y=i_y,
+                    i_b=i_b,
+                    power_factor=pf,
+                    frequency=freq,
                     active_power=kw,
                     reactive_power=extract_metric(rec, ['reactive_power', 'q_var', 'Reactive Power'], default=0.0),
                     dc_power=dc_power,
                     daily_yield=daily_kwh,
-                    lifetime_yield=extract_metric(rec, ['lifetime_yield', 'total_yield', 'e_total', 'Lifetime Yield (kWh)'], default=0.0),
-                    insulation_resistance=extract_metric(rec, ['insulation_resistance', 'r_iso'], default=1000.0),
+                    lifetime_yield=total_kwh,
+                    insulation_resistance=r_iso,
                     temperature=temp,
                     operating_status=status_str,
                     alarm_code=alarm_code,
                     string_currents=string_currents,
+                    mppt_data=mppt_data,
                     quality=DataQuality.VALID
                 )
 
@@ -384,11 +474,11 @@ class ScadaMqttBridge:
                         'operating_state': status_str,
                         'active_power': kw,
                         'daily_yield': daily_kwh,
-                        'lifetime_yield': extract_metric(rec, ['lifetime_yield', 'total_yield'], default=0.0),
+                        'lifetime_yield': total_kwh,
                         'temperature': temp,
                         'voltage_ry': v_ry,
-                        'power_factor': extract_metric(rec, ['power_factor', 'pf'], default=0.996),
-                        'frequency': extract_metric(rec, ['frequency', 'freq'], default=50.02),
+                        'power_factor': pf,
+                        'frequency': freq,
                         'latest_alarm_code': alarm_code if alarm_code != '0' else '',
                         'alarm_active': (alarm_code != '0' and alarm_code != '')
                     }
@@ -413,7 +503,7 @@ class ScadaMqttBridge:
 
             elif device.device_type == DeviceType.MFM:
                 kw = extract_metric(rec, ['active_power', 'power', 'kw', 'Active Power (kW)', 'Active Power'], default=0.0)
-                v_line = extract_metric(rec, ['v_ll', 'v_ry', 'grid_voltage', 'Grid Voltage (V)', 'voltage'], default=11040.0)
+                v_line = extract_metric(rec, ['p2p_volt_ry', 'v_ll', 'v_ry', 'grid_voltage', 'Grid Voltage (V)', 'voltage'], default=11040.0)
                 exp_today = extract_metric(rec, ['export_energy_today', 'export_kwh', 'export_energy', 'Export (kWh)', 'today_export'], default=0.0)
                 imp_today = extract_metric(rec, ['import_energy_today', 'import_kwh', 'import_energy', 'Import (kWh)'], default=0.0)
 
@@ -425,8 +515,8 @@ class ScadaMqttBridge:
                     v_br=v_line,
                     active_power=kw,
                     reactive_power=extract_metric(rec, ['reactive_power', 'kvar'], default=0.0),
-                    power_factor=extract_metric(rec, ['power_factor', 'pf'], default=0.996),
-                    frequency=extract_metric(rec, ['frequency', 'freq'], default=50.02),
+                    power_factor=extract_metric(rec, ['pf', 'power_factor', 'Power Factor'], default=0.996),
+                    frequency=extract_metric(rec, ['freq', 'frequency', 'Frequency (Hz)'], default=50.02),
                     import_energy_today=imp_today,
                     export_energy_today=exp_today,
                     quality=DataQuality.VALID
@@ -439,20 +529,20 @@ class ScadaMqttBridge:
                         'status': CommunicationStatus.ONLINE,
                         'active_power': kw,
                         'voltage_ry': v_line,
-                        'frequency': extract_metric(rec, ['frequency', 'freq'], default=50.02),
-                        'power_factor': extract_metric(rec, ['power_factor', 'pf'], default=0.996)
+                        'frequency': extract_metric(rec, ['freq', 'frequency'], default=50.02),
+                        'power_factor': extract_metric(rec, ['pf', 'power_factor'], default=0.996)
                     }
                 )
                 processed += 1
 
             elif device.device_type == DeviceType.WMS:
-                poa = extract_metric(rec, ['poa', 'poa_irradiance', 'gti', 'Radiation (W/m2)', 'POA (W/m2)', 'GTI (W/m2)', 'GTI', 'POA', 'radiation', 'solar_radiation'], default=892.0)
-                ghi = extract_metric(rec, ['ghi', 'ghi_irradiance', 'GHI (W/m2)', 'GHI'], default=845.0)
-                mod_temp = extract_metric(rec, ['module_temp', 'mod_temp', 'Module Temp (°C)', 'mod_temperature', 'Module Temperature'], default=48.2)
-                amb_temp = extract_metric(rec, ['ambient_temp', 'amb_temp', 'Ambient Temp (°C)', 'amb_temperature', 'Ambient Temperature'], default=33.6)
+                poa = extract_metric(rec, ['gti', 'poa', 'poa_irradiance', 'Radiation (W/m2)', 'POA (W/m2)', 'GTI (W/m2)', 'GTI', 'POA', 'radiation'], default=1.0)
+                ghi = extract_metric(rec, ['ghi', 'ghi_irradiance', 'GHI (W/m2)', 'GHI'], default=1.0)
+                mod_temp = extract_metric(rec, ['module_temp', 'mod_temp', 'Module Temp (°C)', 'mod_temperature'], default=23.6)
+                amb_temp = extract_metric(rec, ['amb_temp', 'ambient_temp', 'Ambient Temp (°C)', 'amb_temperature'], default=25.7)
                 wind = extract_metric(rec, ['wind_speed', 'Wind Speed (m/s)', 'wind', 'windSpeed'], default=3.8)
                 wind_dir = extract_metric(rec, ['wind_direction', 'Wind Direction (deg)', 'windDir'], default=295.0)
-                hum = extract_metric(rec, ['humidity', 'Humidity (%)', 'rh', 'relative_humidity'], default=42.0)
+                hum = extract_metric(rec, ['humidity', 'Humidity (%)', 'rh', 'relative_humidity'], default=57.6)
 
                 WMSObservation.objects.create(
                     device=device,
@@ -464,6 +554,8 @@ class ScadaMqttBridge:
                     wind_speed=wind,
                     wind_direction=wind_dir,
                     humidity=hum,
+                    rainfall=extract_metric(rec, ['rain', 'rainfall'], default=0.0),
+                    cloud_cover=extract_metric(rec, ['cloud', 'cloud_cover'], default=0.0),
                     quality=DataQuality.VALID
                 )
                 DeviceLatest.objects.update_or_create(
