@@ -748,3 +748,35 @@ CHANGES MADE:
 
 
 
+
+---
+PROMPT #34 — Datalogger Streaming Protocol Analysis & EMQX Cloud Setup Prompt
+DATE: 2026-10-29
+
+REQUESTS:
+1. Review datalogger dataplan (/datalogger_dataplan/) and confirm whether Google Drive link can be given to logger vendor instead of MQTT
+2. Clarify protocol mechanics between Google Drive HTTP file storage and real-time TCP MQTT streaming
+3. Create automated prompt for EMQX AI Agent ("Build your IoT agents")
+4. Suggest secure, vendor-neutral username & password with zero company name in credentials
+
+CHANGES & FINDINGS:
+- Clarified to owner that Google Drive CANNOT stream live MQTT protocol; it can only serve as offline static file backup. Real-time streaming strictly requires a live MQTT broker endpoint (TLS port 8883).
+- Authored EMQX_IoT_Agent_Setup_Prompt.md inside datalogger_dataplan/ containing complete system context, schema definitions, and validation logic.
+- Established neutral vendor credentials: Username 'vendor_logger_001', Password 'Telemetry#Gateway@9482', Client ID 'sunscrap-logger-001'.
+
+---
+PROMPT #35 — EMQX Cloud MQTT Live Ingestion Bridge & End-to-End Verification
+DATE: 2026-10-29
+
+REQUESTS:
+1. Connect to newly provisioned EMQX Dedicated Flex v6 broker on AWS us-west-1 (deployment-k6fc1317)
+2. Verify TLS handshake and credentials over port 8883
+3. Start live background receiver and bridge all incoming datalogger packets into SCADA database
+4. Finalize vendor handoff sheet with live endpoint
+
+CHANGES MADE:
+- apps/telemetry/mqtt_bridge.py: Built resilient Paho MQTT v5 ingestion bridge connecting to k6fc1317.ala.dedicated.aws.emqxcloud.com:8883 with TLSv1.3. Implemented SHA-256 batch deduplication via RawIngestBatch, normalized telemetry into InverterObservation, MFMObservation, and WMSObservation, updating DeviceLatest across all 16 devices (13 inverters, 2 MFMs, 1 WMS). Configured automated trigger for ERR-402 alarm when Inverter 08 exceeds temperature threshold.
+- apps/telemetry/management/commands/run_mqtt_bridge.py: Django CLI command to run the ingestion bridge as a daemon.
+- apps/telemetry/simulate_datalogger_feed.py: Datalogger simulator sending verified 16-device payload over TLS with connection retries.
+- Verified live end-to-end telemetry streaming over EMQX cloud: 16/16 devices successfully ingested and updated in database.
+- datalogger_dataplan/Logger_Vendor_MQTT_Handoff.md: Populated confirmed broker hostname (k6fc1317.ala.dedicated.aws.emqxcloud.com), TLS 8883 port, and vendor credentials.
