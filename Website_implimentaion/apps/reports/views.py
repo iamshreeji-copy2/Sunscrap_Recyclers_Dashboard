@@ -339,16 +339,71 @@ def report_inverter_generation_view(request):
     
     now = timezone.now()
     rows_data = []
-    # 20 intervals
-    for idx in range(20):
-        t = now - timedelta(minutes=15 * idx)
-        row = {'timestamp': t.strftime('%Y-%m-%d %H:%M')}
+
+    # --- Build a map of device_key -> Device for fast lookup ---
+    inv_key_map = {inv.device_id.lower().replace("-", "_"): inv for inv in inverters}
+
+    # --- Determine date range based on period ---
+    if period == 'daily':
+        date_from = now.date()
+        date_to = now.date()
+    elif period == 'weekly':
+        date_from = (now - timedelta(days=6)).date()
+        date_to = now.date()
+    elif period == 'monthly':
+        date_from = now.date().replace(day=1)
+        date_to = now.date()
+    else:
+        date_from = now.date()
+        date_to = now.date()
+
+    # --- Pull all InverterObservation records in range, group by (date, 15-min bucket) ---
+    from django.db.models import Max
+    from collections import defaultdict
+    import datetime as dt_mod
+
+    obs_qs = (
+        InverterObservation.objects
+        .filter(device__in=inverters, timestamp__date__gte=date_from, timestamp__date__lte=date_to)
+        .order_by('timestamp')
+    )
+
+    # Build a nested dict: bucket_label -> device_key -> latest daily_yield
+    # We use 15-minute floor-buckets for grouping (same as the rest of the SCADA system)
+    bucket_map = defaultdict(dict)  # { "2026-10-29 19:00": {"inv_01": 1302.2, ...} }
+
+    for obs in obs_qs:
+        ts_local = obs.timestamp.astimezone()
+        # Floor to 15-min bucket
+        floored_minute = (ts_local.minute // 15) * 15
+        bucket_ts = ts_local.replace(minute=floored_minute, second=0, microsecond=0)
+        bucket_label = bucket_ts.strftime('%Y-%m-%d %H:%M')
+        dev_key = obs.device.device_id.lower().replace("-", "_")
+        # Keep the highest daily_yield seen in this bucket (most recent reading wins)
+        existing = bucket_map[bucket_label].get(dev_key, None)
+        if existing is None or float(obs.daily_yield or 0) >= float(existing):
+            bucket_map[bucket_label][dev_key] = float(obs.daily_yield or 0)
+
+    # --- Convert to sorted rows (newest first) ---
+    for bucket_label in sorted(bucket_map.keys(), reverse=True):
+        bucket_data = bucket_map[bucket_label]
+        row = {'timestamp': bucket_label}
         r_sum = 0.0
         for inv in inverters:
-            val = round(max(0.0, 70.0 - (idx * 2.5) + (inv.display_order * 0.5)), 2)
-            row[inv.device_id.lower().replace("-", "_")] = val
+            dev_key = inv.device_id.lower().replace("-", "_")
+            val = round(bucket_data.get(dev_key, 0.0), 2)
+            row[dev_key] = val
             r_sum += val
         row['row_total'] = round(r_sum, 2)
+        rows_data.append(row)
+
+    # --- If zero real rows, show a clear empty state (no fake data) ---
+    if not rows_data:
+        # Single placeholder row so table renders headers correctly
+        row = {'timestamp': now.strftime('%Y-%m-%d %H:%M') + '  (no data yet)'}
+        for inv in inverters:
+            row[inv.device_id.lower().replace("-", "_")] = '—'
+        row['row_total'] = '—'
         rows_data.append(row)
         
     snapshot = create_or_get_snapshot(

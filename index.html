@@ -560,17 +560,17 @@
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
                 <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Ambient Temp</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">25.7</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">24.9</div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">°C</span>
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
                 <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Module Temp</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">23.2</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">23.1</div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">°C</span>
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
                 <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Humidity</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">56.0</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">59.1</div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">%RH</span>
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
@@ -638,13 +638,13 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const times = ["07:41", "07:43", "07:43", "07:44", "13:18", "13:37", "13:38", "13:39", "13:40"];
-    const ghi = [845.0, 845.0, 845.0, 845.0, 848.0, 1.0, 1.0, 1.0, 1.0];
-    const gti = [892.0, 892.0, 892.0, 892.0, 895.0, 0.0, 1.0, 1.0, 1.0];
-    const p_out = [3245.0, 3295.5, 3295.5, 3295.5, 3307.2, 3.9, 3.9, 3.9, 3.9];
-    const p_inv = [3283.9, 3335.0, 3335.0, 3335.0, 3346.9, 3.9, 3.9, 3.9, 3.9];
-    const inv_yield = [18651.2, 833.8, 833.8, 833.8, 836.7, 1.0, 1.0, 1.0, 1.0];
-    const exp_yield = [18430.0, 823.9, 823.9, 823.9, 826.8, 1.0, 1.0, 1.0, 1.0];
+    const times = ["07:41", "07:43", "07:43", "07:44", "13:18", "13:37", "13:38", "13:39", "13:40", "13:41", "13:42", "13:43", "13:44", "13:45"];
+    const ghi = [845.0, 845.0, 845.0, 845.0, 848.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
+    const gti = [892.0, 892.0, 892.0, 892.0, 895.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0];
+    const p_out = [3245.0, 3295.5, 3295.5, 3295.5, 3307.2, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9];
+    const p_inv = [3283.9, 3335.0, 3335.0, 3335.0, 3346.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9, 3.9];
+    const inv_yield = [18651.2, 833.8, 833.8, 833.8, 836.7, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
+    const exp_yield = [18430.0, 823.9, 823.9, 823.9, 826.8, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
 
     // 1. Dual-Axis Power & Irradiance Chart with Gradient Fill & Rated Capacity Line
     ChartRegistry.init('dashboard-power-irradiance-chart', {
