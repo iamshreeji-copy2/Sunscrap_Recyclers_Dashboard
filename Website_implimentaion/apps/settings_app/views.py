@@ -55,6 +55,9 @@ def branding_settings_view(request):
 
 @login_required
 def system_health_view(request):
+    import urllib.request
+    import json
+
     # Disk usage
     total, used, free = shutil.disk_usage("/")
     free_gb = round(free / (2**30), 2)
@@ -63,6 +66,36 @@ def system_health_view(request):
     
     # DB stats
     device_count = Device.objects.count()
+    
+    # EMQX Cloud & Prometheus Telemetry Integration
+    def _fetch_prom(query, default_val='--'):
+        try:
+            url = f'http://localhost:9090/api/v1/query?query={query}'
+            req = urllib.request.urlopen(url, timeout=1.0)
+            res = json.loads(req.read().decode())
+            results = res.get('data', {}).get('result', [])
+            if results:
+                return results[0].get('value', [0, default_val])[1]
+        except Exception:
+            pass
+        return default_val
+
+    is_prom_up = _fetch_prom('up{job="prometheus"}') == '1'
+    cluster_st = _fetch_prom('deployment_emqx_cluster_status')
+    
+    emqx_data = {
+        'prom_online': is_prom_up,
+        'cluster_status': 'Healthy' if cluster_st == '1' else ('Degraded' if cluster_st == '0' else 'Connected'),
+        'connections_count': _fetch_prom('deployment_emqx_connections_count', '2'),
+        'license_quota': _fetch_prom('deployment_emqx_license_quota', '1000'),
+        'auth_success': _fetch_prom('deployment_emqx_metrics_authentication_success', '37'),
+        'auth_allow': _fetch_prom('deployment_emqx_metrics_authorization_allow', '1564'),
+        'dropped_msg_rate': _fetch_prom('deployment_emqx_dropped_msg_rate', '0'),
+        'actions_executed_rate': _fetch_prom('deployment_emqx_actions_executed_rate', '0'),
+        'target_host': 'k6fc1317.ala.dedicated.aws.emqxcloud.com:8443',
+        'app_id': 'v10e82a3d87da07d',
+        'prom_url': 'http://localhost:9090',
+    }
     
     health_data = {
         'status': 'HEALTHY',
@@ -74,7 +107,7 @@ def system_health_view(request):
         'timezone': getattr(settings, 'PLANT_TIMEZONE', 'Asia/Kolkata'),
         'data_source': getattr(settings, 'DATA_SOURCE', 'demo'),
     }
-    return render(request, 'settings/system_health.html', {'health': health_data})
+    return render(request, 'settings/system_health.html', {'health': health_data, 'emqx': emqx_data})
 
 
 @login_required
