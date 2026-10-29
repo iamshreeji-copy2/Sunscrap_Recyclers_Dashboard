@@ -23,6 +23,21 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Date:</label>
+            <input type="date" name="date" value="{{ selected_date_str }}" onchange="this.form.submit()" style="padding: 5px 9px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; color: var(--text-main); background: var(--surface);">
+            {% if distinct_dates %}
+            <select onchange="if(this.value){ this.form.date.value=this.value; this.form.submit(); }" style="padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 600; color: var(--text-muted); background: var(--surface);" title="Recorded telemetry dates in database">
+                <option value="">Jump Date...</option>
+                {% for d in distinct_dates %}
+                    <option value="{{ d|date:'Y-m-d' }}" {% if d|date:'Y-m-d' == selected_date_str %}selected{% endif %}>
+                        {{ d|date:'Y-m-d' }}{% if d == today %} (Today){% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+            {% endif %}
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
             <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Period:</label>
             <div style="display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden;">
                 <button type="submit" name="period" value="daily" class="export-btn {% if period == 'daily' or not period %}export-btn-primary{% endif %}" style="border: none; border-radius: 0;">Daily</button>

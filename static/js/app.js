@@ -2447,7 +2447,7 @@ function initFullModeController() {
 
         // Start live telemetry polling simulation
         if (liveTelemetryTimer) clearInterval(liveTelemetryTimer);
-        liveTelemetryTimer = setInterval(tickLiveTelemetry, 2500);
+        liveTelemetryTimer = setInterval(tickLiveTelemetry, 30000);
 
         // Launch to slide 0 and start auto-play
         isPaused = false;
@@ -2704,61 +2704,44 @@ function initFullModeController() {
         clockEl.textContent = `${hrs}:${mins}:${secs} IST`;
     }
 
-    // Live Telemetry Simulation: Subtle, Realistic Micro-Fluctuations
-    let baseGenKWh = 18450.60;
-    let basePowerKW = 3248.50;
+    // Live Telemetry — fetch real data from /api/dashboard
+    let _cachedDashData = null;
 
     function tickLiveTelemetry() {
-        // Micro fluctuation for Active Power (±1.5 kW)
-        const powerJitter = (Math.random() - 0.48) * 2.2;
-        const currentPower = Math.max(3180, Math.min(3350, basePowerKW + powerJitter));
+        fetch('/api/dashboard', { credentials: 'same-origin' })
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+                if (!data) return;
+                _cachedDashData = data;
 
-        // Accumulate slight energy generation
-        baseGenKWh += 0.02;
+                const powerKW = data.power_inv_total_kw || 0;
+                const genKWh = data.energy_inv_today_kwh || 0;
+                const ghiVal = data.ghi_w_m2 || 0;
+                const gtiVal = data.gti_w_m2 || 0;
 
-        // Irradiance jitter (842 - 847 W/m²)
-        const ghiJitter = Math.floor(844 + (Math.random() * 4 - 2));
-        const poaJitter = Math.floor(ghiJitter * 1.055);
+                const updates = [
+                    { id: 'slide-val-active-power', val: powerKW.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+                    { id: 'slide-val-sub-kw', val: powerKW.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+                    { id: 'slide-fleet-total-kw', val: powerKW.toFixed(1) + ' kW' },
+                    { id: 'slide-val-gen-today', val: genKWh.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+                    { id: 'slide-val-ghi', val: ghiVal + ' W/m²' },
+                    { id: 'slide-val-ghi-2', val: ghiVal },
+                    { id: 'wms-val-poa', val: gtiVal },
+                    { id: 'slide-val-freq', val: '50.00' },
+                    { id: 'slide-val-revenue-today', val: '₹' + (genKWh * 3.0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+                    { id: 'slide-fin-today', val: '₹' + (genKWh * 3.0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
+                ];
 
-        // Grid Frequency (50.01 - 50.03 Hz)
-        const freqVal = (50.015 + (Math.random() * 0.02 - 0.01)).toFixed(2);
-
-        // Line Voltage (11.03 - 11.05 kV)
-        const vVal = (11.035 + (Math.random() * 0.015)).toFixed(2);
-
-        // Update DOM elements and trigger visual pulse
-        const updates = [
-            { id: 'slide-val-active-power', val: currentPower.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
-            { id: 'slide-val-sub-kw', val: currentPower.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
-            { id: 'slide-fleet-total-kw', val: currentPower.toFixed(1) + ' kW' },
-            { id: 'slide-val-gen-today', val: baseGenKWh.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
-            { id: 'slide-val-ghi', val: ghiJitter + ' W/m²' },
-            { id: 'slide-val-ghi-2', val: ghiJitter },
-            { id: 'wms-val-poa', val: poaJitter },
-            { id: 'slide-val-freq', val: freqVal },
-            { id: 'slide-val-feeder-v', val: vVal + ' kV' },
-            { id: 'slide-val-revenue-today', val: '₹' + (baseGenKWh * 3.0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
-            { id: 'slide-fin-today', val: '₹' + (baseGenKWh * 3.0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
-        ];
-
-        updates.forEach(u => {
-            const el = document.getElementById(u.id);
-            if (el) {
-                el.textContent = u.val;
-                el.classList.add('telemetry-pulse');
-                setTimeout(() => el.classList.remove('telemetry-pulse'), 700);
-            }
-        });
-
-        // Jitter individual inverters slightly
-        for (let i = 1; i <= 13; i++) {
-            const invEl = document.getElementById(`inv-val-${i}`);
-            if (invEl) {
-                const baseInv = (i === 8) ? 254.2 : (278.0 + (i % 3) * 1.1);
-                const invJitter = (baseInv + (Math.random() * 0.8 - 0.4)).toFixed(1);
-                invEl.textContent = `${invJitter} kW`;
-            }
-        }
+                updates.forEach(u => {
+                    const el = document.getElementById(u.id);
+                    if (el) {
+                        el.textContent = u.val;
+                        el.classList.add('telemetry-pulse');
+                        setTimeout(() => el.classList.remove('telemetry-pulse'), 700);
+                    }
+                });
+            })
+            .catch(() => {});
     }
 
     function syncSlideshowMetadata() {

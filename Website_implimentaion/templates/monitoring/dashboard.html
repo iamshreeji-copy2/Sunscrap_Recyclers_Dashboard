@@ -39,7 +39,7 @@
             <div>
                 <span style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); display: block; letter-spacing: 0.5px;">PLANT OVERVIEW</span>
                 <span style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
-                    Sanand GIDC Solar Plant (Device Config: 16)
+                    Sanand GIDC Solar Plant (Device Config: {{ comm_stats.total }})
                 </span>
                 <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                     <span>📍 Sanand GIDC Phase II, Ahmedabad</span>
@@ -50,24 +50,24 @@
                 </div>
             </div>
             <div style="display: flex; gap: 12px; align-items: center;">
-                <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Total Devices: <strong>16</strong></span>
-                <span class="status-badge online" style="font-weight: 700;">Online: 16</span>
-                <span class="status-badge" style="background:#F1F5F9; color:#64748B; font-weight: 700;">Offline: 0</span>
+                <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Total Devices: <strong>{{ comm_stats.total }}</strong></span>
+                <span class="status-badge online" style="font-weight: 700;">Online: {{ comm_stats.online }}</span>
+                <span class="status-badge" style="background:#F1F5F9; color:#64748B; font-weight: 700;">Offline: {{ comm_stats.offline }}</span>
             </div>
         </div>
 
         <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 0.85rem;">
             <div style="display: flex; align-items: center; gap: 6px;">
                 <span style="color: var(--primary); font-weight: 700;">Inverters:</span>
-                <span class="status-badge online">13 / 13 Online</span>
+                <span class="status-badge online">{{ comm_stats.inverter_count }} / {{ comm_stats.inverter_count }} Online</span>
             </div>
             <div style="display: flex; align-items: center; gap: 6px;">
                 <span style="color: var(--primary); font-weight: 700;">MFM:</span>
-                <span class="status-badge online">2 / 2 Online</span>
+                <span class="status-badge online">{{ comm_stats.mfm_count }} / {{ comm_stats.mfm_count }} Online</span>
             </div>
             <div style="display: flex; align-items: center; gap: 6px;">
                 <span style="color: var(--primary); font-weight: 700;">WMS:</span>
-                <span class="status-badge online">1 / 1 Online</span>
+                <span class="status-badge online">{{ comm_stats.wms_count }} / {{ comm_stats.wms_count }} Online</span>
             </div>
             <a href="{% url 'devices_settings' %}" class="export-btn" style="font-size: 0.78rem; padding: 4px 10px;">View Details</a>
         </div>
@@ -105,20 +105,20 @@
 <div class="kpi-grid">
     <div class="kpi-card">
         <span class="kpi-label">Inverter Total Active Power</span>
-        <div class="kpi-value" style="color: var(--primary);">{{ total_inv_power|floatformat:2 }} <span class="kpi-unit">kW</span></div>
+        <div class="kpi-value" style="color: var(--primary);"><span id="live-total-inv-power">{{ total_inv_power|floatformat:2 }}</span> <span class="kpi-unit">kW</span></div>
         <span class="kpi-sub">13 Inverters Operating Sum</span>
     </div>
 
     <div class="kpi-card">
         <span class="kpi-label">Inverter Today Generation</span>
-        <div class="kpi-value">{{ total_inv_today|floatformat:2 }} <span class="kpi-unit">kWh</span></div>
+        <div class="kpi-value"><span id="live-total-inv-today">{{ total_inv_today|floatformat:2 }}</span> <span class="kpi-unit">kWh</span></div>
         <span class="kpi-sub">Cumulative Today Yield (13 Inverters)</span>
     </div>
 
     <div class="kpi-card">
         <span class="kpi-label">Outgoing Meter Export Today</span>
-        <div class="kpi-value">{{ out_today|floatformat:2 }} <span class="kpi-unit">kWh</span></div>
-        <span class="kpi-sub">Grid Substation Export (Active: {{ out_power }} kW)</span>
+        <div class="kpi-value"><span id="live-export-today">{{ out_today|floatformat:2 }}</span> <span class="kpi-unit">kWh</span></div>
+        <span class="kpi-sub">Grid Substation Export (Active: <span id="live-export-power">{{ out_power }}</span> kW)</span>
     </div>
 
     <div class="kpi-card">
@@ -273,27 +273,27 @@
         <div class="grid-4col-responsive" style="text-align: center;">
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
                 <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">GHI</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.ghi }}</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;"><span id="live-ghi">{{ wms.ghi }}</span></div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">W/m²</span>
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
                 <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">GTI</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.gti }}</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;"><span id="live-gti">{{ wms.gti }}</span></div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">W/m²</span>
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
                 <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Ambient Temp</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.ambient_temp }}</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;"><span id="live-ambient-temp">{{ wms.ambient_temp }}</span></div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">°C</span>
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
                 <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Module Temp</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.module_temp }}</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;"><span id="live-module-temp">{{ wms.module_temp }}</span></div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">°C</span>
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
                 <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Humidity</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;">{{ wms.humidity }}</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin: 2px 0;"><span id="live-humidity">{{ wms.humidity }}</span></div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">%RH</span>
             </div>
             <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
@@ -591,5 +591,52 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     });
 });
+</script>
+
+<script>
+// Live Dashboard Polling - every 30 seconds from /api/dashboard
+(function initDashboardPolling() {
+    const KPI_MAP = {
+        'live-total-inv-power': d => d.power_inv_total_kw,
+        'live-total-inv-today': d => d.energy_inv_today_kwh,
+        'live-export-power': d => d.power_export_kw,
+        'live-export-today': d => d.energy_export_today_kwh,
+        'live-ghi': d => d.ghi_w_m2,
+        'live-gti': d => d.gti_w_m2,
+        'live-ambient-temp': d => d.ambient_temp_c,
+        'live-module-temp': d => d.module_temp_c,
+        'live-humidity': d => d.humidity_pct,
+        'live-specific-yield': d => d.specific_yield_kwh_kwp,
+        'live-cuf': d => d.cuf_pct,
+        'live-pr': d => d.pr_pct,
+    };
+
+    function pollDashboard() {
+        fetch('/api/dashboard', { credentials: 'same-origin' })
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+                if (!data) return;
+                Object.entries(KPI_MAP).forEach(([id, getter]) => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        const val = getter(data);
+                        if (val !== null && val !== undefined) {
+                            el.textContent = typeof val === 'number' ? val.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : val;
+                        }
+                    }
+                });
+                // Update last-reading time
+                const tsEl = document.getElementById('live-last-reading');
+                if (tsEl && data.timestamp) {
+                    const dt = new Date(data.timestamp);
+                    tsEl.textContent = dt.toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false}) + ' IST';
+                }
+            })
+            .catch(() => {});
+    }
+
+    setInterval(pollDashboard, 30000);
+    setTimeout(pollDashboard, 2000); // Initial poll after 2s
+})();
 </script>
 {% endblock %}

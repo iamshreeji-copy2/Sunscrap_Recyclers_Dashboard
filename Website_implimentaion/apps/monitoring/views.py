@@ -336,22 +336,59 @@ def dashboard_analytical_view(request):
             'expected_revenue': round(forecast_kwh[i-1] * default_tariff, 2)
         })
 
-    # Inverter Fleet Ranking (Best to Lowest)
-    inverter_ranks = [
-        {'id': 'Inv-03', 'name': 'Inverter 03', 'today_kwh': 1489.0, 'pr': 81.2, 'status': 'Optimal (+4.2%)'},
-        {'id': 'Inv-01', 'name': 'Inverter 01', 'today_kwh': 1467.0, 'pr': 80.1, 'status': 'Optimal (+2.6%)'},
-        {'id': 'Inv-07', 'name': 'Inverter 07', 'today_kwh': 1451.0, 'pr': 79.5, 'status': 'Normal (+1.5%)'},
-        {'id': 'Inv-09', 'name': 'Inverter 09', 'today_kwh': 1453.0, 'pr': 79.6, 'status': 'Normal (+1.6%)'},
-        {'id': 'Inv-05', 'name': 'Inverter 05', 'today_kwh': 1450.0, 'pr': 79.4, 'status': 'Normal (+1.4%)'},
-        {'id': 'Inv-04', 'name': 'Inverter 04', 'today_kwh': 1455.0, 'pr': 79.7, 'status': 'Normal (+1.7%)'},
-        {'id': 'Inv-12', 'name': 'Inverter 12', 'today_kwh': 1450.0, 'pr': 79.4, 'status': 'Normal (+1.4%)'},
-        {'id': 'Inv-02', 'name': 'Inverter 02', 'today_kwh': 1457.0, 'pr': 79.8, 'status': 'Normal (+1.9%)'},
-        {'id': 'Inv-11', 'name': 'Inverter 11', 'today_kwh': 1432.0, 'pr': 78.5, 'status': 'Normal (+0.1%)'},
-        {'id': 'Inv-10', 'name': 'Inverter 10', 'today_kwh': 1431.0, 'pr': 78.4, 'status': 'Normal (+0.1%)'},
-        {'id': 'Inv-13', 'name': 'Inverter 13', 'today_kwh': 1430.0, 'pr': 78.3, 'status': 'Normal (+0.0%)'},
-        {'id': 'Inv-06', 'name': 'Inverter 06', 'today_kwh': 1425.0, 'pr': 77.9, 'status': 'Minor Shading (-0.3%)'},
-        {'id': 'Inv-08', 'name': 'Inverter 08', 'today_kwh': 1159.0, 'pr': 63.4, 'status': 'Grid Trip Cleared (-18.9%)'}
-    ]
+    # Real inverter ranks from live DeviceLatest
+    inv_latests_ranked = DeviceLatest.objects.filter(
+        device__device_type=DeviceType.INVERTER
+    ).select_related('device').order_by('-daily_yield')
+
+    total_yield_today = sum(dl.daily_yield or 0 for dl in inv_latests_ranked)
+    avg_yield = total_yield_today / max(inv_latests_ranked.count(), 1)
+
+    inverter_ranks = []
+    for dl in inv_latests_ranked:
+        yield_val = dl.daily_yield or 0.0
+        # Derive PR from yield relative to rated capacity (320 kWp each inverter)
+        rated_kwp = getattr(dl.device, 'rated_capacity_kwp', 320.0) or 320.0
+        expected_kwh = rated_kwp * 4.5  # ~4.5 peak hours
+        pr_est = round((yield_val / expected_kwh) * 100, 1) if expected_kwh > 0 else 0.0
+
+        diff_pct = round(((yield_val - avg_yield) / avg_yield) * 100, 1) if avg_yield > 0 else 0.0
+        if diff_pct >= 3.0:
+            status = f'Optimal (+{diff_pct}%)'
+        elif diff_pct >= 0:
+            status = f'Normal (+{diff_pct}%)'
+        elif diff_pct >= -5.0:
+            status = f'Minor Shading ({diff_pct}%)'
+        else:
+            status = f'Low Generation ({diff_pct}%)'
+
+        inverter_ranks.append({
+            'id': dl.device.device_id,
+            'name': dl.device.name,
+            'today_kwh': round(yield_val, 1),
+            'pr': pr_est,
+            'status': status,
+        })
+
+    # Real monthly revenue from DB
+    from django.db.models.functions import TruncMonth
+    monthly_qs = (
+        InverterObservation.objects
+        .filter(device__device_type=DeviceType.INVERTER)
+        .annotate(month=TruncMonth('timestamp'))
+        .values('month')
+        .annotate(total_kwh=Sum('daily_yield'))
+        .order_by('month')
+    )
+    monthly_rev_data = []
+    for m in monthly_qs:
+        kwh = round(float(m['total_kwh'] or 0), 0)
+        rev = round(kwh * default_tariff, 0)
+        monthly_rev_data.append({
+            'month': m['month'].strftime('%b %Y'),
+            'kwh': int(kwh),
+            'revenue_inr': int(rev),
+        })
 
     context = {
         'plant': plant,
@@ -367,13 +404,6 @@ def dashboard_analytical_view(request):
         'forecast_lower_json': json.dumps(forecast_lower),
         'forecast_upper_json': json.dumps(forecast_upper),
         'inverter_ranks': inverter_ranks,
-        'monthly_revenue_json': json.dumps([
-            {'month': 'May 2026', 'revenue_inr': 784200, 'kwh': 261400},
-            {'month': 'Jun 2026', 'revenue_inr': 748100, 'kwh': 249366},
-            {'month': 'Jul 2026', 'revenue_inr': 791500, 'kwh': 263833},
-            {'month': 'Aug 2026', 'revenue_inr': 694200, 'kwh': 231400},
-            {'month': 'Sep 2026', 'revenue_inr': 712800, 'kwh': 237600},
-            {'month': 'Oct 2026', 'revenue_inr': 971838, 'kwh': 323946}
-        ])
+        'monthly_revenue_json': json.dumps(monthly_rev_data),
     }
     return render(request, 'monitoring/dashboard_analytical.html', context)

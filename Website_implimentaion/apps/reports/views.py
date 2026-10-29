@@ -311,15 +311,30 @@ def report_energy_generation_view(request):
     page = request.GET.get('page', 1)
     now = timezone.now()
     
+    date_param = request.GET.get('date', '').strip()
+    selected_date = now.date()
+    if date_param:
+        try:
+            selected_date = datetime.strptime(date_param, '%Y-%m-%d').date()
+        except ValueError:
+            selected_date = now.date()
+    
     mfm = Device.objects.filter(device_id="MFM-OUT").first()
+    
+    distinct_dates = list(
+        MFMObservation.objects.filter(device=mfm)
+        .dates('timestamp', 'day', order='DESC')
+    )
+    if now.date() not in distinct_dates:
+        distinct_dates.insert(0, now.date())
     
     # 1. Date / Period filtering
     if period == 'daily':
-        qs = MFMObservation.objects.filter(device=mfm, timestamp__date=now.date()).order_by('-timestamp')
+        qs = MFMObservation.objects.filter(device=mfm, timestamp__date=selected_date).order_by('-timestamp')
     elif period == 'weekly':
-        qs = MFMObservation.objects.filter(device=mfm, timestamp__date__gte=(now - timedelta(days=6)).date()).order_by('-timestamp')
+        qs = MFMObservation.objects.filter(device=mfm, timestamp__date__gte=(selected_date - timedelta(days=6)), timestamp__date__lte=selected_date).order_by('-timestamp')
     elif period == 'monthly':
-        qs = MFMObservation.objects.filter(device=mfm, timestamp__date__gte=now.date().replace(day=1)).order_by('-timestamp')
+        qs = MFMObservation.objects.filter(device=mfm, timestamp__date__gte=selected_date.replace(day=1), timestamp__date__lte=selected_date).order_by('-timestamp')
     else:
         qs = MFMObservation.objects.filter(device=mfm).order_by('-timestamp')
         
@@ -418,6 +433,9 @@ def report_energy_generation_view(request):
         'report_type': 'energy_generation',
         'period': period,
         'interval': interval,
+        'selected_date_str': selected_date.strftime('%Y-%m-%d'),
+        'distinct_dates': distinct_dates,
+        'today': now.date(),
         'per_page': per_page,
         'page_obj': page_obj,
         'page_window': page_window,
@@ -441,25 +459,39 @@ def report_inverter_generation_view(request):
     per_page = request.GET.get('per_page', '100').lower()
     page = request.GET.get('page', 1)
     
+    now = timezone.now()
+    date_param = request.GET.get('date', '').strip()
+    selected_date = now.date()
+    if date_param:
+        try:
+            selected_date = datetime.strptime(date_param, '%Y-%m-%d').date()
+        except ValueError:
+            selected_date = now.date()
+    
     inverters = list(Device.objects.filter(device_type=DeviceType.INVERTER).order_by('display_order'))
     if zone != 'all':
         inverters = [inv for inv in inverters if zone.lower() in inv.zone.lower()]
+        
+    distinct_dates = list(
+        InverterObservation.objects
+        .dates('timestamp', 'day', order='DESC')
+    )
+    if now.date() not in distinct_dates:
+        distinct_dates.insert(0, now.date())
         
     columns = [{'key': 'timestamp', 'label': 'Timestamp'}]
     for inv in inverters:
         columns.append({'key': inv.device_id.lower().replace("-", "_"), 'label': f'{inv.name} (kWh)'})
     columns.append({'key': 'row_total', 'label': 'Total Generation (kWh)'})
     
-    now = timezone.now()
     rows_data = []
-
     from collections import defaultdict
 
     if period == 'daily':
-        # Pure real cloud telemetry from InverterObservation for today
+        is_today = (selected_date == now.date())
         obs_qs = (
             InverterObservation.objects
-            .filter(device__in=inverters, timestamp__date=now.date())
+            .filter(device__in=inverters, timestamp__date=selected_date)
             .order_by('timestamp')
         )
         
@@ -495,11 +527,14 @@ def report_inverter_generation_view(request):
                 # Keep latest observation in that bucket
                 real_by_bucket[b_ts.strftime('%Y-%m-%d %H:%M')][dev_key] = val
                 
-            start_dt = now.astimezone().replace(hour=6, minute=0, second=0, microsecond=0)
-            curr_floored_min = (now.astimezone().minute // step_minutes) * step_minutes
-            curr_dt = now.astimezone().replace(minute=curr_floored_min, second=0, microsecond=0)
-            if curr_dt < start_dt:
-                curr_dt = start_dt
+            start_dt = now.astimezone().replace(year=selected_date.year, month=selected_date.month, day=selected_date.day, hour=6, minute=0, second=0, microsecond=0)
+            if is_today:
+                curr_floored_min = (now.astimezone().minute // step_minutes) * step_minutes
+                curr_dt = now.astimezone().replace(minute=curr_floored_min, second=0, microsecond=0)
+                if curr_dt < start_dt:
+                    curr_dt = start_dt
+            else:
+                curr_dt = start_dt.replace(hour=19, minute=0)
                 
             t = start_dt
             while t <= curr_dt:
@@ -522,9 +557,9 @@ def report_inverter_generation_view(request):
             rows_data.reverse()
 
     elif period == 'weekly':
-        # Last 7 days, strictly using actual recorded cloud observations
+        # Last 7 days ending at selected_date, strictly using actual recorded cloud observations
         for d in range(7):
-            dt_cur = (now - timedelta(days=d)).date()
+            dt_cur = selected_date - timedelta(days=d)
             label = dt_cur.strftime('%Y-%m-%d')
             row = {'timestamp': label}
             row_sum = 0.0
@@ -546,9 +581,9 @@ def report_inverter_generation_view(request):
             rows_data.append(row)
 
     elif period == 'monthly':
-        # Current month days, strictly using actual recorded cloud observations
-        for d in range(now.day):
-            dt_cur = (now - timedelta(days=d)).date()
+        # Month days up to selected_date.day, strictly using actual recorded cloud observations
+        for d in range(selected_date.day):
+            dt_cur = selected_date - timedelta(days=d)
             label = dt_cur.strftime('%Y-%m-%d')
             row = {'timestamp': label}
             row_sum = 0.0
@@ -572,7 +607,7 @@ def report_inverter_generation_view(request):
     # --- If zero real rows, show a clear empty state (no fake data) ---
     if not rows_data:
         # Single placeholder row so table renders headers correctly
-        row = {'timestamp': now.strftime('%Y-%m-%d %H:%M') + ' (no data recorded)'}
+        row = {'timestamp': selected_date.strftime('%Y-%m-%d') + ' (no data recorded)'}
         for inv in inverters:
             row[inv.device_id.lower().replace("-", "_")] = 0.0
         row['row_total'] = 0.0
@@ -621,6 +656,9 @@ def report_inverter_generation_view(request):
         'report_type': 'inverter_generation',
         'period': period,
         'interval': interval,
+        'selected_date_str': selected_date.strftime('%Y-%m-%d'),
+        'distinct_dates': distinct_dates,
+        'today': now.date(),
         'zone': zone,
         'per_page': per_page,
         'page_obj': page_obj,
