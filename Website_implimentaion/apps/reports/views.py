@@ -41,9 +41,9 @@ def create_or_get_snapshot(request, report_type, title, period_label, interval_l
 @login_required
 def report_summary_view(request):
     mode = request.GET.get('mode', request.GET.get('period', 'daily')).lower()
-    selected_date = request.GET.get('date', '2026-10-23')
-    selected_month = request.GET.get('month', '2026-10')
     now = timezone.now()
+    selected_date = request.GET.get('date', now.strftime('%Y-%m-%d'))
+    selected_month = request.GET.get('month', now.strftime('%Y-%m'))
     
     inverters = list(Device.objects.filter(device_type=DeviceType.INVERTER).order_by('display_order'))
     
@@ -205,6 +205,42 @@ def report_summary_view(request):
                 row[f'inv_{i}'] = f"{inv_val:.2f}"
             rows_data.append(row)
         
+    # Prepend today's live telemetry row for daily mode so today (Oct 29) is always shown first
+    if mode == 'daily':
+        today_str = now.strftime('%Y-%m-%d')
+        if not any(r.get('date') == today_str for r in rows_data):
+            from apps.telemetry.models import DeviceLatest
+            inv_latests = list(DeviceLatest.objects.filter(device__device_type=DeviceType.INVERTER))
+            tot_today = sum((dl.daily_yield or 0.0) for dl in inv_latests)
+            wms_obs = WMSObservation.objects.filter(device__device_type=DeviceType.WMS).order_by('-timestamp').first()
+            mfm_out = DeviceLatest.objects.filter(device__device_id='MFM-OUT').first()
+            
+            exp_val = (mfm_out.daily_yield or 0.0) if mfm_out else 0.0
+            imp_val = 0.0
+            net_val = round(exp_val - imp_val, 2)
+            cp_val = f"{(tot_today / (3900.0 * 24.0)) * 100:.2f} %" if tot_today > 0 else "0.00 %"
+            cg_val = f"{(exp_val / (3900.0 * 24.0)) * 100:.2f} %" if exp_val > 0 else "0.00 %"
+            
+            today_entry = {
+                'date': today_str,
+                'total_inv': f"{tot_today:.2f}",
+                'export': f"{exp_val:.2f}",
+                'import': f"{imp_val:.2f}",
+                'net': f"{net_val:.2f}",
+                'guarantee': "4,250.00",
+                'cuf_plant': cp_val,
+                'cuf_getco': cg_val,
+                'ghi_energy': f"{wms_obs.insolation_today_ghi:.2f}" if wms_obs and wms_obs.insolation_today_ghi else "0.00",
+                'ghi_avg': f"{wms_obs.ghi:.2f}" if wms_obs and wms_obs.ghi is not None else "0.00",
+                'ambient_temp': f"{wms_obs.ambient_temp:.1f} °C" if wms_obs and wms_obs.ambient_temp is not None else "0.0 °C",
+                'module_temp': f"{wms_obs.module_temp:.1f} °C" if wms_obs and wms_obs.module_temp is not None else "0.0 °C",
+            }
+            for i in range(1, 14):
+                dev_id = f"INV-{i:02d}"
+                dl_match = next((dl for dl in inv_latests if dl.device.device_id == dev_id), None)
+                today_entry[f'inv_{i}'] = f"{(dl_match.daily_yield or 0.0):.2f}" if dl_match else "0.00"
+            rows_data.insert(0, today_entry)
+
     snapshot = create_or_get_snapshot(
         request, 'summary', 'Plant Generation & Meteorological Summary',
         f'{mode.capitalize()} Period', 'Daily Aggregate', columns, rows_data
@@ -226,7 +262,7 @@ def report_summary_view(request):
         'snapshot': snapshot,
         'columns': columns,
         'rows': rows_data,
-        'daily_dates': ['2026-10-23', '2026-10-22', '2026-10-21', '2026-10-20', '2026-10-19', '2026-10-18'],
+        'daily_dates': [(now - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)],
         'monthly_months': ['2026-10', '2026-09', '2026-08', '2026-07', '2026-06', '2026-05']
     }
     return render(request, 'reports/report_summary.html', context)

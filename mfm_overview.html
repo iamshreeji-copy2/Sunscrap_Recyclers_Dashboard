@@ -312,26 +312,26 @@
 <div class="kpi-grid">
     <div class="kpi-card">
         <span class="kpi-label">Active Power (P)</span>
-        <div class="kpi-value" style="color: var(--primary);">3245.00 <span class="kpi-unit">kW</span></div>
+        <div class="kpi-value" style="color: var(--primary);"> <span class="kpi-unit">kW</span></div>
         <span class="kpi-sub">Export Flow to Substation</span>
     </div>
 
     <div class="kpi-card">
         <span class="kpi-label">Reactive Power (Q)</span>
-        <div class="kpi-value">0.00 <span class="kpi-unit">kVAR</span></div>
+        <div class="kpi-value"> <span class="kpi-unit">kVAR</span></div>
         <span class="kpi-sub">Inductive / Capacitive Compensation</span>
     </div>
 
     <div class="kpi-card">
         <span class="kpi-label">Apparent Power (S)</span>
-        <div class="kpi-value">0.00 <span class="kpi-unit">kVA</span></div>
+        <div class="kpi-value"> <span class="kpi-unit">kVA</span></div>
         <span class="kpi-sub">Total Vector Load Capacity</span>
     </div>
 
     <div class="kpi-card kpi-green">
         <span class="kpi-label">Today Export Energy</span>
-        <div class="kpi-value">18430.00 <span class="kpi-unit">kWh</span></div>
-        <span class="kpi-sub">Import Today: 0.0 kWh</span>
+        <div class="kpi-value"> <span class="kpi-unit">kWh</span></div>
+        <span class="kpi-sub">Import Today:  kWh</span>
     </div>
 </div>
 
@@ -344,32 +344,32 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; text-align: center;">
         <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm);">
             <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Line-to-Line Voltage</span>
-            <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);">0.0 kV</div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);"> kV</div>
             <span style="font-size: 0.72rem; color: var(--text-dim);">Average Grid Voltage</span>
         </div>
         <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm);">
             <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Phase Voltages (R-Y-B)</span>
-            <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">11040 / 11040 / 11040 V</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);"> /  /  V</div>
             <span style="font-size: 0.72rem; color: var(--text-dim);">Phase-to-Phase</span>
         </div>
         <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm);">
             <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Phase Currents (R-Y-B)</span>
-            <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">0.0 / 0.0 / 0.0 A</div>
-            <span style="font-size: 0.72rem; color: var(--text-dim);">Neutral: 0.0 A</span>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);"> /  /  A</div>
+            <span style="font-size: 0.72rem; color: var(--text-dim);">Neutral:  A</span>
         </div>
         <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm);">
             <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Grid Frequency</span>
-            <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);">50.02 Hz</div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);"> Hz</div>
             <span style="font-size: 0.72rem; color: var(--text-dim);">Nominal 50.0 Hz</span>
         </div>
         <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm);">
             <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Power Factor</span>
-            <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);">0.996</div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);"></div>
             <span style="font-size: 0.72rem; color: var(--success); font-weight: 600;">Optimal (> 0.99)</span>
         </div>
         <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm);">
             <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Lifetime Export</span>
-            <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">0 kWh</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);"> kWh</div>
             <span style="font-size: 0.72rem; color: var(--text-dim);">Cumulative Register</span>
         </div>
     </div>
@@ -394,12 +394,12 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const times = ["06:00", "06:15", "06:30", "06:45", "07:00", "07:15", "07:30", "07:45", "07:52", "07:44"];
-    const act_p = [0.0, 233.21, 464.47, 676.97, 920.74, 1128.28, 1349.01, 1552.08, 3531.07, 3245.0];
-    const rea_p = [0.0, 7.0, 13.93, 20.31, 27.62, 33.85, 40.47, 46.56, 120.5, 0.0];
-    const app_p = [0.0, 233.68, 465.4, 678.32, 922.58, 1130.54, 1351.71, 1555.18, 3533.1, 0.0];
-    const exp_e = [0.0, 58.3, 174.42, 343.67, 573.85, 855.92, 1193.18, 1581.2, 11778.24, 18430.0];
-    const imp_e = [12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.5, 0.0];
+    const times = [];
+    const act_p = [];
+    const rea_p = [];
+    const app_p = [];
+    const exp_e = [];
+    const imp_e = [];
 
     // 1. Powers Profile
     ChartRegistry.init('chart-mfm-powers', {

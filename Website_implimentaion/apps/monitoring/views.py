@@ -40,40 +40,40 @@ def dashboard_view(request):
     # 2. Latest Telemetry Snapshot
     # Inverters
     inv_latests = DeviceLatest.objects.filter(device__device_type=DeviceType.INVERTER)
-    total_inv_power = sum(dl.active_power for dl in inv_latests) or 3573.96
-    total_inv_today = sum(dl.daily_yield for dl in inv_latests) or 11921.30
-    total_inv_life = sum(dl.lifetime_yield for dl in inv_latests) or 1567546.00
+    total_inv_power = sum(dl.active_power for dl in inv_latests if dl.active_power is not None)
+    total_inv_today = sum(dl.daily_yield for dl in inv_latests if dl.daily_yield is not None)
+    total_inv_life = sum(dl.lifetime_yield for dl in inv_latests if dl.lifetime_yield is not None)
     
     # Outgoing MFM (Main Grid export)
     mfm_out = Device.objects.filter(device_id="MFM-OUT").first()
     mfm_out_latest = getattr(mfm_out, 'latest_state', None)
-    out_power = mfm_out_latest.active_power if mfm_out_latest else 3531.07
-    out_today = mfm_out_latest.daily_yield if mfm_out_latest else 11778.24
-    out_life = mfm_out_latest.lifetime_yield if mfm_out_latest else 1548735.40
+    out_power = mfm_out_latest.active_power if mfm_out_latest and mfm_out_latest.active_power is not None else 0.0
+    out_today = mfm_out_latest.daily_yield if mfm_out_latest and mfm_out_latest.daily_yield is not None else 0.0
+    out_life = mfm_out_latest.lifetime_yield if mfm_out_latest and mfm_out_latest.lifetime_yield is not None else 0.0
     
     # LT MFM
     mfm_lt = Device.objects.filter(device_id="MFM-LT").first()
     mfm_lt_latest = getattr(mfm_lt, 'latest_state', None)
-    lt_power = mfm_lt_latest.active_power if mfm_lt_latest else 3556.09
-    lt_today = mfm_lt_latest.daily_yield if mfm_lt_latest else 11861.69
-    lt_life = mfm_lt_latest.lifetime_yield if mfm_lt_latest else 1559708.27
+    lt_power = mfm_lt_latest.active_power if mfm_lt_latest and mfm_lt_latest.active_power is not None else 0.0
+    lt_today = mfm_lt_latest.daily_yield if mfm_lt_latest and mfm_lt_latest.daily_yield is not None else 0.0
+    lt_life = mfm_lt_latest.lifetime_yield if mfm_lt_latest and mfm_lt_latest.lifetime_yield is not None else 0.0
     
     # WMS
     wms_dev = Device.objects.filter(device_type=DeviceType.WMS).first()
     wms_latest_obs = WMSObservation.objects.filter(device=wms_dev).order_by('-timestamp').first()
     
     wms_data = {
-        'ghi': wms_latest_obs.ghi if wms_latest_obs else 905.0,
-        'gti': wms_latest_obs.gti if wms_latest_obs else 1165.0,
-        'insolation_ghi': wms_latest_obs.insolation_today_ghi if wms_latest_obs else 4.82,
-        'insolation_gti': wms_latest_obs.insolation_today_gti if wms_latest_obs else 5.94,
-        'ambient_temp': wms_latest_obs.ambient_temp if wms_latest_obs else 38.1,
-        'module_temp': wms_latest_obs.module_temp if wms_latest_obs else 51.0,
-        'humidity': wms_latest_obs.humidity if wms_latest_obs else 23.10,
-        'wind_speed': wms_latest_obs.wind_speed if wms_latest_obs else 3.4,
-        'wind_direction': wms_latest_obs.wind_direction if wms_latest_obs else 210.0,
+        'ghi': wms_latest_obs.ghi if wms_latest_obs else 0.0,
+        'gti': wms_latest_obs.gti if wms_latest_obs else 0.0,
+        'insolation_ghi': wms_latest_obs.insolation_today_ghi if wms_latest_obs else 0.0,
+        'insolation_gti': wms_latest_obs.insolation_today_gti if wms_latest_obs else 0.0,
+        'ambient_temp': wms_latest_obs.ambient_temp if wms_latest_obs else 0.0,
+        'module_temp': wms_latest_obs.module_temp if wms_latest_obs else 0.0,
+        'humidity': wms_latest_obs.humidity if wms_latest_obs else 0.0,
+        'wind_speed': wms_latest_obs.wind_speed if wms_latest_obs else 0.0,
+        'wind_direction': wms_latest_obs.wind_direction if wms_latest_obs else 0.0,
         'rainfall': wms_latest_obs.rainfall if wms_latest_obs else 0.0,
-        'cloud_cover': wms_latest_obs.cloud_cover if wms_latest_obs else 8.0,
+        'cloud_cover': wms_latest_obs.cloud_cover if wms_latest_obs else 0.0,
     }
     
     # 3. Scientific Calculations
@@ -273,8 +273,8 @@ def mfm_overview_view(request):
 def api_dashboard_view(request):
     """GET /api/dashboard: Returns consolidated JSON payload for client polling."""
     inv_latests = DeviceLatest.objects.filter(device__device_type=DeviceType.INVERTER)
-    total_inv_power = sum(dl.active_power for dl in inv_latests) or 3573.96
-    total_inv_today = sum(dl.daily_yield for dl in inv_latests) or 11921.30
+    total_inv_power = sum(dl.active_power for dl in inv_latests if dl.active_power is not None)
+    total_inv_today = sum(dl.daily_yield for dl in inv_latests if dl.daily_yield is not None)
     
     mfm_out = Device.objects.filter(device_id="MFM-OUT").first()
     mfm_out_latest = getattr(mfm_out, 'latest_state', None)
@@ -284,19 +284,19 @@ def api_dashboard_view(request):
     
     specific_yield = PlantCalculations.specific_yield(total_inv_today, 4640.0)
     cuf_val = PlantCalculations.cuf(total_inv_today, 3900.0, 24.0)
-    pr_val = PlantCalculations.pr(total_inv_today, 4640.0, wms_obs.insolation_today_gti if wms_obs else 5.94)
+    pr_val = PlantCalculations.pr(total_inv_today, 4640.0, wms_obs.insolation_today_gti if wms_obs else 0.0)
     
     return JsonResponse({
         'timestamp': timezone.now().isoformat(),
         'power_inv_total_kw': round(total_inv_power, 2),
         'energy_inv_today_kwh': round(total_inv_today, 2),
-        'power_export_kw': mfm_out_latest.active_power if mfm_out_latest else 3531.07,
-        'energy_export_today_kwh': mfm_out_latest.daily_yield if mfm_out_latest else 11778.24,
-        'ghi_w_m2': wms_obs.ghi if wms_obs else 905.0,
-        'gti_w_m2': wms_obs.gti if wms_obs else 1165.0,
-        'ambient_temp_c': wms_obs.ambient_temp if wms_obs else 38.1,
-        'module_temp_c': wms_obs.module_temp if wms_obs else 51.0,
-        'humidity_pct': wms_obs.humidity if wms_obs else 23.10,
+        'power_export_kw': round(mfm_out_latest.active_power, 2) if mfm_out_latest and mfm_out_latest.active_power is not None else 0.0,
+        'energy_export_today_kwh': round(mfm_out_latest.daily_yield, 2) if mfm_out_latest and mfm_out_latest.daily_yield is not None else 0.0,
+        'ghi_w_m2': wms_obs.ghi if wms_obs else 0.0,
+        'gti_w_m2': wms_obs.gti if wms_obs else 0.0,
+        'ambient_temp_c': wms_obs.ambient_temp if wms_obs else 0.0,
+        'module_temp_c': wms_obs.module_temp if wms_obs else 0.0,
+        'humidity_pct': wms_obs.humidity if wms_obs else 0.0,
         'specific_yield_kwh_kwp': specific_yield,
         'cuf_pct': cuf_val,
         'pr_pct': pr_val,
