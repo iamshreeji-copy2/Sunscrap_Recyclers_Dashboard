@@ -23,7 +23,30 @@
     </div>
 </div>
 
-{% include 'components/period_filter.html' with table_id='energy-gen-table' report_title=report_title snapshot=snapshot period=period interval=interval %}
+{% include 'components/period_filter.html' with table_id='energy-gen-table' report_title=report_title snapshot=snapshot period=period interval=interval per_page=per_page %}
+
+<!-- Entries Per Page Selector & Count Summary -->
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; padding: 0 4px;">
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted);">
+        <span>Show</span>
+        <select id="per-page-select" onchange="changePerPage(this.value)" style="padding: 5px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; color: var(--text-main); background: var(--surface); cursor: pointer;">
+            <option value="25" {% if per_page == '25' %}selected{% endif %}>25</option>
+            <option value="50" {% if per_page == '50' %}selected{% endif %}>50</option>
+            <option value="100" {% if per_page == '100' %}selected{% endif %}>100</option>
+            <option value="250" {% if per_page == '250' %}selected{% endif %}>250</option>
+            <option value="all" {% if per_page == 'all' %}selected{% endif %}>All</option>
+        </select>
+        <span>entries per page</span>
+    </div>
+
+    <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+        {% if total_count > 0 %}
+            Showing <strong>{{ start_index }}</strong> to <strong>{{ end_index }}</strong> of <strong>{{ total_count }}</strong> entries
+        {% else %}
+            Showing 0 entries
+        {% endif %}
+    </div>
+</div>
 
 <div class="card" style="padding: 0; overflow: hidden;">
     <div class="table-container">
@@ -59,4 +82,42 @@
         </table>
     </div>
 </div>
+
+<!-- Pagination Controls -->
+{% if page_obj and page_obj.has_other_pages %}
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-top: 16px; padding: 12px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);">
+    <div style="font-size: 0.82rem; color: var(--text-muted);">
+        Page <strong>{{ page_obj.number }}</strong> of <strong>{{ page_obj.paginator.num_pages }}</strong>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+        {% if page_obj.has_previous %}
+            <a href="?page=1&period={{ period }}&interval={{ interval }}&per_page={{ per_page }}" class="export-btn" style="padding: 5px 10px; font-size: 0.8rem;" title="First Page">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}&period={{ period }}&interval={{ interval }}&per_page={{ per_page }}" class="export-btn" style="padding: 5px 10px; font-size: 0.8rem;">&lsaquo; Prev</a>
+        {% endif %}
+
+        {% for p_num in page_window %}
+            {% if p_num == page_obj.number %}
+                <span class="export-btn export-btn-primary" style="padding: 5px 12px; font-size: 0.82rem; font-weight: 800;">{{ p_num }}</span>
+            {% else %}
+                <a href="?page={{ p_num }}&period={{ period }}&interval={{ interval }}&per_page={{ per_page }}" class="export-btn" style="padding: 5px 12px; font-size: 0.82rem;">{{ p_num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&period={{ period }}&interval={{ interval }}&per_page={{ per_page }}" class="export-btn" style="padding: 5px 10px; font-size: 0.8rem;">Next &rsaquo;</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&period={{ period }}&interval={{ interval }}&per_page={{ per_page }}" class="export-btn" style="padding: 5px 10px; font-size: 0.8rem;" title="Last Page">Last &raquo;</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<script>
+function changePerPage(val) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', val);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+</script>
 {% endblock %}

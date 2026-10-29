@@ -292,12 +292,12 @@
 <div class="kpi-grid" style="margin-bottom: 20px;">
     <div class="kpi-card kpi-green">
         <span class="kpi-label">Selected Period Total Export</span>
-        <div class="kpi-value">34988.78 <span class="kpi-unit">kWh</span></div>
+        <div class="kpi-value">18430.00 <span class="kpi-unit">kWh</span></div>
         <span class="kpi-sub">Outgoing Substation Feed</span>
     </div>
     <div class="kpi-card">
         <span class="kpi-label">Selected Period Total Import</span>
-        <div class="kpi-value">108.50 <span class="kpi-unit">kWh</span></div>
+        <div class="kpi-value">12.50 <span class="kpi-unit">kWh</span></div>
         <span class="kpi-sub">Night auxiliary power import</span>
     </div>
 </div>
@@ -308,6 +308,7 @@
         <!-- Preserve extra query parameters -->
         
         
+        <input type="hidden" name="per_page" value="25">
 
         <div style="display: flex; align-items: center; gap: 8px;">
             <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Period:</label>
@@ -364,7 +365,7 @@
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
         Print
     </button>
-    <button type="button" class="export-btn export-btn-primary btn-open-email-modal" data-snapshot-id="c71b0084-a02e-4424-95ca-5301fe8119f7" data-report-name="Energy Generation &amp; Meter Interval Report" title="Email snapshot to authorized recipients">
+    <button type="button" class="export-btn export-btn-primary btn-open-email-modal" data-snapshot-id="4b3b7037-5975-459d-a8eb-b09f6d0ea560" data-report-name="Energy Generation &amp; Meter Interval Report" title="Email snapshot to authorized recipients">
         <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
         Email
     </button>
@@ -373,6 +374,27 @@
     </div>
 </div>
 
+
+<!-- Entries Per Page Selector & Count Summary -->
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; padding: 0 4px;">
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted);">
+        <span>Show</span>
+        <select id="per-page-select" onchange="changePerPage(this.value)" style="padding: 5px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; color: var(--text-main); background: var(--surface); cursor: pointer;">
+            <option value="25" selected>25</option>
+            <option value="50" >50</option>
+            <option value="100" >100</option>
+            <option value="250" >250</option>
+            <option value="all" >All</option>
+        </select>
+        <span>entries per page</span>
+    </div>
+
+    <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+        
+            Showing <strong>1</strong> to <strong>25</strong> of <strong>56</strong> entries
+        
+    </div>
+</div>
 
 <div class="card" style="padding: 0; overflow: hidden;">
     <div class="table-container">
@@ -403,7 +425,7 @@
                             <td>
                                 
                                     
-                                        2026-10-29 07:44
+                                        2026-10-29 19:45
                                     
                                 
                                     
@@ -447,6 +469,28 @@
                                     
                                 
                                     
+                                        12.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
                                         0.0
                                     
                                 
@@ -456,28 +500,6 @@
                                 
                                     
                                 
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        3245.0
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
                             </td>
                         
                             <td>
@@ -491,7 +513,7 @@
                                     
                                 
                                     
-                                        0.996
+                                        0.998
                                     
                                 
                                     
@@ -513,7 +535,7 @@
                                     
                                 
                                     
-                                        0.0
+                                        11.0
                                     
                                 
                                     
@@ -547,7 +569,7 @@
                             <td>
                                 
                                     
-                                        2026-10-23 07:52
+                                        2026-10-29 19:30
                                     
                                 
                                     
@@ -569,7 +591,7 @@
                                     
                                 
                                     
-                                        11778.24
+                                        18430.0
                                     
                                 
                                     
@@ -613,1114 +635,6 @@
                                     
                                 
                                     
-                                        3531.07
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        0.998
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        11.0
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        valid
-                                    
-                                
-                            </td>
-                        
-                    </tr>
-                
-                    <tr>
-                        
-                            <td>
-                                
-                                    
-                                        2026-10-23 07:45
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                        1581.2
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        12.0
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        1552.08
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        0.998
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        11.0
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        valid
-                                    
-                                
-                            </td>
-                        
-                    </tr>
-                
-                    <tr>
-                        
-                            <td>
-                                
-                                    
-                                        2026-10-23 07:30
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                        1193.18
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        12.0
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        1349.01
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        0.998
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        11.0
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        valid
-                                    
-                                
-                            </td>
-                        
-                    </tr>
-                
-                    <tr>
-                        
-                            <td>
-                                
-                                    
-                                        2026-10-23 07:15
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                        855.92
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        12.0
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        1128.28
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        0.998
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        11.0
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        valid
-                                    
-                                
-                            </td>
-                        
-                    </tr>
-                
-                    <tr>
-                        
-                            <td>
-                                
-                                    
-                                        2026-10-23 07:00
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                        573.85
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        12.0
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        920.74
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        0.998
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        11.0
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        valid
-                                    
-                                
-                            </td>
-                        
-                    </tr>
-                
-                    <tr>
-                        
-                            <td>
-                                
-                                    
-                                        2026-10-23 06:45
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                        343.67
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        12.0
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        676.97
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        0.998
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        11.0
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        valid
-                                    
-                                
-                            </td>
-                        
-                    </tr>
-                
-                    <tr>
-                        
-                            <td>
-                                
-                                    
-                                        2026-10-23 06:30
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                        174.42
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        12.0
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        464.47
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        0.998
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        11.0
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        valid
-                                    
-                                
-                            </td>
-                        
-                    </tr>
-                
-                    <tr>
-                        
-                            <td>
-                                
-                                    
-                                        2026-10-23 06:15
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                        58.3
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        12.0
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        233.21
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        0.998
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        11.0
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                        valid
-                                    
-                                
-                            </td>
-                        
-                    </tr>
-                
-                    <tr>
-                        
-                            <td>
-                                
-                                    
-                                        2026-10-23 06:00
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                                    
-                                
-                            </td>
-                        
-                            <td>
-                                
-                                    
-                                
-                                    
                                         0.0
                                     
                                 
@@ -1730,6 +644,22 @@
                                 
                                     
                                 
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
                                     
                                 
                                     
@@ -1743,7 +673,91 @@
                                     
                                 
                                     
-                                        12.0
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 19:15
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        18430.0
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        12.5
                                     
                                 
                                     
@@ -1766,6 +780,3174 @@
                                 
                                     
                                         0.0
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 19:00
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        18430.0
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        12.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.0
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 18:45
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        18430.0
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        12.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.0
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 18:30
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        18430.0
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        12.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.0
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 18:15
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        18430.0
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        12.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.0
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 18:00
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        18409.84
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        232.74
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 17:45
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        18349.43
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        464.45
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 17:30
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        18249.05
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        694.14
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 17:15
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        18109.13
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        920.79
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 17:00
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        17930.29
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        1143.41
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 16:45
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        17713.3
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        1361.02
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 16:30
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        17459.13
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        1572.68
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 16:15
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        17168.87
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        1777.45
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 16:00
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        16843.81
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        1974.45
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 15:45
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        16485.35
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2162.8
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 15:30
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        16095.08
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2341.69
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 15:15
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        15674.7
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2510.33
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 15:00
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        15226.05
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2667.99
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 14:45
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        14751.09
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2813.97
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 14:30
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        14251.9
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2947.63
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 14:15
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        13730.67
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        3068.39
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 14:00
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        13189.68
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        3175.73
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        0.998
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        11.0
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        valid
+                                    
+                                
+                            </td>
+                        
+                    </tr>
+                
+                    <tr>
+                        
+                            <td>
+                                
+                                    
+                                        2026-10-29 13:45
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                        12631.29
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        2.5
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                            </td>
+                        
+                            <td>
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        3269.17
                                     
                                 
                                     
@@ -1842,6 +4024,47 @@
         </table>
     </div>
 </div>
+
+<!-- Pagination Controls -->
+
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-top: 16px; padding: 12px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);">
+    <div style="font-size: 0.82rem; color: var(--text-muted);">
+        Page <strong>1</strong> of <strong>3</strong>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+        
+
+        
+            
+                <span class="export-btn export-btn-primary" style="padding: 5px 12px; font-size: 0.82rem; font-weight: 800;">1</span>
+            
+        
+            
+                <a href="?page=2&period=daily&interval=15min&per_page=25" class="export-btn" style="padding: 5px 12px; font-size: 0.82rem;">2</a>
+            
+        
+            
+                <a href="?page=3&period=daily&interval=15min&per_page=25" class="export-btn" style="padding: 5px 12px; font-size: 0.82rem;">3</a>
+            
+        
+
+        
+            <a href="?page=2&period=daily&interval=15min&per_page=25" class="export-btn" style="padding: 5px 10px; font-size: 0.8rem;">Next &rsaquo;</a>
+            <a href="?page=3&period=daily&interval=15min&per_page=25" class="export-btn" style="padding: 5px 10px; font-size: 0.8rem;" title="Last Page">Last &raquo;</a>
+        
+    </div>
+</div>
+
+
+<script>
+function changePerPage(val) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', val);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+</script>
 
 
             <!-- Global SATs Professional Workstation Footer -->

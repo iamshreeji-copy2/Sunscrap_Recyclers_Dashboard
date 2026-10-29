@@ -4,6 +4,7 @@
         <!-- Preserve extra query parameters -->
         {% if selected_device %}<input type="hidden" name="device" value="{{ selected_device.device_id }}">{% endif %}
         {% if zone %}<input type="hidden" name="zone" value="{{ zone }}">{% endif %}
+        {% if per_page %}<input type="hidden" name="per_page" value="{{ per_page }}">{% endif %}
 
         <div style="display: flex; align-items: center; gap: 8px;">
             <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Period:</label>

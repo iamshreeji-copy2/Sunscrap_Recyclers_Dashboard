@@ -305,14 +305,53 @@ def report_export_zip_view(request):
 
 @login_required
 def report_energy_generation_view(request):
-    period = request.GET.get('period', 'daily')
-    interval = request.GET.get('interval', '15min')
+    period = request.GET.get('period', 'daily').lower()
+    interval = request.GET.get('interval', '15min').lower()
+    per_page = request.GET.get('per_page', '25').lower()
+    page = request.GET.get('page', 1)
+    now = timezone.now()
     
     mfm = Device.objects.filter(device_id="MFM-OUT").first()
-    history = list(MFMObservation.objects.filter(device=mfm).order_by('-timestamp')[:50])
     
+    # 1. Date / Period filtering
+    if period == 'daily':
+        qs = MFMObservation.objects.filter(device=mfm, timestamp__date=now.date()).order_by('-timestamp')
+    elif period == 'weekly':
+        qs = MFMObservation.objects.filter(device=mfm, timestamp__date__gte=(now - timedelta(days=6)).date()).order_by('-timestamp')
+    elif period == 'monthly':
+        qs = MFMObservation.objects.filter(device=mfm, timestamp__date__gte=now.date().replace(day=1)).order_by('-timestamp')
+    else:
+        qs = MFMObservation.objects.filter(device=mfm).order_by('-timestamp')
+        
+    if not qs.exists():
+        qs = MFMObservation.objects.filter(device=mfm).order_by('-timestamp')
+
+    # 2. Resolution / interval filtering
+    if interval == 'raw':
+        obs_list = list(qs)
+        ts_fmt = '%Y-%m-%d %H:%M:%S'
+        ts_label = 'Timestamp (Raw 1-Min)'
+    elif interval == 'hourly':
+        obs_list = [h for h in qs if h.timestamp.astimezone().minute == 0]
+        ts_fmt = '%Y-%m-%d %H:00'
+        ts_label = 'Timestamp (Hourly)'
+    elif interval == 'daily':
+        seen_dates = set()
+        obs_list = []
+        for h in qs:
+            d_key = h.timestamp.astimezone().date()
+            if d_key not in seen_dates:
+                seen_dates.add(d_key)
+                obs_list.append(h)
+        ts_fmt = '%Y-%m-%d'
+        ts_label = 'Date'
+    else:  # 15min default
+        obs_list = [h for h in qs if h.timestamp.astimezone().minute % 15 == 0]
+        ts_fmt = '%Y-%m-%d %H:%M'
+        ts_label = 'Timestamp / Interval'
+
     columns = [
-        {'key': 'timestamp', 'label': 'Timestamp / Interval'},
+        {'key': 'timestamp', 'label': ts_label},
         {'key': 'export_energy_today', 'label': 'Export Energy (kWh)'},
         {'key': 'import_energy_today', 'label': 'Import Energy (kWh)'},
         {'key': 'active_power', 'label': 'Active Power (kW)'},
@@ -322,9 +361,9 @@ def report_energy_generation_view(request):
     ]
     
     rows_data = []
-    for h in history:
+    for h in obs_list:
         rows_data.append({
-            'timestamp': h.timestamp.strftime('%Y-%m-%d %H:%M'),
+            'timestamp': h.timestamp.astimezone().strftime(ts_fmt),
             'export_energy_today': h.export_energy_today,
             'import_energy_today': h.import_energy_today,
             'active_power': h.active_power,
@@ -333,6 +372,9 @@ def report_energy_generation_view(request):
             'quality': h.quality
         })
         
+    total_export = rows_data[0]['export_energy_today'] if rows_data else 0.0
+    total_import = rows_data[0]['import_energy_today'] if rows_data else 0.0
+
     snapshot = create_or_get_snapshot(
         request, 'energy_generation', 'Energy Generation Interval Report',
         f'{period.capitalize()}', f'{interval}', columns, rows_data
@@ -343,17 +385,50 @@ def report_energy_generation_view(request):
         job = ExportJob.objects.create(snapshot=snapshot, export_format=export_fmt, requester=request.user)
         process_export_job(job)
         return redirect('download_file', job_id=job.job_id)
+
+    # 3. Pagination & per_page entry filtering
+    total_count = len(rows_data)
+    if per_page == 'all':
+        page_obj = None
+        display_rows = rows_data
+        start_index = 1 if total_count > 0 else 0
+        end_index = total_count
+        page_window = []
+    else:
+        try:
+            per_page_int = int(per_page)
+            if per_page_int not in (25, 50, 100, 250):
+                per_page_int = 25
+        except (ValueError, TypeError):
+            per_page_int = 25
+            per_page = '25'
+            
+        paginator = Paginator(rows_data, per_page_int)
+        page_obj = paginator.get_page(page)
+        display_rows = page_obj.object_list
+        start_index = page_obj.start_index() if total_count > 0 else 0
+        end_index = page_obj.end_index() if total_count > 0 else 0
+        
+        cur_p = page_obj.number
+        num_p = paginator.num_pages
+        page_window = [p for p in range(max(1, cur_p - 2), min(num_p + 1, cur_p + 3))]
         
     context = {
         'report_title': 'Energy Generation & Meter Interval Report',
         'report_type': 'energy_generation',
         'period': period,
         'interval': interval,
+        'per_page': per_page,
+        'page_obj': page_obj,
+        'page_window': page_window,
+        'start_index': start_index,
+        'end_index': end_index,
+        'total_count': total_count,
         'snapshot': snapshot,
         'columns': columns,
-        'rows': rows_data,
-        'total_export': sum(r['export_energy_today'] for r in rows_data) if rows_data else 0.0,
-        'total_import': sum(r['import_energy_today'] for r in rows_data) if rows_data else 0.0,
+        'rows': display_rows,
+        'total_export': total_export,
+        'total_import': total_import,
     }
     return render(request, 'reports/report_energy_generation.html', context)
 
